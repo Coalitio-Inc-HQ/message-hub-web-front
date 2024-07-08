@@ -1,0 +1,352 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  color: white;
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  background: #222;
+}
+
+.body {
+  white-space: pre-wrap; /* Сохраняет пробелы и переносы строк */
+  word-wrap: break-word; /* Переносит длинные слова */
+  
+}
+
+.wrapper {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  height: 100%;
+  background-color: #333;
+  padding: 45px 25PX 25px 25px;
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+
+}
+
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.name {
+
+  font-weight: bold; /* Полужирный шрифт */
+  font-size: 14px; /* Размер шрифта */
+  color: #ffffff; /* Белый цвет текста */
+  padding: 2px 10px; /* Внутренние отступы */
+  margin-bottom: 2px; /* Отступ снизу */
+  background: linear-gradient(45deg, #918d8d60, #5a5858);
+  border-radius: 5px; /* Закругленные углы */
+  display: inline-flex; /* Для корректного отображения отступов и размера */
+  
+
+}
+
+.name-shifted {
+  margin-left: 65px; /* Отступ, чтобы элемент не наезжал на кнопку */
+  transition: margin-left 0.3s ease; /* Добавлено свойство transition для плавного перехода */
+
+}
+
+
+
+
+.chat {
+  list-style: none;
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+}
+/* --------------------------------------------------- */
+.chat li {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  word-wrap: break-word; /* Позволяет переносить слова на новую строку */
+
+}
+
+.chat-item.active {
+  background-color: #555; /* Цвет для активного чата */
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  max-width: 56.5%;
+  height: auto;
+  padding: 10px;
+  word-wrap: break-word; /* Позволяет переносить слова на новую строку */
+
+
+
+  
+
+}
+
+.message.self {
+  align-self: flex-end; /* Выравнивание сообщений пользователя по правой стороне */
+  background-color: #424242;
+
+  border-bottom-right-radius: 0; /* Закругление внизу справа */
+  margin-left: auto; /* Отодвигает блок от левого края */
+}
+
+
+
+.message.other {
+  align-self: flex-start; /* Выравнивание сообщений других пользователей по левой стороне */
+  background-color: #424242;
+
+  border-bottom-left-radius: 0; /* Закругление внизу слева */
+  margin-right: auto; /* Отодвигает блок от правого края */
+}
+
+.message-content {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.timestamp {
+  font-size: 12px;
+  align-self: flex-end; /* Выравнивание сообщений других пользователей по левой стороне */
+ 
+  color: #8f8e8e;
+  margin-top: 5px; /* Отступ сверху для отделения от текста сообщения */
+}
+
+/* --------------------------------------------------- */
+
+
+
+
+
+
+
+
+.form {
+  display: flex;
+  align-items: center;
+  background: #3e3e3e;
+  border-radius: 18px;
+  gap: 15px;
+  padding: 10px;
+  margin: 10px;
+}
+
+
+
+textarea {
+  resize: vertical; /* Разрешает изменение размера только по вертикали */
+  border: none;
+  flex: 1;
+  max-height: 200px; /* Максимальная высота */
+  min-height: 40px;
+  height: 40px;
+
+  border-radius: 10px;
+  background: #333333;
+  outline: none;
+  padding: 10px 15px;
+  color: white;
+  overflow-y: auto; /* Автоматическая прокрутка по вертикали */
+  position: relative; /* Важный для абсолютного позиционирования ручки изменения размера */
+
+}
+
+
+
+ /* Скрыть визуально ручку изменения размера, но оставить ее функциональной */
+ textarea::after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 15px;
+  height: 15px;
+  background: transparent;
+  cursor: se-resize;
+}
+
+textarea::-webkit-resizer {
+  display: none; /* Скрыть дефолтный резайзер в Webkit */
+}
+
+/* Кастомная прокрутка */
+::-webkit-scrollbar {
+  width: 14px; /* Ширина скроллбара */
+}
+
+::-webkit-scrollbar-track {
+  background: #333; /* Цвет дорожки скроллбара */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #555; /* Цвет ползунка скроллбара */
+  border-radius: 10px;
+  border: 3px solid #333; /* Обводка вокруг ползунка, чтобы был виден зазор */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #444; /* Цвет ползунка при наведении */
+}
+
+::-webkit-scrollbar-corner {
+  background: #333; /* Цвет углового квадрата в правом нижнем углу */
+  border-radius: 10px;
+}
+
+
+.form .send {
+  display: flex;
+  justify-content: center; /* Выравнивание по горизонтали */
+  align-items: center; /* Выравнивание по вертикали */
+  width: 110px; /* Фиксированная ширина */
+  min-height: 40px;
+  /* height: 40px; Фиксированная высота */
+  border-radius: 16px;
+  background-color: #1e1e1e;
+  border: none;
+  color: #FFFFFF;
+  text-align: center;
+  font-size: 15px; /* Размер шрифта */
+  padding: 0; /* Убираем внутренние отступы */
+  cursor: pointer;
+  outline: none;
+  margin-left: 5px; /* Отступ слева */
+  position: relative; /* Относительное позиционирование для анимации */
+  transition: all 0.5s;
+}
+
+.form .send:hover {
+  background-color: #302f2f;
+  padding-right: 25px;
+}
+
+.form .send::after {
+  content: '>';
+  position: absolute;
+  right: 5px;
+  opacity: 0;
+  transition: 0.5s;
+}
+
+.form .send:hover::after {
+  opacity: 1;
+  right: 10px;
+}
+
+.chat-list {
+  list-style: none;
+  padding: 0;
+}
+
+.chat-item {
+  padding: 10px;
+  margin-bottom: 12px;
+  background-color: #1e1e1e;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+
+.chat-item:hover {
+  background-color: #52404083;
+}
+
+.chat-item.active {
+  background-color:#9b9b9b;
+}
+
+
+
+h2 {
+
+  color: white;
+  margin-bottom: 15px;
+}
+
+.chat-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+
+
+
+/* new */
+
+/* .main-button {
+  display: block;
+} */
+.sidebar-container .button-container {
+  display: none;
+}
+.sidebar-container {
+  width: 250px;
+  transition: width 0.3s ease, margin-left 0.3s ease; /* Добавляем плавный переход */
+
+}
+
+.sidebar-container-hidden {
+  width: 0;
+  margin-left: 0px; /* Скрываем контейнер */
+
+}
+
+
+
+/* .button-container {
+  position: absolute;
+  margin: 1px;
+  z-index: 1000;
+} */
+
+.toggle-sidebar-btn {
+  position: absolute;
+  background: none;
+  border: none;
+
+  left: 25px;
+  top: 10px;
+  width: 24px;
+  height: 24px;
+}
+
+
+
+
+
+
+
+/* .sidebar-hidden ~ .main {
+  margin-left: 0;
+} */
+
+
+
+
+
+
+.sidebar-hidden {
+  transform: translateX(-250px);
+}
+
