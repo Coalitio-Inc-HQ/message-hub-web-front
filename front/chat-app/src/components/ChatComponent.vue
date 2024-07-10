@@ -52,32 +52,25 @@
 
 
 <script>
-import { useWebSocket } from '@vueuse/core';
-
-import { 
-  get_chats_by_user_Request,
-  get_waiting_chats_Request,
-  get_messages_by_chat_Request,
-  send_message_to_chat
- 
-} from '@/services/wsRequests'; 
-
-
 
 import {
   setupMessageObserver
-} from '@/observers/messageObserver';
+} from '@/websocket/observers/messageObserver';
 
-import {
-  
-  convertToUTCFormatted
-} from '@/services/dateUtils'
+import { convertToUTCFormatted } from '@/services/dateUtils';
+
+import { 
+         get_messages_by_chat_Request,
+         new_user_in_chat_Request
+
+       } from "@/services/wsRequests.js";
+
 
 export default {
   data() {
     return {
       username: '',
-      thisUserId: 1, // ID веба текущего пользователя
+      thisUserId: null, // ID веба текущего пользователя
       waitingChats: [],
       readChats: [],
       currentChatId: null,
@@ -86,193 +79,105 @@ export default {
       currentChatMessages: [],
       isSubmitting: false,
       isSidebarVisible: true // Добавили переменную состояния
-
     };
   },
 
-  setup() {
-    const { status, data, send, open, close } = useWebSocket('ws://localhost:8000/ws_listener'); 
-    return { status, data, send, open, close};
-  },
 
-  name: 'ChatComponent',
   async created() {
-    const isAuthenticated = localStorage.getItem('isAuthenticated');
-    if (!isAuthenticated) {
-      this.$router.push('/login');
-    }
-    this.username = prompt('Как вас зовут?');
+    this.connection = new WebSocket('ws://localhost:8000/ws_listener');
 
-    try {
-      console.log('WebSocket connection opened. Все ок');
-       
-      get_chats_by_user_Request(this.send, this.thisUserId);
-      get_waiting_chats_Request(this.send);
 
-    } catch (error) {
-      console.error('Что-то не так, по любому бэк косякнул: ', error);
-    }
 
-    // // Слушаем сообщения от сервера
-    // this.$watch('data', (newData) => {
-    //   if (newData) {
-    //     const message = JSON.parse(newData);
-    //     console.log('Получено какое-то сообщение:', message); 
-    //     switch(message.name) {
-          
-    //     //Old requests
-    //     case 'get_waiting_chats':{
-    //       handleGetWaitingChats(this,message);
-    //       break;
-    //     }
-
-    //     //Old requests
-    //     case 'get_chats_by_user':{
-    //       handleGetChatsByUser(this, message);
-    //       break;      
-    //     }
-
-    //     //Old requests  
-    //     case 'get_messages_by_chat':{
-    //       handleGetMessagesByChat(this, message);
-    //       break;
-    //     }
-
-    //     //Old send
-    //     case 'send_message_to_chat':{
-    //       console.log('Сообщение отправлено:', message);
-    //       break;
-    //     }
-
-    //     //new requests
-    //     case 'new_waiting_chats': {
-    //       handleNewWaitingChats(this, message);
-    //       break;
-    //     }
-
-    //     //new requests
-    //     case 'new_message': {
-    //       //trigger_front_new_message_in_chat_Listen(message);
-    //       handleNewMessage(this, message);
-    //       break;
-    //     }
-
-    //     //new
-    //     case 'new_user_in_chat': {
-    //       //trigger_front_new_user_in_chat_Listen(message);
-    //       console.log('new_user_in_chat');
-    //       console.log('------------------------------------------------------');
-    //       console.log('Получили данные по new_user_in_chat:', message.body);
-    //       console.log('В разработке');
-    //       console.log('------------------------------------------------------');
-    //       break;
-    //     }
-        
-    //     case 'status': {
-    //       console.log('status:',message.body);
-    //       break;
-    //     }
-        
-    //     default: {
-    //       console.log('Необработанный тип сообщения:', message.name);
-    //       break;
-    //     }
-
-    //     }
-    //   }
-    //   });
-    
-    setupMessageObserver(this);
-
+    setupMessageObserver(this, this.connection);
   },
 
   methods: {
     
    
-    convertToUTCFormatted,
+   convertToUTCFormatted,
 
     toggleSidebar() {
     this.isSidebarVisible = !this.isSidebarVisible;
     },
 
 
-    getLastMessageId(chatId) {
-      if (this.messages[chatId] && this.messages[chatId].length > 0) {
-        // Происк максимального messageId
-        return Math.max(...this.messages[chatId].map(message => message.messageId));
-      }
-      return 0; // Если сообщений нет, возвращаем 0
-    },
+  //   getLastMessageId(chatId) {
+  //     if (this.messages[chatId] && this.messages[chatId].length > 0) {
+  //       // Происк максимального messageId
+  //       return Math.max(...this.messages[chatId].map(message => message.messageId));
+  //     }
+  //     return 0; // Если сообщений нет, возвращаем 0
+  //   },
 
 
-    async sendMessage() {
-    // Проверка условий для отправки сообщения
-    if (this.messageInput.trim() !== "" && this.currentChatId !== null && !this.isSubmitting) {
-      this.isSubmitting = true;
+  //   async sendMessage() {
+  //   // Проверка условий для отправки сообщения
+  //   if (this.messageInput.trim() !== "" && this.currentChatId !== null && !this.isSubmitting) {
+  //     this.isSubmitting = true;
 
-      // Получение последнего messageId и его инкрементация
-      let lastMessageId = this.getLastMessageId(this.currentChatId);
-        if (lastMessageId === 0) {
-          // Если сообщений нет, присваиваем messageId значение 1
-          lastMessageId = 1;
-        } else {
-          lastMessageId++;
-        }
-      // Создание нового сообщения 
-      const message = { 
-        id: this.currentChatId, 
-        messageId: lastMessageId, 
-        name: this.username, 
-        body: this.messageInput, 
-        sender_id: this.thisUserId, 
-        sended_at:  (new Date().toISOString())
+  //     // Получение последнего messageId и его инкрементация
+  //     let lastMessageId = this.getLastMessageId(this.currentChatId);
+  //       if (lastMessageId === 0) {
+  //         // Если сообщений нет, присваиваем messageId значение 1
+  //         lastMessageId = 1;
+  //       } else {
+  //         lastMessageId++;
+  //       }
+  //     // Создание нового сообщения 
+  //     const message = { 
+  //       id: this.currentChatId, 
+  //       messageId: lastMessageId, 
+  //       name: this.username, 
+  //       body: this.messageInput, 
+  //       sender_id: this.thisUserId, 
+  //       sended_at:  (new Date().toISOString())
 
-      };
+  //     };
 
-      console.log('Сообщение:', message);
-      console.log('Дата отправки (форматированная):', convertToUTCFormatted(message.sended_at));
+  //     console.log('Сообщение:', message);
+  //     console.log('Дата отправки (форматированная):', convertToUTCFormatted(message.sended_at));
 
-      // Проверка существования массива сообщений для текущего чата и добавление нового сообщения
-      if (!this.messages[this.currentChatId]) {
-        this.messages[this.currentChatId] = [];
-      }
-      this.messages[this.currentChatId].push(message);
+  //     // Проверка существования массива сообщений для текущего чата и добавление нового сообщения
+  //     if (!this.messages[this.currentChatId]) {
+  //       this.messages[this.currentChatId] = [];
+  //     }
+  //     this.messages[this.currentChatId].push(message);
 
-      // Логирование обновленного массива сообщений
-      console.log('Обновленный messages:', this.messages);
+  //     // Логирование обновленного массива сообщений
+  //     console.log('Обновленный messages:', this.messages);
 
-      // Очистка поля ввода сообщения и обновление состояния чата
-      this.messageInput = '';
-      this.moveChatToRead(this.currentChatId);
-      this.isSubmitting = false;
+  //     // Очистка поля ввода сообщения и обновление состояния чата
+  //     this.messageInput = '';
+  //     this.moveChatToRead(this.currentChatId);
+  //     this.isSubmitting = false;
       
-      // Обновление текущих сообщений чата
-      this.currentChatMessages=[];
-      this.currentChatMessages = this.messages[this.currentChatId];
-      this.currentChatMessages = this.currentChatMessages.map(msg => ({
-      ...msg,
-      sended_at: convertToUTCFormatted(msg.sended_at)
-      }));
+  //     // Обновление текущих сообщений чата
+  //     this.currentChatMessages=[];
+  //     this.currentChatMessages = this.messages[this.currentChatId];
+  //     this.currentChatMessages = this.currentChatMessages.map(msg => ({
+  //     ...msg,
+  //     sended_at: convertToUTCFormatted(msg.sended_at)
+  //     }));
             
-      // Отправляем сообщение на сервер, используя функцию send_message_to_chat
-      send_message_to_chat(
-            this.send, 
-            this.thisUserId, 
-            this.currentChatId, 
-              {
-              id: message.messageId,
-              chat_id: this.currentChatId,
-              sender_id: this.thisUserId,
-              sended_at: message.sended_at,
-              text: message.body,
-              }
-      );
+  //     // Отправляем сообщение на сервер, используя функцию send_message_to_chat
+  //     send_message_to_chat(
+  //           this.send, 
+  //           this.thisUserId, 
+  //           this.currentChatId, 
+  //             {
+  //             id: message.messageId,
+  //             chat_id: this.currentChatId,
+  //             sender_id: this.thisUserId,
+  //             sended_at: message.sended_at,
+  //             text: message.body,
+  //             }
+  //     );
     
-    }
-    },
+  //   }
+  //   },
 
 
-    selectChat(chatId) {
+     selectChat(chatId) {
       console.log('------------------------------------------------------');
       console.log('Мы находимся в selectChat с chatId:', chatId);
 
@@ -294,12 +199,26 @@ export default {
           console.log(`Сообщения для чата ${chatId} отсутствуют, отправка запроса`);
           // Если сообщений для чата нет, запрашиваем их
           this.currentChatMessages = [];
-          get_messages_by_chat_Request(this.send, chatId);
+          this.loadChatMessages(chatId);
         }
       }
-      console.log('------------------------------------------------------');
     },
-
+    async loadChatMessages(chatId) {
+    try {
+      if (this.connection && this.connection.send) {
+          
+          new_user_in_chat_Request(this.connection.send.bind(this.connection), this.thisUserId,chatId);
+          get_messages_by_chat_Request(this.connection.send.bind(this.connection), chatId);
+        
+        } 
+      else {
+          console.error('Соединение с WebSocket недоступно');
+        }    
+      }
+    catch (error) {
+      console.error(`Ошибка при загрузке сообщений для чата ${chatId}:`, error);
+    }
+  },
 
     moveChatToWaiting(chatId) {
       const index = this.readChats.findIndex(chat => chat.chatId === chatId);
