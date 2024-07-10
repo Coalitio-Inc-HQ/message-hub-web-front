@@ -1,4 +1,19 @@
-* {
+
+html, body, .full-height {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: #222;
+}
+
+.chat-component {
+  width: 100%;
+  height: 100%;
+  background: #222;
+}
+
+.chat-component * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -6,43 +21,35 @@
   color: white;
 }
 
-body, html {
-  width: 100%;
-  height: 100%;
-  background: #222;
+
+.chat-component .body {
+  white-space: pre-wrap; 
+  word-wrap: break-word; 
 }
 
-.body {
-  white-space: pre-wrap; /* Сохраняет пробелы и переносы строк */
-  word-wrap: break-word; /* Переносит длинные слова */
-  
-}
-
-.wrapper {
+.chat-component .wrapper {
   display: flex;
   height: 100vh;
 }
 
-.sidebar {
+.chat-component .sidebar {
   width: 250px;
   height: 100%;
   background-color: #333;
-  padding: 45px 25PX 25px 25px;
+  padding: 45px 25px 25px 25px;
   overflow-y: auto;
   transition: transform 0.3s ease;
-
 }
 
 
-.main {
+.chat-component .main {
   flex: 1;
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-.name {
-
+.chat-component .name {
   font-weight: bold; /* Полужирный шрифт */
   font-size: 14px; /* Размер шрифта */
   color: #ffffff; /* Белый цвет текста */
@@ -51,127 +58,97 @@ body, html {
   background: linear-gradient(45deg, #918d8d60, #5a5858);
   border-radius: 5px; /* Закругленные углы */
   display: inline-flex; /* Для корректного отображения отступов и размера */
-  
-
 }
 
-.name-shifted {
+
+.chat-component .name-shifted {
   margin-left: 65px; /* Отступ, чтобы элемент не наезжал на кнопку */
   transition: margin-left 0.3s ease; /* Добавлено свойство transition для плавного перехода */
-
 }
 
-
-
-
-.chat {
+.chat-component .chat {
   list-style: none;
   padding: 20px;
   flex: 1;
   overflow-y: auto;
 }
-/* --------------------------------------------------- */
-.chat li {
+
+.chat-component .chat li {
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 10px;
   word-wrap: break-word; /* Позволяет переносить слова на новую строку */
-
 }
 
-.chat-item.active {
+.chat-component .chat-item.active {
   background-color: #555; /* Цвет для активного чата */
 }
 
-.message {
+.chat-component .message {
   display: flex;
   flex-direction: column;
   max-width: 56.5%;
   height: auto;
   padding: 10px;
   word-wrap: break-word; /* Позволяет переносить слова на новую строку */
-
-
-
-  
-
 }
 
-.message.self {
+
+.chat-component .message.self {
   align-self: flex-end; /* Выравнивание сообщений пользователя по правой стороне */
   background-color: #424242;
-
   border-bottom-right-radius: 0; /* Закругление внизу справа */
   margin-left: auto; /* Отодвигает блок от левого края */
 }
 
 
-
-.message.other {
+.chat-component .message.other {
   align-self: flex-start; /* Выравнивание сообщений других пользователей по левой стороне */
   background-color: #424242;
-
   border-bottom-left-radius: 0; /* Закругление внизу слева */
   margin-right: auto; /* Отодвигает блок от правого края */
 }
 
-.message-content {
+.chat-component .message-content {
   display: flex;
   flex-direction: column;
 }
 
-
-.timestamp {
+.chat-component .timestamp {
   font-size: 12px;
   align-self: flex-end; /* Выравнивание сообщений других пользователей по левой стороне */
- 
   color: #8f8e8e;
   margin-top: 5px; /* Отступ сверху для отделения от текста сообщения */
 }
 
-/* --------------------------------------------------- */
-
-
-
-
-
-
-
-
-.form {
+.chat-component .form {
   display: flex;
   align-items: center;
   background: #3e3e3e;
-  border-radius: 18px;
+  border-radius: 14px;
   gap: 15px;
   padding: 10px;
   margin: 10px;
 }
 
-
-
-textarea {
+.chat-component textarea {
   resize: vertical; /* Разрешает изменение размера только по вертикали */
   border: none;
   flex: 1;
-  max-height: 200px; /* Максимальная высота */
+  max-height: 200px;
   min-height: 40px;
   height: 40px;
-
   border-radius: 10px;
   background: #333333;
   outline: none;
-  padding: 10px 15px;
+  padding: 10px;
   color: white;
   overflow-y: auto; /* Автоматическая прокрутка по вертикали */
   position: relative; /* Важный для абсолютного позиционирования ручки изменения размера */
-
 }
 
-
-
- /* Скрыть визуально ручку изменения размера, но оставить ее функциональной */
- textarea::after {
+/* Скрыть визуально ручку изменения размера, но оставить ее функциональной */
+.chat-component textarea::after {
   content: '';
   position: absolute;
   bottom: 5px;
@@ -182,81 +159,65 @@ textarea {
   cursor: se-resize;
 }
 
-textarea::-webkit-resizer {
+.chat-component textarea::-webkit-resizer {
   display: none; /* Скрыть дефолтный резайзер в Webkit */
 }
 
 /* Кастомная прокрутка */
-::-webkit-scrollbar {
+.chat-component ::-webkit-scrollbar {
   width: 14px; /* Ширина скроллбара */
 }
 
-::-webkit-scrollbar-track {
+.chat-component ::-webkit-scrollbar-track {
   background: #333; /* Цвет дорожки скроллбара */
   border-radius: 10px;
 }
 
-::-webkit-scrollbar-thumb {
+.chat-component ::-webkit-scrollbar-thumb {
   background-color: #555; /* Цвет ползунка скроллбара */
   border-radius: 10px;
   border: 3px solid #333; /* Обводка вокруг ползунка, чтобы был виден зазор */
 }
 
-::-webkit-scrollbar-thumb:hover {
+.chat-component ::-webkit-scrollbar-thumb:hover {
   background-color: #444; /* Цвет ползунка при наведении */
 }
 
-::-webkit-scrollbar-corner {
+.chat-component ::-webkit-scrollbar-corner {
   background: #333; /* Цвет углового квадрата в правом нижнем углу */
   border-radius: 10px;
 }
 
-
-.form .send {
+.chat-component .form .send {
   display: flex;
-  justify-content: center; /* Выравнивание по горизонтали */
-  align-items: center; /* Выравнивание по вертикали */
-  width: 110px; /* Фиксированная ширина */
-  min-height: 40px;
-  /* height: 40px; Фиксированная высота */
-  border-radius: 16px;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 40px;
+  width: 110px;
+  border-width: 0;
+  border-radius: 10px;
   background-color: #1e1e1e;
+  color: #fff;
   border: none;
-  color: #FFFFFF;
-  text-align: center;
-  font-size: 15px; /* Размер шрифта */
-  padding: 0; /* Убираем внутренние отступы */
+  flex-direction: row;
+  font: inherit;
   cursor: pointer;
-  outline: none;
-  margin-left: 5px; /* Отступ слева */
-  position: relative; /* Относительное позиционирование для анимации */
-  transition: all 0.5s;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.form .send:hover {
-  background-color: #302f2f;
-  padding-right: 25px;
+.chat-component .form .send:hover {
+  background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(19, 1, 1, 0.3));
 }
 
-.form .send::after {
-  content: '>';
-  position: absolute;
-  right: 5px;
-  opacity: 0;
-  transition: 0.5s;
-}
-
-.form .send:hover::after {
-  opacity: 1;
-  right: 10px;
-}
-
-.chat-list {
+.chat-component .chat-list {
   list-style: none;
   padding: 0;
 }
 
-.chat-item {
+.chat-component .chat-item {
   padding: 10px;
   margin-bottom: 12px;
   background-color: #1e1e1e;
@@ -266,87 +227,73 @@ textarea::-webkit-resizer {
   transition: background-color 0.3s ease;
 }
 
-
-.chat-item:hover {
+.chat-component .chat-item:hover {
   background-color: #52404083;
 }
 
-.chat-item.active {
-  background-color:#9b9b9b;
+.chat-component .chat-item.active {
+  background-color: #9b9b9b;
 }
 
-
-
-h2 {
-
+.chat-component h2 {
   color: white;
   margin-bottom: 15px;
 }
 
-.chat-list {
+.chat-component .chat-list {
   list-style: none;
   padding: 0;
   margin-bottom: 20px;
 }
 
-
-
-
-/* new */
-
-/* .main-button {
-  display: block;
-} */
-.sidebar-container .button-container {
+.chat-component .sidebar-container .button-container {
   display: none;
 }
-.sidebar-container {
-  width: 250px;
-  transition: width 0.3s ease, margin-left 0.3s ease; /* Добавляем плавный переход */
 
+.chat-component .sidebar-container {
+  width: 250px;
+  transition: width 0.3s ease, margin-left 0.3s ease; 
 }
 
-.sidebar-container-hidden {
+.chat-component .sidebar-container-hidden {
   width: 0;
   margin-left: 0px; /* Скрываем контейнер */
-
 }
 
-
-
-/* .button-container {
-  position: absolute;
-  margin: 1px;
-  z-index: 1000;
-} */
-
-.toggle-sidebar-btn {
+.chat-component .toggle-sidebar-btn {
   position: absolute;
   background: none;
   border: none;
-
   left: 25px;
   top: 10px;
   width: 24px;
   height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  outline: none;
+  cursor: pointer;
+  padding: 0;
 }
 
+.chat-component .toggle-sidebar-btn:focus,
+.chat-component .toggle-sidebar-btn:active,
+.chat-component .toggle-sidebar-btn:hover {
+  outline: none;
+  background: none;
+}
 
+.chat-component .toggle-btn-container {
+  position: absolute;
+  width: 250px;
+  height: 50px;
+  z-index: 1000;
+}
 
+.chat-component .sidebar-container-hidden .toggle-btn-container {
+  width: 0px;
+}
 
-
-
-
-/* .sidebar-hidden ~ .main {
-  margin-left: 0;
-} */
-
-
-
-
-
-
-.sidebar-hidden {
+.chat-component .sidebar-hidden {
   transform: translateX(-250px);
 }
-

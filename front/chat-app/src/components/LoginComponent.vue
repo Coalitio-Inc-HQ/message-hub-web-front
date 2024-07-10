@@ -1,84 +1,94 @@
 <template>
-  <div class="login-container">
-    <h1>Login</h1>
-    <form @submit.prevent="login">
-      <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" v-model="username" required />
-      </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" v-model="password" required />
-      </div>
-      <button type="submit">Login</button>
-    </form>
+  <div class="login-body">
+    <div class="login-container">
+      <form v-if="!registerActive" @submit.prevent="login">
+        <h4>Войти</h4>
+        <div class="input-box">
+          <input type="text" id="username" v-model="username" required />
+          <span>Логин</span>
+          <i></i>
+        </div>
+        <div class="input-box">
+          <input type="password" id="password" v-model="password" required />
+          <span>Пароль</span>
+          <i></i>
+        </div>
+        <div class="button-container-log">
+          <button type="submit">Войти</button>
+        </div>
+        <p class="switch-form">Еще не зарегистрированны? <a href="#" @click="toggleRegister">Регестрация</a></p>
+      </form>
+
+      <form v-else @submit.prevent="register">
+        <h4>Зарегестрироваться</h4>
+        <div class="input-box">
+          <input type="text" id="usernameReg" v-model="usernameReg" required />
+          <span>Имя</span>
+          <i></i>
+        </div>
+        <div class="input-box">
+          <input type="text" id="emailReg" v-model="emailReg" required />
+          <span>Email</span>
+          <i></i>
+        </div>
+        <div class="input-box">
+          <input type="password" id="passwordReg" v-model="passwordReg" required />
+          <span>Пароль</span>
+          <i></i>
+        </div>
+        <div class="button-container">
+          <button type="submit">Регестрация</button>
+        </div>
+        <p class="switch-form">Уже зарегестрированны? <a href="#" @click="toggleRegister">Войти</a></p>
+      </form>
+    </div>
   </div>
 </template>
+
 
 <script>
 export default {
   data() {
     return {
       username: '',
-      password: ''
+      password: '',
+      registerActive: false,
+      usernameReg: '',
+      emailReg: '',
+      passwordReg: '',
+      confirmPasswordReg: ''
     };
   },
   methods: {
     login() {
-      // Пока шаблончик простой проверки
-      if (this.username === 'user' && this.password === 'password') {
-        this.$router.push({ name: 'Chat' });
+      if (this.username && this.password) {
+        localStorage.setItem('isAuthenticated', 'true');
+        this.$router.push('/chat');
       } else {
-        alert('Invalid credentials');
+        alert('Please enter your username and password');
+      }
+    },
+    toggleRegister() {
+      this.registerActive = !this.registerActive;
+    },
+    register() {
+      if (this.passwordReg !== this.confirmPasswordReg) {
+        alert('Passwords do not match');
+        return;
+      }
+      if (this.usernameReg && this.emailReg && this.passwordReg && this.confirmPasswordReg) {
+        // Perform registration logic here
+        alert('Registration successful');
+        this.toggleRegister(); // Switch back to login form
+      } else {
+        alert('Please fill in all fields');
       }
     }
   }
 };
 </script>
 
-<style>
-.password{
-  color: #000000;
-}
-.login-container {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 20px;
-  border: 1px solid #000000;
-  border-radius: 4px;
-}
 
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
-}
-
-button {
-  width: 100%;
-  padding: 10px;
-  background-color: #007BFF;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.form-group input {
-  width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
-  color: #000000; 
-}
-button:hover {
-  background-color: #0056b3;
-}
+<style scoped>
+@import '@/assets/LoginComponent.css';
 </style>

@@ -1,83 +1,49 @@
-<!-- <template>
-  <div class="wrapper">
-    <div class="sidebar-container">
-      <div :class="['sidebar', { 'sidebar-hidden': !isSidebarVisible }]">
-        <h2>Ожидающие</h2>
-        <ul class="chat-list waiting-chats">
-          <li v-for="chat in waitingChats" :key="chat.chatId" :data-chat-id="chat.chatId" :class="{ 'chat-item': true, 'active': chat.chatId === currentChatId }" @click="selectChat(chat.chatId)">
-            {{ chat.name }}
-          </li>
-        </ul>
-        <h2>Прочитанные</h2>
-        <ul class="chat-list read-chats">
-          <li v-for="chat in readChats" :key="chat.chatId" :data-chat-id="chat.chatId" :class="{ 'chat-item': true, 'active': chat.chatId === currentChatId }" @click="selectChat(chat.chatId)">
-            {{ chat.name }}
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="main">
-      <div id="name" class="name-display">Вы: {{ username }}</div>
-      <ul class="chat">
-        <li v-for="message in currentChatMessages" :key="'message-' + message.messageId" :class="{ 'message': true, 'self': message.sender_id === thisUserId, 'other': message.sender_id !== thisUserId }">
-          <div class="message-content">
-            <div class="name">{{ message.name }}</div>
-            <div class="body">{{ message.body }}</div>
-            <div class="timestamp">{{ message.sended_at }}</div>
-          </div>
-        </li>
-      </ul>
-      <form class="form" @submit.prevent="sendMessage">
-        <textarea v-model="messageInput" id="msg" placeholder="Введите сообщение..."></textarea>
-        <button type="submit" class="send" :disabled="isSubmitting || !currentChatId">Отправить</button>
-      </form>
-    </div>
-  </div>
-</template> -->
-
 <template>
-  <div class="wrapper">
-    <div :class="['sidebar-container', { 'sidebar-container-hidden': !isSidebarVisible }]">
-      <button @click="toggleSidebar" class="toggle-sidebar-btn">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path d="M3 12H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M3 6H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M3 18H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      <div :class="['sidebar', { 'sidebar-hidden': !isSidebarVisible }]">
-        <h2>Ожидающие</h2>
-        <ul class="chat-list waiting-chats">
-          <li v-for="chat in waitingChats" :key="chat.chatId" :data-chat-id="chat.chatId" :class="{ 'chat-item': true, 'active': chat.chatId === currentChatId }" @click="selectChat(chat.chatId)">
-            {{ chat.name }}
-          </li>
-        </ul>
-        <h2>Прочитанные</h2>
-        <ul class="chat-list read-chats">
-          <li v-for="chat in readChats" :key="chat.chatId" :data-chat-id="chat.chatId" :class="{ 'chat-item': true, 'active': chat.chatId === currentChatId }" @click="selectChat(chat.chatId)">
-            {{ chat.name }}
-          </li>
-        </ul>
-      </div>
-    </div>
+  <div class="chat-component full-height">
+    <div class="wrapper">
+      <div :class="['sidebar-container', { 'sidebar-container-hidden': !isSidebarVisible }]">
+        <div class="toggle-btn-container">
+          <button @click="toggleSidebar" class="toggle-sidebar-btn" title="toggle-sidebar" type="button">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M3 12H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M3 6H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M3 18H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
 
-    <div :class="['main', { 'main-expanded': !isSidebarVisible }]">
-      <!-- <div id="name" class="name-display">Вы: {{ username }}</div> -->
-      <div :class="['name-display', { 'name-shifted': !isSidebarVisible }]" id="name">Вы: {{ username }}</div>
-      <ul class="chat">
-        <li v-for="message in currentChatMessages" :key="'message-' + message.messageId" :class="{ 'message': true, 'self': message.sender_id === thisUserId, 'other': message.sender_id !== thisUserId }">
-          <div class="message-content">
-            <div class="name">{{ message.name }}</div>
-            <div class="body">{{ message.body }}</div>
-            <div class="timestamp">{{ message.sended_at }}</div>
-          </div>
-        </li>
-      </ul>
-      <form class="form" @submit.prevent="sendMessage">
-        <textarea v-model="messageInput" id="msg" placeholder="Введите сообщение..."></textarea>
-        <button type="submit" class="send" :disabled="isSubmitting || !currentChatId">Отправить</button>
-      </form>
+        <div :class="['sidebar', { 'sidebar-hidden': !isSidebarVisible }]">
+          <h2>Ожидающие</h2>
+          <ul class="chat-list waiting-chats">
+            <li v-for="chat in waitingChats" :key="chat.chatId" :data-chat-id="chat.chatId" :class="{ 'chat-item': true, 'active': chat.chatId === currentChatId }" @click="selectChat(chat.chatId)">
+              {{ chat.name }}
+            </li>
+          </ul>
+          <h2>Прочитанные</h2>
+          <ul class="chat-list read-chats">
+            <li v-for="chat in readChats" :key="chat.chatId" :data-chat-id="chat.chatId" :class="{ 'chat-item': true, 'active': chat.chatId === currentChatId }" @click="selectChat(chat.chatId)">
+              {{ chat.name }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div :class="['main', { 'main-expanded': !isSidebarVisible }]">
+        <div :class="['name-display', { 'name-shifted': !isSidebarVisible }]" id="name">Вы: {{ username }}</div>
+        <ul class="chat">
+          <li v-for="message in currentChatMessages" :key="'message-' + message.messageId" :class="{ 'message': true, 'self': message.sender_id === thisUserId, 'other': message.sender_id !== thisUserId }">
+            <div class="message-content">
+              <div class="name">{{ message.name }}</div>
+              <div class="body">{{ message.body }}</div>
+              <div class="timestamp">{{ message.sended_at }}</div>
+            </div>
+          </li>
+        </ul>
+        <form class="form" @submit.prevent="sendMessage">
+          <textarea v-model="messageInput" id="msg" placeholder="Введите сообщение..."></textarea>
+          <button type="submit" class="send" :disabled="isSubmitting || !currentChatId">Отправить</button>
+        </form>
+      </div>
     </div>
   </div>
 </template>
@@ -96,28 +62,14 @@ import {
  
 } from '@/services/wsRequests'; 
 
-// import {
-// trigger_front_new_message_in_chat_Listen,
-// //trigger_front_new_waiting_chat_Listen,
-// trigger_front_new_user_in_chat_Listen
-// } from '@/services/wsTriggers';
 
-
-// import {
-//   handleNewMessage,
-//   handleGetWaitingChats,
-//   handleGetChatsByUser,
-//   handleGetMessagesByChat,
-//   handleNewWaitingChats,
-  
-// } from '@/messageHandlers/messageHandlers'
 
 import {
   setupMessageObserver
 } from '@/observers/messageObserver';
 
 import {
-  convertToUTC,
+  
   convertToUTCFormatted
 } from '@/services/dateUtils'
 
@@ -143,7 +95,12 @@ export default {
     return { status, data, send, open, close};
   },
 
+  name: 'ChatComponent',
   async created() {
+    const isAuthenticated = localStorage.getItem('isAuthenticated');
+    if (!isAuthenticated) {
+      this.$router.push('/login');
+    }
     this.username = prompt('Как вас зовут?');
 
     try {
@@ -231,7 +188,7 @@ export default {
 
   methods: {
     
-    convertToUTC,
+   
     convertToUTCFormatted,
 
     toggleSidebar() {
@@ -362,22 +319,12 @@ export default {
     }
 
   },
-
 };
-
-
 </script>
 
 
 <style scoped>
-
-
-.main {
-  transition: margin-left 0.3s ease, width 0.3s ease;
-  width: calc(100% - 250px); /* 250px - ширина sidebar */
-}
-
-.main-expanded {
-  margin-left: 0;
-}
+@import '@/assets/ChatComponent.css'; 
 </style>
+
+
