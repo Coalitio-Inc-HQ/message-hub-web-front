@@ -88,13 +88,19 @@ export async function handleSendMessageToChat(context, message) {
     let id = body.message_id;
     console.log('front_message_id:', front_message_id);
     console.log('message_id:', id);
-    for (let i = context.current_chat_messages.length-1;i>=0;i--){
-        if (context.current_chat_messages[i].front_message_id!=undefined){
-            if (context.current_chat_messages[i].front_message_id==front_message_id){
-                context.current_chat_messages[i].id=id;
-            }
+    // for (let i = context.current_chat_messages.length-1;i>=0;i--){
+    //     if (context.current_chat_messages[i].front_message_id!=undefined){
+    //         if (context.current_chat_messages[i].front_message_id==front_message_id){
+    //             context.current_chat_messages[i].id=id;
+    //         }
+    //     }
+    // }
+
+    context.current_chat_messages.forEach(chat_message => {
+        if (chat_message.front_message_id !== undefined && chat_message.front_message_id === front_message_id) {
+            chat_message.id = id;
         }
-    }
+    });
 }
 
 
