@@ -10,7 +10,7 @@
             </div>
           </li>
         </ul>
-        <form class="form" @submit.prevent="sendMessage">
+        <form class="form">
           <textarea v-model="message_input" id="msg" placeholder="Введите сообщение..."></textarea>
           <button type="submit" class="send" :disabled="!current_chat_id" @click="$emit('send-message',message_input)">Отправить</button>
         </form>
