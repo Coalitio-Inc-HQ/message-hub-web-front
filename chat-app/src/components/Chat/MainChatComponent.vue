@@ -114,38 +114,29 @@
         }
       },
 
-      send_message(text){
-        if(text){
-          let message = create_message(this,this.this_user_id, this.current_chat_id,text,this.message_iterator);
-          if (!this.current_chat_is_waiting){
-            send_message_to_chat_Request(this.connection.send.bind(this.connection),message);
-            this.current_chat_messages.push(message);
-          }
-          else {
-            if (!this.current_chat_waiting_connaction){
-              this.current_chat_waiting_connaction=true;
-              connect_to_waiting_chat_Request(this.connection.send.bind(this.connection), this.current_chat_id);
-              let chat;
-              let ind;
-              for (let index = 0; index < this.waiting_chats.length; index++) {
-                if (this.waiting_chats[index].id==this.current_chat_id){
-                  chat= this.waiting_chats[index];
-                  ind = index;
-                  break;
-                }
-              }
-              if (chat){
-                this.waiting_chats.splice(ind, 1);
-                this.user_chats.push(chat);
-              }
-            }
-            this.current_chat_messages.push(message);
-            this.waiting_messages.push(message);
-          }
-          
-        }
-      },
+      send_message(text) {
+          if (text) {
+              let message = create_message(this, this.this_user_id, this.current_chat_id, text, this.message_iterator);
+              
+              if (!this.current_chat_is_waiting) {
+                  send_message_to_chat_Request(this.connection.send.bind(this.connection), message);
+                  this.current_chat_messages.push(message);
+              } else {
+                  if (!this.current_chat_waiting_connection) {
+                      this.current_chat_waiting_connection = true;
+                      connect_to_waiting_chat_Request(this.connection.send.bind(this.connection), this.current_chat_id);
 
+                      let chatIndex = this.waiting_chats.findIndex(chat => chat.id === this.current_chat_id);
+                      if (chatIndex !== -1) {
+                          let chat = this.waiting_chats.splice(chatIndex, 1)[0];
+                          this.user_chats.push(chat);
+                      }
+                  }
+                  this.current_chat_messages.push(message);
+                  this.waiting_messages.push(message);
+              }
+          }
+      },
 
       toggleSidebar() {
         this.isSidebarVisible = !this.isSidebarVisible;
