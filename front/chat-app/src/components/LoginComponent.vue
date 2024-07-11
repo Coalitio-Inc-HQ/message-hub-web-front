@@ -16,30 +16,31 @@
         <div class="button-container-log">
           <button type="submit">Войти</button>
         </div>
-        <p class="switch-form">Еще не зарегистрированны? <a href="#" @click="toggleRegister">Регестрация</a></p>
+        <p class="switch-form">Еще не зарегистрированны? <a href="#" @click="toggleRegister">Регистрация</a></p>
       </form>
 
       <form v-else @submit.prevent="register">
-        <h4>Зарегестрироваться</h4>
+        <h4>Зарегистрироваться</h4>
         <div class="input-box">
           <input type="text" id="usernameReg" v-model="usernameReg" required />
           <span>Имя</span>
           <i></i>
         </div>
         <div class="input-box">
-          <input type="text" id="emailReg" v-model="emailReg" required />
-          <span>Email</span>
-          <i></i>
-        </div>
+            <input type="text" id="emailReg" v-model="emailReg" @blur="validateEmail" required />
+            <span>Email</span>
+            <i></i>
+            <p v-if="emailError" style="color:red; margin-left: 100px;">Введите корректный email</p>
+          </div>
         <div class="input-box">
           <input type="password" id="passwordReg" v-model="passwordReg" required />
           <span>Пароль</span>
           <i></i>
         </div>
         <div class="button-container">
-          <button type="submit">Регестрация</button>
+          <button type="submit">Регистрация</button>
         </div>
-        <p class="switch-form">Уже зарегестрированны? <a href="#" @click="toggleRegister">Войти</a></p>
+        <p class="switch-form">Уже зарегистрированны? <a href="#" @click="toggleRegister">Войти</a></p>
       </form>
     </div>
   </div>
@@ -70,15 +71,21 @@
       }
     },
 
+
     methods: {
       login() {
         this.rquest_login(this.username, this.password)
       },
+      validateEmail() {
+      const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      this.emailError = !regex.test(this.emailReg);
+    },
 
       toggleRegister() {
         this.registerActive = !this.registerActive;
       },
 
+      
       register() {
         let temp_emailReg = this.emailReg;
         let temp_passwordReg = this.passwordReg;
