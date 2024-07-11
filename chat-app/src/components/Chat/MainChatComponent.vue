@@ -17,7 +17,8 @@
           :current_chat_id="current_chat_id"
           @select-waitng-chat="select_waitng_chat"
           />
-          <UserChatsComponent :user_chats="user_chats" 
+          <UserChatsComponent 
+          :user_chats="user_chats" 
           :current_chat_id="current_chat_id" 
           @select-user-chat="select_user_chat"/>
         </div>
