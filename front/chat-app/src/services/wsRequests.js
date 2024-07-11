@@ -1,6 +1,10 @@
 // wsRequests.js
 
 
+/**
+ * Отправляет запрос на получение информации о пользователе.
+ * @param {Function} send - Функция для отправки запроса.
+ */
 export function get_user_info(send){
   const request = {
     name: 'get_user_info',
@@ -10,7 +14,6 @@ export function get_user_info(send){
 
   send(JSON.stringify(request));
 }
-
 
 /**
  * Отправляет запрос на получение прочитанных чатов веб-пользователя.
@@ -84,6 +87,13 @@ export function get_messages_by_chat_Request(send, chatId, count = 50, offsetMes
 }
 
 
+
+/**
+ * Отправляет запрос на получение пользователей по идентификатору чата.
+ * @param {Function} send - Функция для отправки запроса.
+ * @param {string} chat_id - Идентификатор чата.
+ * @return {void} Эта функция ничего не возвращает.
+ */
 export function get_users_by_chat_Request(send,chat_id) {
   const request = {
     name: 'get_users_by_chat',
@@ -94,6 +104,15 @@ export function get_users_by_chat_Request(send,chat_id) {
 }
 
 
+/**
+ * Создает сообщение для отправки в чат.
+ * @param {Object} context - Контекст, в котором происходит отправка сообщения.
+ * @param {number} user_id - Идентификатор пользователя, который отправляет сообщение.
+ * @param {number} chat_id - Идентификатор чата, в который отправляется сообщение.
+ * @param {string} text - Текст сообщения, которое будет отправлено.
+ * @param {number} front_message_id - Идентификатор сообщения, которое было отправлено с фронтенда.
+ * @returns {Object} - Созданное сообщение, которое будет отправлено.
+ */
 export function create_message(context,user_id, chat_id, text, front_message_id){
   context.message_iterator=context.message_iterator+1;
   return {
@@ -107,6 +126,13 @@ export function create_message(context,user_id, chat_id, text, front_message_id)
 }
 
 
+
+/**
+ * Отправляет запрос на отправку сообщения в чат.
+ * @param {Function} send - Функция для отправки запроса.
+ * @param {Object} message - Сообщение, которое будет отправлено в чат.
+ * @returns {Object} - Message, которое было отправлено.
+ */
 export function send_message_to_chat_Request(send, message) {
   const request = {
     name: "send_message_to_chat",
@@ -119,8 +145,12 @@ export function send_message_to_chat_Request(send, message) {
   return message;
 }
 
-
-export function connect_to_waiting_chat_Request(send,chat_id) {
+/**
+ * Отправляет запрос на подключение к ожидающему чату по его идентификатору chatId.
+ * @param {Function} send - Функция для отправки запроса.
+ * @param {string} chat_id - Идентификатор чата.
+ */
+export function connect_to_waiting_chat_Request(send, chat_id) {
   const request = {
     name: 'connect_to_waiting_chat',
     body: { chat_id: chat_id }
@@ -129,4 +159,3 @@ export function connect_to_waiting_chat_Request(send,chat_id) {
   send(JSON.stringify(request));
 }
 
-//add_user_to_chat пока не нужен
