@@ -27,13 +27,12 @@
           <i></i>
         </div>
         <div class="input-box">
-            <input type="text" id="emailReg" v-model="emailReg" @blur="validateEmail" required />
-            <span>Email</span>
-            <i></i>
-            <p v-if="emailError" style="color:red; margin-left: 100px;">Введите корректный email</p>
-          </div>
+          <input type="text" id="emailReg" v-model="emailReg" required />
+          <span>Email</span>
+          <i></i>
+        </div>
         <div class="input-box">
-          <input type="password" id="passwordReg" v-model="passwordReg" required />
+          <input type="password" id="passwordReg" v-model="passwordReg"  required />
           <span>Пароль</span>
           <i></i>
         </div>
@@ -50,7 +49,7 @@
   import axios from 'axios';
   import router from "@/router";
 
-  // axios.defaults.withCredentials = true
+
 
   export default {
     data() {
@@ -71,22 +70,49 @@
       }
     },
 
-
     methods: {
       login() {
+        if (!this.validateLoginPassword()) {
+        alert('Пароль должен содержать минимум 8 символов');
+        return;
+        }
         this.rquest_login(this.username, this.password)
       },
-      validateEmail() {
-      const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      this.emailError = !regex.test(this.emailReg);
-    },
 
       toggleRegister() {
         this.registerActive = !this.registerActive;
       },
 
-      
+      validateEmail(email) {
+        const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}$/;
+        return re.test(email);
+      },
+
+    validateLoginPassword() {
+    const minLength = 8;
+    if (this.password.length < minLength) return false;
+     return true;
+    },
+
+    validateRegistrationPassword(value) {
+      const containsUppercase = /[A-Z]/.test(value)
+      const containsLowercase = /[a-z]/.test(value)
+      const containsNumber = /[0-9]/.test(value)
+      const containsSpecial = /[#?!@$%^&*-]/.test(value)
+      return containsUppercase && containsLowercase && containsNumber && containsSpecial
+    },
+
+
       register() {
+        if (!this.validateRegistrationPassword(this.passwordReg)) {
+        alert('Пароль должен содержать минимум 8 символов');
+        return;
+      } else if (!this.validateEmail(this.emailReg)) {
+          alert("Пожалуйста, введите корректный email.");
+          return;
+        }
+
+
         let temp_emailReg = this.emailReg;
         let temp_passwordReg = this.passwordReg;
         let metod = this.rquest_login;

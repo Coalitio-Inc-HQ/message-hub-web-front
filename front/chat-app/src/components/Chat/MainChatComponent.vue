@@ -1,4 +1,3 @@
-
 <template>
   <div class="chat-component full-height">
     <div class="wrapper">
@@ -13,11 +12,23 @@
           </button>
         </div>
         <div :class="['sidebar', { 'sidebar-hidden': !isSidebarVisible }]">
-          <WaitingСhatsComponent :waitng_chats="waiting_chats"  :current_chat_id="current_chat_id" @select-waitng-chat="select_waitng_chat"/>
-          <UserChatsComponent :user_chats="user_chats" :current_chat_id="current_chat_id" @select-user-chat="select_user_chat"/>
+          <WaitingСhatsComponent 
+          :waiting_chats="waiting_chats"
+          :current_chat_id="current_chat_id"
+          @select-waitng-chat="select_waitng_chat"
+          />
+          <UserChatsComponent :user_chats="user_chats" 
+          :current_chat_id="current_chat_id" 
+          @select-user-chat="select_user_chat"/>
         </div>
       </div>
-      <ChatComponent :this_user_id="this_user_id" :user_name="user_name" :current_chat_id="current_chat_id" :current_chat_messages="current_chat_messages" :current_chat_users="current_chat_users" @send-message="send_message"/>
+      <ChatComponent 
+      :this_user_id="this_user_id" 
+      :user_name="user_name" 
+      :current_chat_id="current_chat_id" 
+      :current_chat_messages="current_chat_messages" 
+      :current_chat_users="current_chat_users" 
+      @send-message="send_message"/>
     </div>
   </div>
 </template>
@@ -63,8 +74,7 @@
         waiting_messages:[], // сообщения, которые могут накопится при подключенни к чату
         current_chat_waiting_connaction: false,// ожидает ли текущий чат подключения
         
- 
-        isSidebarVisible: true // Добавили переменную состояния
+        isSidebarVisible: true // переменная состояния для боковой панели
       };
     },
 
@@ -140,21 +150,7 @@
         this.isSidebarVisible = !this.isSidebarVisible;
       },
 
-      moveChatToWaiting(chatId) {
-        const index = this.readChats.findIndex(chat => chat.chatId === chatId);
-        if (index !== -1) {
-          const chat = this.readChats.splice(index, 1)[0];
-          this.waitingChats.push(chat);
-        }
-      },
 
-      moveChatToRead(chatId) {
-        const index = this.waitingChats.findIndex(chat => chat.chatId === chatId);
-        if (index !== -1) {
-          const chat = this.waitingChats.splice(index, 1)[0];
-          this.readChats.push(chat);
-        }
-      }
     },
   };
 </script>

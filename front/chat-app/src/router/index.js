@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import LoginComponent from '@/components/LoginComponent.vue';
+import LoginComponent from '@/components/Login/LoginComponent.vue';
 import MainChatComponent from '@/components/Chat/MainChatComponent.vue';
 
 const routes = [

@@ -4,10 +4,9 @@
 export function convertToUTC(timestamp) {
   const date = new Date(timestamp);
 
-  // Получаем локальное время в миллисекундах с начала эпохи
   const localTime = date.getTime();
 
-  // Получаем UTC время в миллисекундах с начала эпохи
+
   const utcTime = Date.UTC(
     date.getFullYear(),
     date.getMonth(),
@@ -17,10 +16,10 @@ export function convertToUTC(timestamp) {
     date.getSeconds()
   );
 
-  // Вычисляем разницу в миллисекундах между локальным временем и UTC
+
   const timeDifference = utcTime - localTime;
 
-  // Применяем разницу к текущему времени
+
   const newUtcDate = new Date(localTime + timeDifference);
   
   console.log(newUtcDate);
@@ -30,7 +29,6 @@ export function convertToUTC(timestamp) {
 // Функция для форматирования в строку вида HH:mm:ss YYYY-MM-DD
 export function convertToUTCFormatted(timestamp) {
   const date = new Date(timestamp);
-
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');

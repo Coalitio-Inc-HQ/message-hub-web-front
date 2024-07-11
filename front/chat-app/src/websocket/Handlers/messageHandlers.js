@@ -154,8 +154,9 @@ export async function handleNewMessage(context, message) {
     let body = message.body; 
     let msg = body.message;
 
-    ///? надо отсортировать
+
     if (msg.chat_id == context.current_chat_id && msg.sender_id != context.this_user_id){
+        
         context.current_chat_messages.push(msg);
     }
 }
@@ -224,9 +225,7 @@ const handlers = {
     "new_message": handleNewMessage,
     "delite_waiting_chats":handleDeliteWaitingChats,
     "new_waiting_chats":handleNewWaitingChats,
-
 };
- 
 
 
 export default handlers;
