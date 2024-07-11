@@ -76,9 +76,9 @@
         alert('Пароль должен содержать минимум 8 символов');
         return;
         }
-        this.rquest_login(this.username, this.password)
+        this.request_login(this.username, this.password)
       },
-
+      
       toggleRegister() {
         this.registerActive = !this.registerActive;
       },
@@ -88,34 +88,33 @@
         return re.test(email);
       },
 
-    validateLoginPassword() {
-    const minLength = 8;
-    if (this.password.length < minLength) return false;
-     return true;
+      validateLoginPassword() {
+      const minLength = 8;
+      return this.password.length >= minLength;
     },
 
     validateRegistrationPassword(value) {
-      const containsUppercase = /[A-Z]/.test(value)
-      const containsLowercase = /[a-z]/.test(value)
-      const containsNumber = /[0-9]/.test(value)
-      const containsSpecial = /[#?!@$%^&*-]/.test(value)
-      return containsUppercase && containsLowercase && containsNumber && containsSpecial
+      const minLength = 8;
+      const containsUppercase = /[A-Z]/.test(value);
+      const containsLowercase = /[a-z]/.test(value);
+      const containsNumber = /[0-9]/.test(value);
+      const containsSpecial = /[#?!@$%^&*-]/.test(value);
+      return value.length >= minLength && containsUppercase && containsLowercase && containsNumber && containsSpecial;
     },
 
 
       register() {
         if (!this.validateRegistrationPassword(this.passwordReg)) {
-        alert('Пароль должен содержать минимум 8 символов');
+        alert('Пароль должен содержать минимум 8 символов, заглавную и строчную буквы, цифру и специальный символ (#?!@$%^&*-).');
         return;
       } else if (!this.validateEmail(this.emailReg)) {
-          alert("Пожалуйста, введите корректный email.");
-          return;
-        }
-
+        alert("Пожалуйста, введите корректный email.");
+        return;
+      }
 
         let temp_emailReg = this.emailReg;
         let temp_passwordReg = this.passwordReg;
-        let metod = this.rquest_login;
+        let metod = this.request_login;
 
         axios.post('http://localhost:8000/auth/register/', {
           name: this.usernameReg,
@@ -135,7 +134,7 @@
         });
       },
 
-      rquest_login(email, password){
+      request_login(email, password){
         axios.post('http://localhost:8000/auth/jwt/login', {
           username: email,
           password: password
