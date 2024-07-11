@@ -1,152 +1,214 @@
 // import {convertToUTCFormatted} from '@/services/dateUtils';
+import {
+    send_message_to_chat_Request
+} from '@/services/wsRequests'
 
 
-
+//get_user_info
 export function handleGetUserInfo(context, message){
-    const validJsonString = JSON.stringify(message.body).replace(/'/g, '"');
-    const parsedData = JSON.parse(validJsonString);
-    console.log('User Name:', parsedData.user_info.name);
-    console.log('User ID:', parsedData.user_info.id);
-    context.thisUserId= parsedData.user_info.id;
-    context.username = parsedData.user_info.name;
+    console.log("Handler get_user_info:", message);
+    let body = message.body;
+
+    console.log('User Name:', body.user_info.name);
+    console.log('User ID:', body.user_info.id);
+    context.this_user_id= body.user_info.id;
+    context.user_name = body.user_info.name;
 }
 
+
+//get_waiting_chats
 export async function handleGetWaitingChats(context, message) {
-    const validJsonString = message.body.chats.replace(/'/g, '"');
-    const parsedData = JSON.parse(validJsonString);
-    context.waitingChats = parsedData.map(chat => ({ chatId: chat.id, name: chat.name }));
-    console.log('waitingChats:', context.waitingChats);
+    console.log("Handler get_waiting_chats:", message);
+    let body = message.body; 
+    let chats = JSON.parse(body.chats.replace(/'/g, '"'));
+
+    console.log('waiting_chats:', chats);
+    context.waiting_chats = context.waiting_chats.concat(chats);
 }
 
-export async function handleGetChatsByUser(context, message) {
-    const validJsonString = message.body.chats.replace(/'/g, '"');
-    const parsedData = JSON.parse(validJsonString);
-    context.readChats = parsedData.map(chat => ({ chatId: chat.id, name: chat.name }));
-    console.log('readChats:', context.readChats);
 
+//get_chats_by_user
+export async function handleGetChatsByUser(context, message) {
+    console.log("Handler get_chats_by_user:", message);
+    let body = message.body; 
+    let chats = JSON.parse(body.chats.replace(/'/g, '"'));
+
+    console.log('user_chats:', chats);
+    context.user_chats = context.user_chats.concat(chats);
+}
+
+
+// get_messages_by_waiting_chat
+export async function handleGetMessagesByWaitingChat(context, message) {
+    console.log("Handler get_messages_by_waiting_chat:", message);
+    let body = message.body; 
+    let messages = JSON.parse(body.messages.replace(/'/g, '"'));
+
+    console.log('messages:', messages);
+    if (messages.length>0){
+        if (messages[0].chat_id==context.current_chat_id){
+            context.current_chat_messages = context.current_chat_messages.concat(messages);
+        }
+    }
+}
+
+
+// get_messages_by_chat
+export async function handleGetMessagesByChat(context, message) {
+    console.log("Handler get_messages_by_chat:", message);
+    let body = message.body; 
+    let messages = JSON.parse(body.messages.replace(/'/g, '"'));
+
+    console.log('messages:', messages);
+    if (messages.length>0){
+        if (messages[0].chat_id==context.current_chat_id){
+            context.current_chat_messages = context.current_chat_messages.concat(messages);
+        }
+    }
 }
 
 
 // get_users_by_chat
 export async function handleGetUsersByChat(context, message) {
     console.log("Handler get_users_by_chat:", message);
-  }
+    let body = message.body; 
+    let users = JSON.parse(body.users.replace(/'/g, '"'));
+
+    console.log('users:', users);
+    context.current_chat_users = context.current_chat_users.concat(users);
+}
   
 
+// send_message_to_chat
+export async function handleSendMessageToChat(context, message) {
+    console.log("Handler send_message_to_chat:", message);
+    let body = message.body; 
 
-export async function handleGetMessagesByChat(context, message) {
-    const validJsonString = message.body.messages.replace(/'/g, '"');
-    const parsedData = JSON.parse(validJsonString);
-    const chatId = parsedData[0]?.chat_id;
-
-    const tempMessages = parsedData.map(msg => ({
-        id: chatId,
-        messageId: msg.id,
-        name: msg.sender_id === context.thisUserId ? context.username : 'Сторонний отправитель',
-        body: msg.text,
-        sender_id: msg.sender_id,
-        sended_at: (msg.sended_at)
-    }));
-
-    console.log('tempMessages:', tempMessages);
-
-    if (!context.messages[chatId]) {
-        context.messages[chatId] = [];
+    let front_message_id = body.front_message_id;
+    let id = body.message_id;
+    console.log('front_message_id:', front_message_id);
+    console.log('message_id:', id);
+    for (let i = context.current_chat_messages.length-1;i>=0;i--){
+        if (context.current_chat_messages[i].front_message_id!=undefined){
+            if (context.current_chat_messages[i].front_message_id==front_message_id){
+                context.current_chat_messages[i].id=id;
+            }
+        }
     }
-    context.messages[chatId] = tempMessages;
-
-    if (context.currentChatId === chatId) {
-        context.currentChatMessages=[];
-        context.currentChatMessages = context.messages[context.currentChatId];
-        context.currentChatMessages = context.messages[context.currentChatId];
-        context.currentChatMessages = context.currentChatMessages.map(msg => ({
-        ...msg,
-        sended_at: (msg.sended_at) // convertToUTCFormatted
-        }));
-    }
-
 }
 
-// get_messages_by_waiting_chat
-export async function handleGetMessagesByWaitingChat(context, message) {
-    console.log("Handler get_messages_by_waiting_chat:", message);
-    
-  }
 
 // connect_to_waiting_chat
 export async function handleConnectToWaitingChat(context, message) {
     console.log("Handler connect_to_waiting_chat:", message);
-  }
 
-// add_user_to_chat
-export async function handleAddUserToChat(context, message) {
-    console.log("Handler add_user_to_chat:", message);
-  }
-  
-  // send_message_to_chat
-  export async function handleSendMessageToChat(context, message) {
-    console.log("Handler send_message_to_chat:", message);
-  }
-  
-
-export async function handleNewWaitingChats(context, message) {
-
-    const validJsonString = JSON.stringify(message.body.chat).replace(/'/g, '"');
-    const parsedData = JSON.parse(validJsonString);
-
-    const exists = context.waitingChats.some(chat => chat.chatId === parsedData.id);
-    if (!exists) {
-        context.waitingChats.push({ chatId: parsedData.id, name: parsedData.name });
+    if (context.current_chat_waiting_connaction){
+        context.current_chat_waiting_connaction = false;
+        for (let index = 0; index < context.waiting_messages.length; index++) {
+            send_message_to_chat_Request(context.connection.send.bind(context.connection), context.waiting_messages[index]);
+        }
     }
 
+    context.current_chat_is_waiting=false;
 }
 
 
 // new_user_in_chat
-export async function handleNewUserInChat(message) {
+export async function handleNewUserInChat(context, message) {
     console.log("Handler new_user_in_chat:", message);
-    console.log("User ID:", message.body.user_id);
-    console.log("Chat ID:", message.body.chat_id);
+    let body = message.body; 
+    let chat = body.chat;
+    let user = body.user;
+    console.log(chat);
+    console.log(user);
+
+    if (chat.id == context.current_chat_id && user.id != context.this_user_id){
+        context.current_chat_users.push(user);
+        return;
+    }
+    
+    let find_chat = false;
+    for (let index = 0; index < context.waiting_chats.length; index++) {
+        if (context.waiting_chats[index].id == chat.id){
+            find_chat=true;
+            break;
+        }
+    }
+    if (!find_chat){
+        for (let index = 0; index < context.user_chats.length; index++) {
+            if(context.user_chats[index].id == chat.id){
+                find_chat=true;
+                break;
+            }
+        }
+    }
+    if(!find_chat){
+        context.user_chats.push(chat);
+    }
 }
 
 
+//new_message
 export async function handleNewMessage(context, message) {
+    console.log("Handler new_message:", message);
+    let body = message.body; 
+    let msg = body.message;
 
-
-    const validJsonString = JSON.stringify(message.body.message).replace(/'/g, '"');
-
-
-    const parsedData = JSON.parse(validJsonString);
-
-
-    const chatId = parsedData.chat_id;
-
-
-    const newMessage = {
-        id: chatId,
-        messageId: parsedData.id,
-        name: parsedData.sender_id === context.thisUserId ? context.username : 'Сторонний отправитель',
-        body: parsedData.text,
-        sender_id: parsedData.sender_id,
-        sended_at: (parsedData.sended_at)
-    };
-    console.log('newMessage:', newMessage);
-    if (!context.messages[chatId]) {
-        context.messages[chatId] = [];
+    ///? надо отсортировать
+    if (msg.chat_id == context.current_chat_id && msg.sender_id != context.this_user_id){
+        context.current_chat_messages.push(msg);
     }
-
-    const exists = context.messages[chatId].some(msg => msg.messageId === parsedData.id);
-    if (!exists) {
-        context.messages[chatId].push(newMessage);
-    }
-
-    if (context.currentChatId === chatId) {
-        context.currentChatMessages = context.messages[context.currentChatId];
-    }
-
-
 }
 
+
+//delite_waiting_chats
+export async function handleDeliteWaitingChats(context, message) {
+    console.log("Handler delite_waiting_chats:", message);
+    let body = message.body; 
+    let chat= body.chat;
+
+    let ind;
+    for (let index = 0; index < context.waiting_chats.length; index++) {
+        if (context.waiting_chats[index].id == chat.id){
+            ind = index;
+            break;
+        }
+    }
+
+    if(ind!=undefined){
+        context.waiting_chats.splice(ind,1);
+    }
+}
+
+
+//new_waiting_chats
+export async function handleNewWaitingChats(context, message) {
+    console.log("Handler new_waiting_chats:", message);
+    let body = message.body; 
+    let chat= body.chat;
+
+    context.waiting_chats.push(chat);
+}
+
+
+//new_broadcast_message
+export async function handleNewBroadcastMessage(context, message){
+    console.log("Handler new_broadcast_message:", message);
+    let body = message.body; 
+    let msg = body.message;
+
+    if (msg.chat_id == context.current_chat_id){
+        context.current_chat_messages.push(msg);
+    }
+}
+
+
+
+// add_user_to_chat
+export async function handleAddUserToChat(context, message) {
+    console.log("Handler add_user_to_chat:", message);
+}
+  
 const handlers = {
     "get_user_info": handleGetUserInfo,
     "get_waiting_chats": handleGetWaitingChats,
@@ -157,16 +219,12 @@ const handlers = {
     "connect_to_waiting_chat": handleConnectToWaitingChat,
     "add_user_to_chat": handleAddUserToChat,
     "send_message_to_chat": handleSendMessageToChat,
-    "new_user_in_chat": handleNewUserInChat
+    "new_user_in_chat": handleNewUserInChat,
+    "new_broadcast_message":handleNewBroadcastMessage,
+    "new_message": handleNewMessage,
+    "delite_waiting_chats":handleDeliteWaitingChats,
+    "new_waiting_chats":handleNewWaitingChats,
 
-    // get_users_by_chat
-    //"get_messages_by_chat": handleGetMessagesByChat,
-    // get_messages_by_waiting_chat
-    // connect_to_waiting_chat
-    // add_user_to_chat
-    // send_message_to_chat
-    //"new_waiting_chats": handleNewWaitingChats,
-    //"new_user_in_chat": handleNewUserInChat
 };
  
 

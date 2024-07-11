@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import LoginComponent from '@/components/LoginComponent.vue';
-import ChatComponent from '@/components/ChatComponent.vue';
+import MainChatComponent from '@/components/Chat/MainChatComponent.vue';
 
 const routes = [
-  { path: '/', component: ChatComponent },
+  { path: '/', component: MainChatComponent },
   { path: '/login', component: LoginComponent },
-  { path: '/chat', component: ChatComponent}  
+  { path: '/chat', component: MainChatComponent}  
 ];
 
 const router = createRouter({

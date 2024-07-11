@@ -21,7 +21,7 @@ export function setupMessageObserver(context, ws) {
     ws.onopen = () => {
       console.log("WebSocket connection opened");
       get_user_info(ws.send.bind(ws));
-      get_chats_by_user_Request(ws.send.bind(ws), context.thisUserId);
+      get_chats_by_user_Request(ws.send.bind(ws));
       get_waiting_chats_Request(ws.send.bind(ws));
    
     };
