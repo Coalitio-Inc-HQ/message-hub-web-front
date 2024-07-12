@@ -14,6 +14,7 @@ RUN npm install
 COPY . .
 
 # Собираем приложение для production
-EXPOSE 8080
+EXPOSE 3000
+RUN npm install -g serve
 RUN npm run build
-CMD npm run serve
+CMD ["serve", "-s", "dist"]
