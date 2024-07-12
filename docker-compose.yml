@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - VUE_APP_API_BASE_URL
+      - VUE_APP_AUTH_REGISTER_URL
+      - VUE_APP_AUTH_LOGIN_URL
+      - VUE_APP_WS_URL
+    volumes:
+      - .:/app
+      - /app/node_modules
