@@ -50,20 +50,20 @@ html, body, .full-height {
 }
 
 .chat-component .name {
-  font-weight: bold; /* Полужирный шрифт */
-  font-size: 14px; /* Размер шрифта */
-  color: #ffffff; /* Белый цвет текста */
-  padding: 2px 10px; /* Внутренние отступы */
-  margin-bottom: 2px; /* Отступ снизу */
+  font-weight: bold; 
+  font-size: 14px;
+  color: #ffffff; 
+  padding: 2px 10px; 
+  margin-bottom: 2px;
   background: linear-gradient(45deg, #918d8d60, #5a5858);
-  border-radius: 5px; /* Закругленные углы */
-  display: inline-flex; /* Для корректного отображения отступов и размера */
+  border-radius: 5px; 
+  display: inline-flex;
 }
 
 
 .chat-component .name-shifted {
-  margin-left: 65px; /* Отступ, чтобы элемент не наезжал на кнопку */
-  transition: margin-left 0.3s ease; /* Добавлено свойство transition для плавного перехода */
+  margin-left: 65px; 
+  transition: margin-left 0.3s ease; 
 }
 
 .chat-component .chat {
@@ -77,11 +77,11 @@ html, body, .full-height {
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 10px;
-  word-wrap: break-word; /* Позволяет переносить слова на новую строку */
+  word-wrap: break-word; 
 }
 
 .chat-component .chat-item.active {
-  background-color: #555; /* Цвет для активного чата */
+  background-color: #555; 
 }
 
 .chat-component .message {
@@ -90,23 +90,23 @@ html, body, .full-height {
   max-width: 56.5%;
   height: auto;
   padding: 10px;
-  word-wrap: break-word; /* Позволяет переносить слова на новую строку */
+  word-wrap: break-word;
 }
 
 
 .chat-component .message.self {
-  align-self: flex-end; /* Выравнивание сообщений пользователя по правой стороне */
+  align-self: flex-end; 
   background-color: #424242;
-  border-bottom-right-radius: 0; /* Закругление внизу справа */
-  margin-left: auto; /* Отодвигает блок от левого края */
+  border-bottom-right-radius: 0; 
+  margin-left: auto; 
 }
 
 
 .chat-component .message.other {
-  align-self: flex-start; /* Выравнивание сообщений других пользователей по левой стороне */
+  align-self: flex-start; 
   background-color: #424242;
-  border-bottom-left-radius: 0; /* Закругление внизу слева */
-  margin-right: auto; /* Отодвигает блок от правого края */
+  border-bottom-left-radius: 0;
+  margin-right: auto; 
 }
 
 .chat-component .message-content {
@@ -116,9 +116,9 @@ html, body, .full-height {
 
 .chat-component .timestamp {
   font-size: 12px;
-  align-self: flex-end; /* Выравнивание сообщений других пользователей по левой стороне */
+  align-self: flex-end; 
   color: #8f8e8e;
-  margin-top: 5px; /* Отступ сверху для отделения от текста сообщения */
+  margin-top: 5px; 
 }
 
 .chat-component .form {
@@ -132,7 +132,7 @@ html, body, .full-height {
 }
 
 .chat-component textarea {
-  resize: vertical; /* Разрешает изменение размера только по вертикали */
+  resize: vertical; 
   border: none;
   flex: 1;
   max-height: 200px;
@@ -143,11 +143,11 @@ html, body, .full-height {
   outline: none;
   padding: 10px;
   color: white;
-  overflow-y: auto; /* Автоматическая прокрутка по вертикали */
-  position: relative; /* Важный для абсолютного позиционирования ручки изменения размера */
+  overflow-y: auto; 
+  position: relative; 
 }
 
-/* Скрыть визуально ручку изменения размера, но оставить ее функциональной */
+
 .chat-component textarea::after {
   content: '';
   position: absolute;
@@ -160,31 +160,31 @@ html, body, .full-height {
 }
 
 .chat-component textarea::-webkit-resizer {
-  display: none; /* Скрыть дефолтный резайзер в Webkit */
+  display: none; 
 }
 
-/* Кастомная прокрутка */
+
 .chat-component ::-webkit-scrollbar {
-  width: 14px; /* Ширина скроллбара */
+  width: 14px; 
 }
 
 .chat-component ::-webkit-scrollbar-track {
-  background: #333; /* Цвет дорожки скроллбара */
+  background: #333; 
   border-radius: 10px;
 }
 
 .chat-component ::-webkit-scrollbar-thumb {
-  background-color: #555; /* Цвет ползунка скроллбара */
+  background-color: #555; 
   border-radius: 10px;
-  border: 3px solid #333; /* Обводка вокруг ползунка, чтобы был виден зазор */
+  border: 3px solid #333; 
 }
 
 .chat-component ::-webkit-scrollbar-thumb:hover {
-  background-color: #444; /* Цвет ползунка при наведении */
+  background-color: #444; 
 }
 
 .chat-component ::-webkit-scrollbar-corner {
-  background: #333; /* Цвет углового квадрата в правом нижнем углу */
+  background: #333; 
   border-radius: 10px;
 }
 
