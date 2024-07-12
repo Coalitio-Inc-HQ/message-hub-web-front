@@ -9,9 +9,8 @@ COPY . .
 
 WORKDIR /chat-app
 
-# Собираем проект
 RUN npm run build
 
 RUN npm install -g serve
 
-CMD ["serve", "-s", "dist", "--listen", "tcp://0.0.0.0:8080"]
+CMD ["npm", "run", "serve"]
