@@ -150,15 +150,26 @@
         )
         .then(function (response) {
           console.log(response);
-          console.log(response.headers);
-          console.log(response.headers['set-cookie']);
           if (response.status == 204){
-            router.push('/chat');
+            if (response.data.access_token){
+              setCookie("token",response.data.access_token,1)
+              router.push('/chat');
+            }
           }
         })
         .catch(function (error) {
           console.log(error);
         });
+      },
+
+      setCookie(name,value,days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days*24*60*60*1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "")  + expires + "; path=/";
       }
     }
   };

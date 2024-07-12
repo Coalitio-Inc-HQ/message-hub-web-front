@@ -52,6 +52,8 @@
     create_message
   } from '@/services/wsRequests'
 
+  import router from "@/router";
+
   const WS_URL = process.env.VUE_APP_WS_URL;
 
   export default {
@@ -83,8 +85,13 @@
 
 
     async created() {
-      this.connection = new WebSocket(WS_URL);
-      setupMessageObserver(this, this.connection);
+      token=getCookie(token);
+      if (token){
+        this.connection = new WebSocket(WS_URL+"?token="+token);
+        setupMessageObserver(this, this.connection);
+      } else{
+        router.push('/login');
+      }
     },
 
     methods: {
@@ -144,7 +151,16 @@
         this.isSidebarVisible = !this.isSidebarVisible;
       },
 
-
+      getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        }
+        return null;
+      }
     },
   };
 </script>
