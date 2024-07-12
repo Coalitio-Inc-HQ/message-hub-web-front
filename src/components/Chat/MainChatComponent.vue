@@ -85,7 +85,7 @@
 
 
     async created() {
-      token=getCookie(token);
+      let token=this.getCookie(token);
       if (token){
         this.connection = new WebSocket(WS_URL+"?token="+token);
         setupMessageObserver(this, this.connection);

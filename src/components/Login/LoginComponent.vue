@@ -152,7 +152,7 @@
           console.log(response);
           if (response.status == 204){
             if (response.data.access_token){
-              setCookie("token",response.data.access_token,1)
+              this.setCookie("token",response.data.access_token,1)
               router.push('/chat');
             }
           }
