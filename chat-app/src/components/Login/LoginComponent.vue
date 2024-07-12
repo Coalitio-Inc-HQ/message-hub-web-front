@@ -16,7 +16,7 @@
         <div class="button-container-log">
           <button type="submit">Войти</button>
         </div>
-        <p class="switch-form">Еще не зарегистрированны? <a href="#" @click="toggleRegister">Регистрация</a></p>
+        <p class="switch-form">Еще не зарегистрированы? <a href="#" @click="toggleRegister">Регистрация</a></p>
       </form>
 
       <form v-else @submit.prevent="register">
@@ -39,7 +39,7 @@
         <div class="button-container">
           <button type="submit">Регистрация</button>
         </div>
-        <p class="switch-form">Уже зарегистрированны? <a href="#" @click="toggleRegister">Войти</a></p>
+        <p class="switch-form">Уже зарегистрированы? <a href="#" @click="toggleRegister">Войти</a></p>
       </form>
     </div>
   </div>
