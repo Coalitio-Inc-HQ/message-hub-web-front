@@ -16,7 +16,7 @@
         <div class="button-container-log">
           <button type="submit">Войти</button>
         </div>
-        <p class="switch-form">Еще не зарегистрированны? <a href="#" @click="toggleRegister">Регистрация</a></p>
+        <p class="switch-form">Еще не зарегистрированы? <a href="#" @click="toggleRegister">Регистрация</a></p>
       </form>
 
       <form v-else @submit.prevent="register">
@@ -39,7 +39,7 @@
         <div class="button-container">
           <button type="submit">Регистрация</button>
         </div>
-        <p class="switch-form">Уже зарегистрированны? <a href="#" @click="toggleRegister">Войти</a></p>
+        <p class="switch-form">Уже зарегистрированы? <a href="#" @click="toggleRegister">Войти</a></p>
       </form>
     </div>
   </div>
@@ -48,7 +48,9 @@
 <script>
   import axios from 'axios';
   import router from "@/router";
-
+  const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
+  const AUTH_REGISTER_URL = `${API_BASE_URL}${process.env.VUE_APP_AUTH_REGISTER_URL}`;
+  const AUTH_LOGIN_URL = `${API_BASE_URL}${process.env.VUE_APP_AUTH_LOGIN_URL}`;
 
 
   export default {
@@ -116,7 +118,7 @@
         let temp_passwordReg = this.passwordReg;
         let metod = this.request_login;
 
-        axios.post('http://localhost:8000/auth/register/', {
+        axios.post(AUTH_REGISTER_URL, {
           name: this.usernameReg,
           email: this.emailReg,
           password: this.passwordReg
@@ -135,7 +137,7 @@
       },
 
       request_login(email, password){
-        axios.post('http://localhost:8000/auth/jwt/login', {
+        axios.post(AUTH_LOGIN_URL, {
           username: email,
           password: password
         },

@@ -52,6 +52,8 @@
     create_message
   } from '@/services/wsRequests'
 
+  const WS_URL = process.env.VUE_APP_WS_URL;
+
   export default {
     components: {
       WaitingСhatsComponent,
@@ -79,9 +81,9 @@
       };
     },
 
-    async created() {
-      this.connection = new WebSocket('ws://localhost:8000/ws_listener');
 
+    async created() {
+      this.connection = new WebSocket(WS_URL);
       setupMessageObserver(this, this.connection);
     },
 
