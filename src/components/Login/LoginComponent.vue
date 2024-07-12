@@ -150,6 +150,8 @@
         )
         .then(function (response) {
           console.log(response);
+          console.log(response.headers);
+          console.log(response.headers['set-cookie']);
           if (response.status == 204){
             router.push('/chat');
           }
