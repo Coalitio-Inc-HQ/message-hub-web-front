@@ -102,7 +102,7 @@ export async function handleSendMessageToChat(context, message) {
 export async function handleConnectToWaitingChat(context, message) {
     console.log("Handler connect_to_waiting_chat:", message);
     console.log(context);
-    console.log(current_chat_waiting_connaction);
+    console.log(context.current_chat_waiting_connaction);
     if (context.current_chat_waiting_connaction){
         context.current_chat_waiting_connaction = false;
         for (let index = 0; index < context.waiting_messages.length; index++) {
