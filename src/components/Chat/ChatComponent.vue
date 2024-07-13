@@ -32,6 +32,9 @@ export default {
 
   submitMessage() {
     this.$emit('send-message', this.message_input);
+    this.message_input = ''; 
+    this.$refs.messageInput.value = '';
+
   },
 
   handleKeyDown(event) {
