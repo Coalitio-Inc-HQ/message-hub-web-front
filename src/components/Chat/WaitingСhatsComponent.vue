@@ -7,7 +7,7 @@
           :key="chat.id" 
           :data-chat-id="chat.id" 
           :class="{ 'chat-item': true, 'active': chat.id == current_chat_id }" 
-          v-on:click="$emit('select-waiting-chat', chat.id)"
+          @click="console.log('asdasd')"
           >
           {{ chat.name }}
         </il>
