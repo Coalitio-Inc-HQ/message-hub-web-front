@@ -10,8 +10,8 @@
         </div>
       </li>
     </ul>
-    <form class="form" @submit.prevent="$emit('send-message', message_input)">
-      <textarea ref="messageInput" v-model="message_input" id="msg" placeholder="Введите сообщение..." @keydown.enter.prevent="submitMessage"></textarea>
+    <form class="form" @submit.prevent="submit_message">
+      <textarea ref="messageInput" v-model="message_input" id="msg" placeholder="Введите сообщение..." @keydown="handle_key_down"></textarea>
       <button type="submit" class="send" :disabled="!current_chat_id">Отправить</button>
     </form>
   </div>
@@ -30,16 +30,16 @@ export default {
       return user ? user.name : "null";
     },
 
-  submitMessage() {
+  submit_message() {
     this.$emit('send-message', this.message_input);
     this.message_input = ''; 
  
   },
 
-  handleKeyDown(event) {
+  handle_key_down(event) {
       if (event.key === 'Enter' && !event.shiftKey) {
         event.preventDefault(); 
-        this.submitMessage();
+        this.submit_message();
       }
     }
   }
