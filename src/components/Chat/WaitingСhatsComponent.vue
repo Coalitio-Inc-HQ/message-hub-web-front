@@ -7,7 +7,7 @@
           :key="chat.id" 
           :data-chat-id="chat.id" 
           :class="{ 'chat-item': true, 'active': chat.id == current_chat_id }" 
-          @click="$emit('select-waitng-chat', chat.id)"
+          @click="$emit('select-waiting-chat', chat.id)"
           >
           {{ chat.name }}
         </il>

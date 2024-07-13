@@ -15,7 +15,7 @@
           <WaitingСhatsComponent 
           :waiting_chats="waiting_chats"
           :current_chat_id="current_chat_id"
-          @select-waitng-chat="select_waitng_chat"
+          @select-waiting-chat="select_waitng_chat"
           />
           <UserChatsComponent 
           :user_chats="user_chats" 
