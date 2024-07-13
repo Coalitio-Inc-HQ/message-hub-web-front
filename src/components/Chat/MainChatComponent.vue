@@ -28,7 +28,8 @@
       :user_name="user_name" 
       :current_chat_id="current_chat_id" 
       :current_chat_messages="current_chat_messages" 
-      :current_chat_users="current_chat_users" 
+      :current_chat_users="current_chat_users"
+      ref="сhat_сomponent"
       @send-message="send_message"/>
     </div>
   </div>
@@ -144,8 +145,7 @@
           this.current_chat_messages.push(message);
           this.waiting_messages.push(message);
         }
-        this.$refs.chatComponent.$refs.messageInput.value = '';
-        this.$refs.chatComponent.message_input = '';
+        this.$refs.сhat_сomponent.$refs.messageInput.value = '';
       }
     },
 
