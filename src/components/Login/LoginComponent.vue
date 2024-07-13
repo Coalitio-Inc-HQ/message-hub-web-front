@@ -150,7 +150,7 @@
         )
         .then(function (response) {
           console.log(response);
-          if (response.status == 204){
+          if (response.status >= 200 && response.status < 300){
             if (response.data.access_token){
               this.setCookie("token",response.data.access_token,1)
               router.push('/chat');
