@@ -147,10 +147,8 @@
         }
         console.log(this.$refs.сhat_сomponent)
         console.log(this.$refs.сhat_сomponent.message_input)
-               
-        this.$refs.сhat_сomponent.$refs.messageInput.value = '';
-       
-        this.$refs.сhat_сomponent.$refs.message_input = '';
+                     
+        this.$refs.сhat_сomponent.message_input = '';
       }
     },
 
