@@ -67,6 +67,7 @@
     },
 
     mounted(){
+      // console.log('VUE_APP_WS_URL:', process.env.VUE_APP_WS_URL);
       if (localStorage.already_registered){
         this.registerActive = !localStorage.already_registered;
       }
