@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  vue-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vue_app
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "8080:8080"
+
+  ngrok:
+    container_name: ngrok
+    image: ngrok/ngrok:latest
+    restart: unless-stopped
+    command:
+      - "http"
+      - "--config"
+      - "/etc/ngrok.yml"
+      - "8080"
+    volumes:
+      - ./ngrok.yml:/etc/ngrok.yml
+
+volumes:
+  node_modules:
