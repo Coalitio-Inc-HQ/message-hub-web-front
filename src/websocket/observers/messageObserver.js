@@ -39,10 +39,13 @@ export function setupMessageObserver(context, ws) {
           await handlers[messageType](context, dict_message);
         } catch (error) {
           console.error(`При обработке сообщения типа ${messageType} произошла ошибка:`, error);
+          console.error(`Error name: ${error.name}`);
+          console.error(`Error message: ${error.message}`);
+          console.error(`Error stack: ${error.stack}`);
         }
       } else {
         console.warn(`Не найден обработчик для сообщения типа ${messageType}`);
       }
     }
-  };
+  }; 
 }
