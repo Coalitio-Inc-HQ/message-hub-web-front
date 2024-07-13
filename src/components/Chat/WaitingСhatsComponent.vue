@@ -2,7 +2,7 @@
     <div v-if="waiting_chats.length != 0">
       <h2>Ожидающие</h2>
       <ul class="chat-list waiting-chats">
-        <button 
+        <il 
           v-for="chat in waiting_chats" 
           :key="chat.id" 
           :data-chat-id="chat.id" 
@@ -10,7 +10,7 @@
           v-on:click="console.log('asd')"
           >
           {{ chat.name }}
-        </button>
+        </il>
       </ul>
     </div>
 </template>
