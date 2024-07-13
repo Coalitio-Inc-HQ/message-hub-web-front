@@ -145,6 +145,9 @@
           this.current_chat_messages.push(message);
           this.waiting_messages.push(message);
         }
+        print(this.$refs.сhat_сomponent)
+        print(this.$refs.сhat_сomponent.$refs.messageInput)
+        print(this.$refs.сhat_сomponent.$refs.messageInput.value)
         this.$refs.сhat_сomponent.$refs.messageInput.value = '';
       }
     },
