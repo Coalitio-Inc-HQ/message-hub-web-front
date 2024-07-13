@@ -2,14 +2,14 @@
     <div v-if="user_chats.length != 0">
       <h2>Прочитанные</h2>
       <ul class="chat-list read-chats">
-        <li 
+        <button 
           v-for="chat in user_chats" 
           :key="chat.id" 
           :data-chat-id="chat.id" 
           :class="{ 'chat-item': true, 'active': chat.id == current_chat_id }" 
           @click="$emit('select-user-chat', chat.id)">
           {{ chat.name }}
-        </li>
+        </button>
       </ul>
     </div>
 </template>
