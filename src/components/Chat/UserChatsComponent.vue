@@ -7,7 +7,8 @@
           :key="chat.id" 
           :data-chat-id="chat.id" 
           :class="{ 'chat-item': true, 'active': chat.id == current_chat_id }" 
-          @click="$emit('select-user-chat', chat.id)">
+          @click="console,log('asdasdsa')"
+          >
           {{ chat.name }}
         </button>
       </ul>
@@ -19,3 +20,4 @@ export default {
   props: ["user_chats","current_chat_id"]
 };
 </script>
+<!-- @click="$emit('select-user-chat', chat.id)" -->
