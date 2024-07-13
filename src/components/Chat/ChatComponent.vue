@@ -11,7 +11,7 @@
       </li>
     </ul>
     <form class="form" @submit.prevent="$emit('send-message', message_input)">
-      <textarea   ref="messageInput"  v-model="message_input" id="msg" placeholder="Введите сообщение..."></textarea>
+      <textarea ref="messageInput" v-model="message_input" id="msg" placeholder="Введите сообщение..." @keydown="handleKeyDown"></textarea>
       <button type="submit" class="send" :disabled="!current_chat_id">Отправить</button>
     </form>
   </div>
@@ -21,15 +21,27 @@
 export default {
   props: ["this_user_id", "user_name", "current_chat_id", "current_chat_messages", "current_chat_users"],
   methods: {
-    get_user_name(user_id) {
+  get_user_name(user_id) {
       if (this.this_user_id === user_id) {
         return this.user_name;
       }
 
       const user = this.current_chat_users.find(user => user.id === user_id);
       return user ? user.name : "null";
+    },
+
+  submitMessage() {
+    this.$emit('send-message', this.message_input);
+  },
+
+  handleKeyDown(event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault(); 
+        this.submitMessage();
+      }
     }
   }
+
 };
 </script>
 
