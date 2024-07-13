@@ -109,8 +109,6 @@ export async function handleConnectToWaitingChat(context, message) {
             send_message_to_chat_Request(context.connection.send.bind(context.connection), context.waiting_messages[index]);
         }
     }
-
-    context.current_chat_is_waiting=false;
 }
 
 

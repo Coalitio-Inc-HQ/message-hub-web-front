@@ -131,8 +131,8 @@
           send_message_to_chat_Request(this.connection.send.bind(this.connection), message);
           this.current_chat_messages.push(message);
         } else {
-          if (!this.current_chat_waiting_connection) {
-            this.current_chat_waiting_connection = true;
+          if (!this.current_chat_waiting_connaction) {
+            this.current_chat_waiting_connaction = true;
             connect_to_waiting_chat_Request(this.connection.send.bind(this.connection), this.current_chat_id);
 
             let chatIndex = this.waiting_chats.findIndex(chat => chat.id === this.current_chat_id);
