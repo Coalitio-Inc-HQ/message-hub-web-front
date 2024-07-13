@@ -215,6 +215,8 @@ html, body, .full-height {
 .chat-component .chat-list {
   list-style: none;
   padding: 0;
+  margin-bottom: 2px;
+
 }
 
 .chat-component .chat-item {
