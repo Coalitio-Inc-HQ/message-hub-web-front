@@ -103,11 +103,13 @@ export async function handleConnectToWaitingChat(context, message) {
     console.log("Handler connect_to_waiting_chat:", message);
     console.log(context);
     console.log(context.current_chat_waiting_connaction);
+    
     if (context.current_chat_waiting_connaction){
         context.current_chat_waiting_connaction = false;
-        for (let index = 0; index < context.waiting_messages.length; index++) {
-            send_message_to_chat_Request(context.connection.send.bind(context.connection), context.waiting_messages[index]);
-        }
+        
+        context.waiting_messages.forEach(message => {
+            send_message_to_chat_Request(context.connection.send.bind(context.connection), message);
+        });    
     }
 }
 
@@ -127,20 +129,12 @@ export async function handleNewUserInChat(context, message) {
     }
     
     let find_chat = false;
-    for (let index = 0; index < context.waiting_chats.length; index++) {
-        if (context.waiting_chats[index].id == chat.id){
-            find_chat=true;
-            break;
-        }
+    find_chat = context.waiting_chats.some(waiting_chat => waiting_chat.id === chat.id);
+
+    if (!find_chat) {
+        find_chat = context.user_chats.some(user_chat => user_chat.id === chat.id);
     }
-    if (!find_chat){
-        for (let index = 0; index < context.user_chats.length; index++) {
-            if(context.user_chats[index].id == chat.id){
-                find_chat=true;
-                break;
-            }
-        }
-    }
+
     if(!find_chat){
         context.user_chats.push(chat);
     }
@@ -165,18 +159,12 @@ export async function handleNewMessage(context, message) {
 export async function handleDeliteWaitingChats(context, message) {
     console.log("Handler delite_waiting_chats:", message);
     let body = message.body; 
-    let chat= body.chat;
+    let chat = body.chat;
 
-    let ind;
-    for (let index = 0; index < context.waiting_chats.length; index++) {
-        if (context.waiting_chats[index].id == chat.id){
-            ind = index;
-            break;
-        }
-    }
+    let index = context.waiting_chats.findIndex(waiting_chat => waiting_chat.id === chat.id);
 
-    if(ind!=undefined){
-        context.waiting_chats.splice(ind,1);
+    if (index !== -1) {
+        context.waiting_chats.splice(index, 1);
     }
 }
 
