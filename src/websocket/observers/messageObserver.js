@@ -17,15 +17,13 @@ export function setupMessageObserver(context, ws) {
     console.log("WebSocket connection closed:", event);
   };
 
-    // Отправка начальных запросов при подключении
-    ws.onopen = () => {
-      console.log("WebSocket connection opened");
-      get_user_info(ws.send.bind(ws));
-      get_chats_by_user_Request(ws.send.bind(ws));
-      get_waiting_chats_Request(ws.send.bind(ws));
-   
-    };
-  
+  // Отправка начальных запросов при подключении
+  ws.onopen = () => {
+    console.log("WebSocket connection opened");
+    get_user_info(ws.send.bind(ws));
+    get_chats_by_user_Request(ws.send.bind(ws));
+    get_waiting_chats_Request(ws.send.bind(ws));
+  };
 
   ws.onmessage = async (event) => {
     console.log("Мы в onmessage");
