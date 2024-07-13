@@ -137,6 +137,7 @@
       },
 
       request_login(email, password){
+        let setcookie = this.setCookie;
         axios.post(AUTH_LOGIN_URL, {
           username: email,
           password: password
@@ -152,7 +153,7 @@
           console.log(response);
           if (response.status >= 200 && response.status < 300){
             if (response.data.access_token){
-              this.setCookie("token",response.data.access_token,1)
+              setcookie("token",response.data.access_token,1)
               router.push('/chat');
             }
           }
