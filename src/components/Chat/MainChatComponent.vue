@@ -88,9 +88,24 @@
     async created() {
       let token=this.getCookie("token");
       if (token){
-        this.connection = new WebSocket(WS_URL+"?token="+token);
+        const connectWebSocket = () => {
+        this.connection = new WebSocket(WS_URL + "?token=" + token);
         setupMessageObserver(this, this.connection);
-      } else{
+
+        this.connection.onclose = (event) => {
+ 
+          if (event.code !== 1008) {
+            setTimeout(() => {
+              connectWebSocket();
+            }, 10000); 
+          } else if (event.code === 1008) {
+            router.push('/login');
+          }
+        };
+      };
+
+      connectWebSocket();
+    } else{
         router.push('/login');
       }
     },
