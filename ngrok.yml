@@ -1,8 +1,9 @@
-version: "2"
-authtoken: <YOUR_NGROK_AUTH_TOKEN>
+version: "2" 
+authtoken: <>
 tunnels:
-  vue-app:
+  httpbin:
     proto: http
-    addr: vue-app:8080
-    schemes:
-      - https
+    schemes: 
+        - https
+    addr: http://vue_app:3000
+    domain: <>
