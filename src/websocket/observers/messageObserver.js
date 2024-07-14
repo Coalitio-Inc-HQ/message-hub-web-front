@@ -8,11 +8,20 @@ import {
 
 export function setupMessageObserver(context, ws) {
   console.log(ws);
-
+  const WS_URL = process.env.VUE_APP_WS_URL;
   // Обработчик события закрытия соединения
   ws.onclose = (event) => {
     if (event.code === 1008) {
       router.push('/login');
+    } else{
+      setTimeout(() => {
+        context.connection = new WebSocket(WS_URL + "?token=" + context.getCookie("token"));
+        setupMessageObserver(context, context.connection);
+      }, 10000);
+
+
+
+
     }
     console.log("WebSocket connection closed:", event);
   };
