@@ -100,6 +100,10 @@
             }, 10000); 
           } else if (event.code === 1008) {
             router.push('/login');
+          } else if(event.code === 1006){
+            setTimeout(() => {
+            connectWebSocket();
+            }, 10000);
           }
         };
       };
