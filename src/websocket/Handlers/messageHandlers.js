@@ -112,6 +112,8 @@ export async function handleConnectToWaitingChat(context, message) {
         });    
         context.waiting_messages = [];
     }
+    context.current_chat_is_waiting = false;
+
 }
 
 
