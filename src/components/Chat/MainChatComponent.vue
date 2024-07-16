@@ -29,7 +29,7 @@
       :current_chat_id="current_chat_id" 
       :current_chat_messages="current_chat_messages" 
       :current_chat_users="current_chat_users"
-      ref="сhat_сomponent"
+      ref="chat_component"
       @send-message="send_message"/>
     </div>
   </div>
@@ -164,10 +164,10 @@
           this.current_chat_messages.push(message);
           this.waiting_messages.push(message);
         }
-        console.log(this.$refs.сhat_сomponent)
-        console.log(this.$refs.сhat_сomponent.message_input)
+        console.log(this.$refs.chat_component)
+        console.log(this.$refs.chat_component.message_input)
                      
-        this.$refs.сhat_сomponent.message_input = '';
+        this.$refs.chat_component.message_input = '';
       }
     },
 
