@@ -110,6 +110,7 @@ export async function handleConnectToWaitingChat(context, message) {
         context.waiting_messages.forEach(message => {
             send_message_to_chat_Request(context.connection.send.bind(context.connection), message);
         });    
+        context.waiting_messages = [];
     }
 }
 
