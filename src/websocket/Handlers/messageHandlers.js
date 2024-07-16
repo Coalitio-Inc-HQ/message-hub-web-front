@@ -57,7 +57,9 @@ export async function handleGetMessagesByWaitingChat(context, message) {
 export async function handleGetMessagesByChat(context, message) {
     console.log("Handler get_messages_by_chat:", message);
     let body = message.body; 
-    let messages = JSON.parse(body.messages.replace(/'/g, '"'));
+    let messagesString = body.messages.replace(/'/g, '"').replace(/, "/g, ', "').replace(/"(\w+)'/g, '"$1"');
+
+    let messages = JSON.parse(messagesString);
 
     console.log('messages:', messages);
     if (messages.length>0){
