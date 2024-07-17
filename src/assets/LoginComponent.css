@@ -52,14 +52,15 @@
     font-size: 16px;
     letter-spacing: 1px;
     transition: 0.5s;
-    z-index: 10;
+    z-index: 1;
 }
 
 .input-box span {
   position: absolute;
   left: 0;
-  padding: 30px 0;
-  font-size: 16px;
+  padding: 26px 0;
+  
+  font-size: 15px;
   color: #000;
   pointer-events: none;
   transition: 0.5s;
@@ -68,7 +69,7 @@
 .input-box i {
   position: absolute;
 
-
+  
   left: 0;
   bottom: 0;
   width: 100%;
@@ -79,6 +80,18 @@
   overflow: hidden;
   transition: 0.5s;
   pointer-events: none;
+ 
+}
+
+
+.input-box i svg {
+  position: relative;
+  cursor: pointer;
+  top: 50%;
+  transform: translateY(-50%);
+  right: -90%;
+  z-index: 10;
+  pointer-events: all;
 }
 
 .fa-eye, .fa-eye-slash {
@@ -87,15 +100,31 @@
 }
 
 .input-box input:valid ~ span,
-.input-box input:focus ~ span {
+.input-box input:focus ~ span,
+.input-box.focused span {
   color: #000;
   font-size: 12px;
   transform: translateY(-34px);
 }
 
-.input-box input:valid ~ i,
+/* .input-box input:valid ~ i,
 .input-box input:focus ~ i {
   height: 40px;
+} */
+/* 
+.input-box input:valid ~ i,
+.input-box input:focus ~ i, */
+
+
+.input-box input:valid ~ i,
+.input-box input:focus ~ i,
+.input-box.focused i {
+  height: 40px;
+}
+
+.input-box i, .input-box i svg {
+  user-select: none; /* Отключение выделения текста */
+  -webkit-user-select: none; /* Отключение выделения текста для Safari и iOS */
 }
 
 .button-container {
@@ -127,6 +156,7 @@ button {
   border-radius: 10px;
   cursor: pointer;
   transition: background-color 0.3s;
+ 
 
 }
 

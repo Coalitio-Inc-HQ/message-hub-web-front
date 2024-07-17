@@ -8,11 +8,29 @@
           <span>Логин</span>
           <i></i>
         </div>
-        <div class="input-box">
-          <input type="password" id="password" v-model="password" required />
+
+
+        <div class="input-box" :class="{ focused: isPasswordFocused }">
+          <input :type="passwordFieldType" 
+          id="password"
+          v-model="password" required 
+                 @focus="handleFocusInputBox" 
+                 @blur="handleBlurInputBox" />
           <span>Пароль</span>
-          <i></i>
+          <i @click.stop="togglePasswordVisibility" class="toggle-password">
+            <svg v-if="showPassword" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            </svg>
+            <svg v-else viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <path d="M3 3l18 18"></path>
+            </svg>
+          </i>
         </div>
+
+
         <div class="button-container-log">
           <button type="submit">Войти</button>
         </div>
@@ -62,14 +80,39 @@
         usernameReg: '',
         emailReg: '',
         passwordReg: '',
-        confirmPasswordReg: ''
+        confirmPasswordReg: '',
+
+
+        showPassword: false,
+        showPasswordReg: false,
+        isPasswordFocused: false
+
       };
     },
 
-    mounted(){
+ mounted(){
       // console.log('VUE_APP_WS_URL:', process.env.VUE_APP_WS_URL);
       if (localStorage.already_registered){
         this.registerActive = !localStorage.already_registered;
+      }
+      // document.addEventListener('click', this.handleOutsideClick);
+      document.addEventListener('mousedown', this.handleOutsideMouseDown);
+      document.addEventListener('mouseup', this.handleOutsideMouseUp);
+
+    }, 
+    beforeUnmount() {
+    // document.removeEventListener('click', this.handleOutsideClick);
+    document.removeEventListener('mousedown', this.handleOutsideMouseDown);
+    document.removeEventListener('mouseup', this.handleOutsideMouseUp);
+  },
+
+
+    computed: {
+      passwordFieldType() {
+        return this.showPassword ? 'text' : 'password';
+      },
+      passwordFieldTypeReg() {
+        return this.showPasswordReg ? 'text' : 'password';
       }
     },
 
@@ -98,17 +141,13 @@
 
     validateRegistrationPassword(value) {
       const minLength = 8;
-      const containsUppercase = /[A-Z]/.test(value);
-      const containsLowercase = /[a-z]/.test(value);
-      const containsNumber = /[0-9]/.test(value);
-      const containsSpecial = /[#?!@$%^&*-]/.test(value);
-      return value.length >= minLength && containsUppercase && containsLowercase && containsNumber && containsSpecial;
+      return value.length >= minLength;
     },
 
 
       register() {
         if (!this.validateRegistrationPassword(this.passwordReg)) {
-        alert('Пароль должен содержать минимум 8 символов, заглавную и строчную буквы, цифру и специальный символ (#?!@$%^&*-).');
+        alert('Пароль должен содержать минимум 8 символов');
         return;
       } else if (!this.validateEmail(this.emailReg)) {
         alert("Пожалуйста, введите корректный email.");
@@ -172,7 +211,55 @@
             expires = "; expires=" + date.toUTCString();
         }
         document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+      },
+      togglePasswordVisibility() {
+        this.showPassword = !this.showPassword;
+        this.isPasswordFocused = true;
+
+      },
+      togglePasswordVisibilityReg() {
+        this.showPasswordReg = !this.showPasswordReg;
+      },
+
+
+
+
+    handleFocusInputBox() {
+      this.isPasswordFocused = false;
+    },
+
+    handleBlurInputBox() {
+      if (!this.password) {
+      this.isPasswordFocused = !this.isPasswordFocused;
+    }
+    },
+  //   handleOutsideClick(event) {
+  //   const inputBox = this.$el.querySelector('.input-box');
+  //   if (!inputBox.contains(event.target) && !this.isPasswordFocused) {
+  //     this.isPasswordFocused = false;
+  //   }
+  // },
+
+  // handleMouseDown() {
+  //   this.isPasswordFocused = true;
+  // }
+
+  // клик внутри input-box
+  handleOutsideMouseDown(event) {
+      const inputBox = this.$el.querySelector('.input-box');
+      if (inputBox.contains(event.target) && !this.isPasswordFocused) {
+        this.isPasswordFocused = true;
       }
+    },
+    // клик вне input-box
+    handleOutsideMouseUp(event) {
+      const inputBox = this.$el.querySelector('.input-box');
+      if (!inputBox.contains(event.target) && this.isPasswordFocused) {
+        this.isPasswordFocused =  !this.isPasswordFocused;
+      }
+    }
+    
+
     }
   };
   </script>
