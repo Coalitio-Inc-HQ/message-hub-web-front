@@ -1,6 +1,6 @@
 <template>
-    <div v-if="user_chats.length != 0">
-      <h2>Прочитанные</h2>
+    <div v-if="user_chats.length != 1">
+      <h2>Чаты</h2>
       <ul class="chat-list read-chats">
         <il 
           v-for="chat in user_chats" 

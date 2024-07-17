@@ -34,14 +34,14 @@ export function get_chats_by_user_Request(send) {
  * Отправляет запрос на получение ожидающих чатов веб-пользователя.
  * @param {Function} send - Функция для отправки запроса.
  */
-export function get_waiting_chats_Request(send) {
-  const request = {
-    name: 'get_waiting_chats',
-    body: { count: '50' }
-  };
-  console.log(`Запрос ${request.name}:`, request);
-  send(JSON.stringify(request));
-}
+// export function get_waiting_chats_Request(send) {
+//   const request = {
+//     name: 'get_waiting_chats',
+//     body: { count: '50' }
+//   };
+//   console.log(`Запрос ${request.name}:`, request);
+//   send(JSON.stringify(request));
+// }
 
 
 /**
@@ -51,18 +51,18 @@ export function get_waiting_chats_Request(send) {
  * @param {number} [count=50] - Количество сообщений для получения (по умолчанию 50).
  * @param {number} [offsetMessageId=-1] - Идентификатор сообщения для смещения (по умолчанию -1).
  */
-export function get_messages_by_waiting_chat_Request(send, chatId, count = 50, offsetMessageId = -1) {
-  const request = {
-    name: "get_messages_by_waiting_chat",
-    body: {
-      chat_id: chatId,
-      count: count,
-      offset_message_id: offsetMessageId
-    }
-  };
-  console.log(`Запрос ${request.name}:`, request);
-  send(JSON.stringify(request));
-}
+// export function get_messages_by_waiting_chat_Request(send, chatId, count = 50, offsetMessageId = -1) {
+//   const request = {
+//     name: "get_messages_by_waiting_chat",
+//     body: {
+//       chat_id: chatId,
+//       count: count,
+//       offset_message_id: offsetMessageId
+//     }
+//   };
+//   console.log(`Запрос ${request.name}:`, request);
+//   send(JSON.stringify(request));
+// }
 
 
 /**
@@ -150,12 +150,12 @@ export function send_message_to_chat_Request(send, message) {
  * @param {Function} send - Функция для отправки запроса.
  * @param {string} chat_id - Идентификатор чата.
  */
-export function connect_to_waiting_chat_Request(send, chat_id) {
-  const request = {
-    name: 'connect_to_waiting_chat',
-    body: { chat_id: chat_id }
-  };
-  console.log(`Запрос ${request.name}:`, request);
-  send(JSON.stringify(request));
-}
+// export function connect_to_waiting_chat_Request(send, chat_id) {
+//   const request = {
+//     name: 'connect_to_waiting_chat',
+//     body: { chat_id: chat_id }
+//   };
+//   console.log(`Запрос ${request.name}:`, request);
+//   send(JSON.stringify(request));
+// }
 
