@@ -1,9 +1,10 @@
 export function fillTestData(component) {
     component.user_name = 'Test User';
     component.this_user_id = 33;
-    component.user_chats = [
-      { id: 15, name: 'Test Chat' },
-    ];
+    component.user_chats = [];
+    for (let i = 15; i <= 100; i++) {
+      component.user_chats.push({ id: i, name: 'Test Chat' });
+    }
     component.current_chat_id = 15;
     component.current_chat_messages = [
       { id: 1, chat_id: 15, sender_id: 33, sended_at: "2024-07-16T14:47:16", text: 'Проверка 23' },
