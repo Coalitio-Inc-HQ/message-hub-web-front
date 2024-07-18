@@ -1,6 +1,6 @@
 <template>
   <div class="login-body">
-    <div class="login-container">
+    <div :class="['login-container', {'expanded': registerActive}]">
       <form v-if="!registerActive" @submit.prevent="login">
         <h4>Войти</h4>
         <div class="input-box">
@@ -34,6 +34,11 @@
         <div class="input-box">
           <input type="password" id="passwordReg" v-model="passwordReg"  required />
           <span>Пароль</span>
+          <i></i>
+        </div>
+        <div class="input-box">
+          <input type="password" id="confirmPasswordReg" v-model="confirmPasswordReg" required />
+          <span>Подтвердите пароль</span>
           <i></i>
         </div>
         <div class="button-container">
@@ -74,44 +79,44 @@
     },
 
     methods: {
-      login() {
+    login() {
         if (!this.validateLoginPassword()) {
         alert('Пароль должен содержать минимум 8 символов');
         return;
         }
         this.request_login(this.username, this.password)
-      },
+    },
       
-      toggleRegister() {
+    toggleRegister() {
         this.registerActive = !this.registerActive;
-      },
+    },
 
-      validateEmail(email) {
-        const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}$/;
-        return re.test(email);
-      },
+    validateEmail(email) {
+      const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{1,}$/;
+      return re.test(email);
+    },
 
-      validateLoginPassword() {
+    validateLoginPassword() {
       const minLength = 8;
       return this.password.length >= minLength;
     },
 
     validateRegistrationPassword(value) {
       const minLength = 8;
-      const containsUppercase = /[A-Z]/.test(value);
-      const containsLowercase = /[a-z]/.test(value);
-      const containsNumber = /[0-9]/.test(value);
-      const containsSpecial = /[#?!@$%^&*-]/.test(value);
-      return value.length >= minLength && containsUppercase && containsLowercase && containsNumber && containsSpecial;
+     
+      return value.length >= minLength;
     },
 
 
-      register() {
-        if (!this.validateRegistrationPassword(this.passwordReg)) {
-        alert('Пароль должен содержать минимум 8 символов, заглавную и строчную буквы, цифру и специальный символ (#?!@$%^&*-).');
+    register() {
+      if (!this.validateRegistrationPassword(this.passwordReg)) {
+        alert('Пароль должен содержать минимум 8 символов');
         return;
       } else if (!this.validateEmail(this.emailReg)) {
         alert("Пожалуйста, введите корректный email.");
+        return;
+      } else if (this.passwordReg !== this.confirmPasswordReg) {
+        alert("Пароли не совпадают. Пожалуйста, повторите попытку.");
         return;
       }
 
@@ -154,7 +159,7 @@
           console.log(response);
           if (response.status >= 200 && response.status < 300){
             if (response.data.access_token){
-              setcookie("token",response.data.access_token,1)
+              setcookie("token", response.data.access_token , 1)
               router.push('/chat');
             }
           }
@@ -179,5 +184,14 @@
 
 
  <style scoped>
-  @import '@/assets/LoginComponent.css';
+@import '@/assets/LoginComponent.css';
+
+.login-container {
+  transition: height 0.5s ease;
+  overflow: hidden;
+}
+
+.login-container.expanded {
+  height: 360px; 
+}
 </style>
