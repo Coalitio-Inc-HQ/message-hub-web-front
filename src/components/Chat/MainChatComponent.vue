@@ -39,7 +39,7 @@
   //import WaitingСhatsComponent from './WaitingСhatsComponent.vue'
   import UserChatsComponent from './UserChatsComponent.vue'
   import ChatComponent from './ChatComponent.vue'
-
+  import {fillTestData} from '@/services/testData'
   import {
     //get_messages_by_waiting_chat_Request, 
     get_messages_by_chat_Request,
@@ -77,21 +77,27 @@
         //current_chat_waiting_connaction: false,// ожидает ли текущий чат подключения
         
         isSidebarVisible: true // переменная состояния для боковой панели
+
+
+         
       };
     },
 
 
     async created() {
-      let token=this.getCookie("token");
+ 
+      let token=this.get_cookie("token");
       if (token){
         this.connection = new WebSocket(WS_URL+"?token="+token);
         setupMessageObserver(this, this.connection);
       } else{
+        fillTestData(this);
         router.push('/login');
       }
     },
 
     methods: {
+
       // select_waitng_chat(chat_id){
       //   console.log(chat_id);
 
@@ -153,7 +159,7 @@
         this.isSidebarVisible = !this.isSidebarVisible;
       },
 
-      getCookie(name) {
+      get_cookie(name) {
         var nameEQ = name + "=";
         var ca = document.cookie.split(';');
         for(var i=0;i < ca.length;i++) {
