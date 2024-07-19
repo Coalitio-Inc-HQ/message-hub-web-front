@@ -156,6 +156,7 @@ export async function handleNewMessage(context, message) {
 
     if (msg.chat_id == context.current_chat && msg.sender_id != context.this_user_id) {
         let is_found = false;
+
         for (let i = 0; i < context.current_chat_messages.length; i++) {
 
             console.log(`Сообщение по индексу ${i}, ID сообщения: ${context.current_chat_messages[i].id}`);
@@ -163,13 +164,14 @@ export async function handleNewMessage(context, message) {
             if (context.current_chat_messages[i].id == msg.id && 
                 context.current_chat_messages[i].sended_at == msg.sended_at && 
                 context.current_chat_messages[i].sender_id == msg.sender_id) {
-                console.log("Duplicate message found:", context.current_chat_messages[i]);
+                console.log("Дубликатик найден:", context.current_chat_messages[i]);
+
                 is_found = true;
                 break;
             }
         }
 
-        console.log("Дубликат сообщения:", is_found);
+    
         if (!is_found) {
             context.current_chat_messages.push(msg);
         } 
