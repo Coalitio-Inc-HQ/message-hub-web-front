@@ -4,7 +4,7 @@ import LoginComponent from '@/components/Login/LoginComponent.vue';
 import MainChatComponent from '@/components/Chat/MainChatComponent.vue';
 
 const routes = [
-  { path: '/', component: MainChatComponent },
+  { path: '/', component: LoginComponent },
   { path: '/login', component: LoginComponent },
   { path: '/chat', component: MainChatComponent}  
 ];

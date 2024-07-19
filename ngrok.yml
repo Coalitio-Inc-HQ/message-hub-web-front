@@ -1,9 +1,0 @@
-version: "2" 
-authtoken: <>
-tunnels:
-  httpbin:
-    proto: http
-    schemes: 
-        - https
-    addr: http://vue_app:3000
-    domain: <>
