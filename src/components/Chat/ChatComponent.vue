@@ -6,30 +6,29 @@
       </button>
     </div>
     <ul class="chat">
-      <li v-for="message in current_chat_messages" :key="message.sender_id + message.sended_at" :class="{ 'message': true, 'self': message.sender_id == this_user_id, 'other': message.sender_id !== this_user_id }">
-        <div class="message-content">
-          <div class="name">{{ get_user_name(message.sender_id) }}</div>
-          <div class="body">{{ message.text }}</div>
-          <div class="timestamp">{{ extractTimeFromTimestamp(message.sended_at) }}</div>
-        </div>
-      </li>
+        <li v-for="message in this.current_chat.messages" :key="message.sender_id + message.sended_at" :class="{ 'message': true, 'self': message.sender_id == this.this_user_id, 'other': message.sender_id !== this.this_user_id }">
+          <div class="message-content">
+            <div class="name">{{ get_user_name(message.sender_id) }}</div>
+            <div class="body">{{ message.text }}</div>
+            <div class="timestamp">{{ extractTimeFromTimestamp(message.sended_at) }}</div>
+          </div>
+        </li>
     </ul>
     <form class="form" @submit.prevent="submit_message">
       <textarea ref="messageInput" v-model="message_input" id="msg" placeholder="Введите сообщение..." @keydown="handle_key_down"></textarea>
-      <button type="submit" class="send" :disabled="!current_chat_id">Отправить</button>
+      <button type="submit" class="send" :disabled="!current_chat">Отправить</button>
     </form>
   </div>
 </template>
 
 <script>
 import router from "@/router";
+
 export default {
   props: [
     "this_user_id",
     "user_name",
-    "current_chat_id",
-    "current_chat_messages",
-    "current_chat_users"
+    "current_chat"
   ],
   methods: {
 
@@ -38,7 +37,7 @@ export default {
       return this.user_name;
     }
 
-    const user = this.current_chat_users.find(user => user.id === user_id);
+    const user = this.current_chat.users.find(user => user.id === user_id);
     return user ? user.name : "null";
   },
 
@@ -60,6 +59,7 @@ export default {
   const minutes = String(date.getMinutes()).padStart(2, '0');
   return `${hours}:${minutes}`;
   },
+
   delete_cookies() {
       const cookies = document.cookie.split(";");
       for (let i = 0; i < cookies.length; i++) {
