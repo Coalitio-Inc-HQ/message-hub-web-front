@@ -148,37 +148,35 @@ export async function handleNewUserInChat(context, message) {
 }
 
 
-//new_message
+//new_message реджект 
 export async function handleNewMessage(context, message) {
     console.log("Handler new_message:", message);
     let body = message.body; 
     let msg = body.message;
 
+    if (msg.chat_id == context.current_chat && msg.sender_id != context.this_user_id) {
+        let is_found = false;
+        for (let i = 0; i < context.current_chat_messages.length; i++) {
 
-    for (let index = 0; index < context.chats.length; index++) {
-        if(context.chats[index].id == msg.chat_id){
+            console.log(`Сообщение по индексу ${i}, ID сообщения: ${context.current_chat_messages[i].id}`);
             
-            let is_fund = false;
-
-            console.log(context.chats[index]);
-            console.log(context.chats[index].messages);
-            context.chats[index].messages.forEach(e=>console.log(e));
-            console.log(msg);
-
-            for (let i = 0; i < context.chats[index].messages.length; i++) {
-                if(context.chats[index].messages[i].id==msg.id){
-                    is_fund=true;
-                    break;
-                }
+            if (context.current_chat_messages[i].id == msg.id && 
+                context.current_chat_messages[i].sended_at == msg.sended_at && 
+                context.current_chat_messages[i].sender_id == msg.sender_id) {
+                console.log("Duplicate message found:", context.current_chat_messages[i]);
+                is_found = true;
+                break;
             }
-            console.log(is_fund);
-            if(!is_fund){
-                context.chats[index].messages.push(msg);
-            }
-            break;
         }
-    }
+
+        console.log("Дубликат сообщения:", is_found);
+        if (!is_found) {
+            context.current_chat_messages.push(msg);
+        } 
+    } 
+
 }
+
 
 
 //new_chat

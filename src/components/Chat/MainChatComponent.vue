@@ -11,6 +11,7 @@
             </svg>
           </button>
         </div>
+        
         <div :class="['sidebar', { 'sidebar-hidden': !isSidebarVisible }]">
           <UserChatsComponent 
             :chats="chats" 
