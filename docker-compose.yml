@@ -12,19 +12,7 @@ services:
       - .:/app
       - /app/node_modules
     ports:
-      - "8080:8080"
-
-  ngrok:
-    container_name: ngrok
-    image: ngrok/ngrok:latest
-    restart: unless-stopped
-    command:
-      - "http"
-      - "--config"
-      - "/etc/ngrok.yml"
-      - "8080"
-    volumes:
-      - ./ngrok.yml:/etc/ngrok.yml
+      - "3000:3000"
 
 volumes:
   node_modules:
