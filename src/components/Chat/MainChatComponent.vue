@@ -35,7 +35,7 @@
   } from '@/websocket/observers/messageObserver';
   import UserChatsComponent from './UserChatsComponent.vue';
   import ChatComponent from './ChatComponent.vue';
-  import { fillTestData } from '@/services/testData';
+  //import { fillTestData } from '@/services/testData';
   import {
     get_messages_by_chat_Request,
     get_users_by_chat_Request,
@@ -70,7 +70,7 @@
         this.connection = new WebSocket(WS_URL + "?token=" + token);
         setupMessageObserver(this, this.connection);
       } else {
-        fillTestData(this);
+        //fillTestData(this);
         router.push('/login');
       }
     },
