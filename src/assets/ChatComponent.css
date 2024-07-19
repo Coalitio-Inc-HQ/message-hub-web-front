@@ -32,9 +32,12 @@ html, body, .full-height {
   width: 250px;
   height: 100%;
   background-color: #333;
-  padding: 45px 25px 25px 25px;
+  padding: 40px 15px 0px 25px;
   overflow-y: auto;
-  transition: transform 0.3s ease;
+}
+.chat-component .sidebar::-webkit-scrollbar-track {
+/* Смещение трека вниз */
+  margin: 40px 0 0 0; 
 }
 
 
@@ -265,11 +268,21 @@ html, body, .full-height {
   display: none;
 }
 
-.chat-component .sidebar-container {
+/* .chat-component .sidebar-container {
   width: 250px;
   transition: width 0.3s ease, margin-left 0.3s ease; 
-}
+} */
 
+
+.chat-component  .toggle-btn-container {
+
+  background-color: #333;
+  width: 250px;
+  height: 40PX;
+  transition: transform 0.3s ease;
+
+
+}
 .chat-component .sidebar-container-hidden {
   width: 0;
   margin-left: 0px; 
@@ -278,7 +291,7 @@ html, body, .full-height {
 .chat-component .toggle-sidebar-btn {
   position: absolute;
   background: none;
-  border: none;
+  /* border: none; */
   left: 25px;
   top: 10px;
   width: 24px;
@@ -301,11 +314,15 @@ html, body, .full-height {
 .chat-component .toggle-btn-container {
   position: absolute;
   width: 250px;
-  height: 50px;
+  height: 40px;
   z-index: 1000;
+  transition: transform 0.3s ease;
+
 }
 
-.chat-component .sidebar-container-hidden .toggle-btn-container {
+.chat-component 
+.sidebar-container-hidden
+.toggle-btn-container {
   width: 0px;
 }
 
