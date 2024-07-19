@@ -154,29 +154,32 @@ export async function handleNewMessage(context, message) {
     let body = message.body; 
     let msg = body.message;
 
-    if (msg.chat_id == context.current_chat && msg.sender_id != context.this_user_id) {
+    if (msg.chat_id == context.current_chat.id && msg.sender_id != context.this_user_id) {
         let is_found = false;
 
-        for (let i = 0; i < context.current_chat_messages.length; i++) {
+        for (let index = 0; index < context.chats.length; index++) {
+            if (context.chats[index].id == msg.chat_id) {
+                
+                for (let i = 0; i < context.chats[index].messages.length; i++) {
+                    console.log(`Сообщение по индексу ${i}, ID сообщения: ${context.chats[index].messages[i].id}`);
+                    
+                    if (context.chats[index].messages[i].id == msg.id && 
+                        context.chats[index].messages[i].sended_at == msg.sended_at && 
+                        context.chats[index].messages[i].sender_id == msg.sender_id) {
+                        
+                        is_found = true;
+                        break;
+                    }
+                }
 
-            console.log(`Сообщение по индексу ${i}, ID сообщения: ${context.current_chat_messages[i].id}`);
-            
-            if (context.current_chat_messages[i].id == msg.id && 
-                context.current_chat_messages[i].sended_at == msg.sended_at && 
-                context.current_chat_messages[i].sender_id == msg.sender_id) {
-                console.log("Дубликатик найден:", context.current_chat_messages[i]);
-
-                is_found = true;
+                console.log("Дубликат сообщения:", is_found);
+                if (!is_found) {
+                    context.chats[index].messages.push(msg);
+                }
                 break;
             }
         }
-
-    
-        if (!is_found) {
-            context.current_chat_messages.push(msg);
-        } 
-    } 
-
+    }
 }
 
 
