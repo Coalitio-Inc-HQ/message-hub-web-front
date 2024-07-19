@@ -96,8 +96,13 @@ export async function handleSendMessageToChat(context, message) {
 
     for (let index = 0; index < context.chats.length; index++) {
         if(context.chats[index].id == message.chat_id){
+
             for (let i = 0; i < context.chats[index].messages.length; i++) {
-                if(context.chats[index].messages[i].front_message_id==front_message_id){
+                
+                
+                if(context.chats[index].messages[i].front_message_id !== undefined && 
+                   context.chats[index].messages[i].front_message_id === front_message_id){
+                    
                     context.chats[index].messages[i].id = id;
                     break;
                 }
