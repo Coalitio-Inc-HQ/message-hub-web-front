@@ -36,6 +36,7 @@ html, body, .full-height {
   overflow-y: auto;
 }
 .chat-component .sidebar::-webkit-scrollbar-track {
+  background: transparent;
 /* Смещение трека вниз */
   margin: 40px 0 0 0; 
 }
@@ -75,6 +76,7 @@ html, body, .full-height {
   /* height: auto; */
   width: -moz-fit-content; /* Для поддержки Firefox */
   width: fit-content; /* Для остальных браузеров */
+  min-width: 120px;
 }
 
 
@@ -83,6 +85,7 @@ html, body, .full-height {
   background-color: #424242;
   border-bottom-right-radius: 0; 
   margin-left: auto; 
+  
   
 }
 
