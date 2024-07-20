@@ -14,6 +14,7 @@
     "cors": "^2.8.5",
     "moment-timezone": "^0.5.45",
     "socket.io-client": "^4.7.5",
+    "tz": "^0.1.1",
     "vue": "^3.2.13",
     "vue-router": "^4.4.0"
   },
