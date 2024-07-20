@@ -59,7 +59,7 @@ html, body, .full-height {
   padding: 12px;
   flex: 1;
   overflow-y: auto;
-  scroll-behavior: smooth;
+  /* scroll-behavior: smooth; будет в js динамически добавляться*/
 }
 
 
@@ -177,7 +177,7 @@ html, body, .full-height {
   bottom: 5px;
   right: 5px;
   width: 15px;
-  height: 15px;
+  height:  40px;
   background: transparent;
   cursor: se-resize;
 }

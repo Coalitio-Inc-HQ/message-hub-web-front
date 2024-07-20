@@ -24,6 +24,7 @@
 <script>
 import router from "@/router";
 import moment from 'moment-timezone';
+
 export default {
   props: [
     "this_user_id",
@@ -34,85 +35,97 @@ export default {
   watch: {
     'current_chat.messages': {
       handler() {
-        this.scroll_down();
+        this.scroll_down(true);
       },
       deep: true
     }
   },
   methods: {
 
-  get_user_name(user_id) {
-    if (this.this_user_id === user_id) {
-      return this.user_name;
-    }
-
-    const user = this.current_chat.users.find(user => user.id === user_id);
-    return user ? user.name : "null";
-  },
-
-  submit_message() {
-    this.$emit('send-message', this.message_input);
-    this.message_input = ''; 
-    this.scroll_down();
-  },
-
-  handle_key_down(event) {
-    const textarea = this.$refs.messageInput;
-    
-      if (event.key === 'Enter' && !event.shiftKey) {
-        event.preventDefault(); 
-        this.submit_message();  
-        textarea.style.height = 'initial';    
-      } else if (event.key === 'Enter' && event.shiftKey) {
-        textarea.style.height = `${textarea.scrollHeight + 10}px`;
+    get_user_name(user_id) {
+      if (this.this_user_id === user_id) {
+        return this.user_name;
       }
-  },
 
+      const user = this.current_chat.users.find(user => user.id === user_id);
+      return user ? user.name : "null";
+    },
 
+    submit_message() {
+      this.$emit('send-message', this.message_input);
+      this.message_input = ''; 
+      this.scroll_down(true);
+    },
 
-  extractTimeFromTimestamp(timestamp) {
-      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const localDate = moment.tz(timestamp, timeZone);
-      const localTimeString = localDate.format('HH:mm');
-      const timezoneOffset = localDate.format('Z');
-      console.log("Смещение относительно UTC:", `UTC${timezoneOffset}`);
-
-      return localTimeString;
+    handle_key_down(event) {
+      const textarea = this.$refs.messageInput;
+      
+        if (event.key === 'Enter' && !event.shiftKey) {
+          event.preventDefault(); 
+          this.submit_message();  
+          textarea.style.height =  `${40}px`;    
+        } else if (event.key === 'Enter' && event.shiftKey) {
+          textarea.style.height = `${textarea.scrollHeight + 10}px`;
+        }
     },
 
 
-  delete_cookies() {
-      const cookies = document.cookie.split(";");
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i];
-        const eqPos = cookie.indexOf("=");
-        const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-        if (name) {
-          document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
-          console.log(`Cookie удалена: ${name}`);
-        } else {
-          console.log('Куки не обнаружены для удаления.');
-      }
-    }
-  },
+    extractTimeFromTimestamp(timestamp) {
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const localDate = moment.tz(timestamp, timeZone);
+        const localTimeString = localDate.format('HH:mm');
+        const timezoneOffset = localDate.format('Z');
+        console.log("Смещение относительно UTC:", `UTC${timezoneOffset}`);
 
-  exit_chat() {
-    alert('Вы вышли из системы');  
-    this.delete_cookies();
-    router.push('/login');
+        return localTimeString;
+      },
+
+
+    delete_cookies() {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i];
+          const eqPos = cookie.indexOf("=");
+          const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+          if (name) {
+            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+            console.log(`Cookie удалена: ${name}`);
+          } else {
+            console.log('Куки не обнаружены для удаления.');
+        }
+      }
+    },
+
+    exit_chat() {
+      alert('Вы вышли из системы');  
+      this.delete_cookies();
+      router.push('/login');
     },
     
-    scroll_down() {
+    scroll_down(smooth = false) {
       this.$nextTick(() => {
         const container = this.$refs.scroll_container;
         if (container) {
+          if (smooth) {
+            container.style.scrollBehavior = 'smooth';
+          }  else{
+            container.style.scrollBehavior = 'auto';
+          }
           container.scrollTop = container.scrollHeight;
+
+          if(smooth){
+            setTimeout(() => {
+              container.style.scrollBehavior = 'auto';
+            }, 1000);
+          }
+
+
         }
       });
     },
   },
   mounted() {
-    this.scroll_down();
+    this.scroll_down(false);
   }
 
 };
