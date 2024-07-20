@@ -51,6 +51,7 @@ export async function handleGetChatsByUser(context, message) {
 
 const moment = require('moment-timezone');
 
+
 function extractTimeFromTimestamp(timestamp) {
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     console.log("Текущий часовой пояс пользователя:", timeZone);
@@ -65,10 +66,14 @@ function extractTimeFromTimestamp(timestamp) {
     console.log("Разница во времени между локальным и UTC в часах:", offsetInHours);
     console.log("Локальное время до корректировки:", localTimeString);
 
-    // Добавление разницы в часах к локальному времени
-    const adjustedLocalDate = localDate.add(offsetInHours, 'hours');
-    const adjustedLocalTimeString = adjustedLocalDate.format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+    let adjustedLocalDate;
+    if (offsetInHours > 0) {
+        adjustedLocalDate = localDate.add(offsetInHours, 'hours');
+    } else {
+        adjustedLocalDate = localDate.subtract(Math.abs(offsetInHours), 'hours');
+    }
 
+    const adjustedLocalTimeString = adjustedLocalDate.format('YYYY-MM-DDTHH:mm:ss.SSSZ');
     console.log("Локальное время после корректировки:", adjustedLocalTimeString);
 
     return adjustedLocalTimeString;
