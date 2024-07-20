@@ -192,7 +192,7 @@ export async function handleNewMessage(context, message) {
 
 //new_chat
 export async function handleNewChat(context, message) {
-    console.log("Handler new_chat:", message);
+    console.log("Handler new_chat: ", message);
     let body = message.body; 
     let chat= body.chat;
 

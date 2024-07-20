@@ -5,7 +5,7 @@
         Выйти
       </button>
     </div>
-    <ul class="chat">
+    <ul class="chat" ref="scroll_container">
         <li v-for="message in this.current_chat.messages" :key="message.sender_id + message.sended_at" :class="{ 'message': true, 'self': message.sender_id == this.this_user_id, 'other': message.sender_id !== this.this_user_id }">
           <div class="message-content">
             <div class="name">{{ get_user_name(message.sender_id) }}</div>
@@ -30,6 +30,15 @@ export default {
     "user_name",
     "current_chat"
   ],
+
+  watch: {
+    'current_chat.messages': {
+      handler() {
+        this.scroll_down();
+      },
+      deep: true
+    }
+  },
   methods: {
 
   get_user_name(user_id) {
@@ -44,12 +53,13 @@ export default {
   submit_message() {
     this.$emit('send-message', this.message_input);
     this.message_input = ''; 
+    this.scroll_down();
   },
 
   handle_key_down(event) {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault(); 
-      this.submit_message();
+      this.submit_message();     
     }
   },
 
@@ -79,7 +89,19 @@ export default {
     alert('Вы вышли из системы');  
     this.delete_cookies();
     router.push('/login');
-    }
+    },
+    
+    scroll_down() {
+      this.$nextTick(() => {
+        const container = this.$refs.scroll_container;
+        if (container) {
+          container.scrollTop = container.scrollHeight;
+        }
+      });
+    },
+  },
+  mounted() {
+    this.scroll_down();
   }
 
 };
