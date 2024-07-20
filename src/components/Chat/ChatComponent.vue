@@ -108,9 +108,6 @@ export default {
         if (container) {
           if (smooth) {
             container.style.scrollBehavior = 'smooth';
-          } else {
-            container.style.scrollBehavior = 'auto';
-         
           }
           container.scrollTop = container.scrollHeight;
           console.log("smooth:", smooth);
