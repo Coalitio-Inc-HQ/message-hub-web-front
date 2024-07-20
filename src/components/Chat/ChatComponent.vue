@@ -35,7 +35,7 @@ export default {
   watch: {
     'current_chat.messages': {
       handler() {
-        this.scroll_down(false);
+        this.scroll_down(true);
       },
       deep: true
     }
@@ -107,11 +107,17 @@ export default {
         const container = this.$refs.scroll_container;
         if (container) {
           if (smooth) {
-            container.classList.add('smooth-scroll');
-          }  else {
-            container.classList.remove('smooth-scroll');
+            container.style.scrollBehavior = 'smooth';
+          } else {
+            container.style.scrollBehavior = 'auto';
           }
           container.scrollTop = container.scrollHeight;
+          console.log("smooth:", smooth);
+          if (smooth) {
+            setTimeout(() => {
+              container.style.scrollBehavior = 'auto';
+            }, 300);
+          }
         }
       });
     },
@@ -143,8 +149,6 @@ export default {
   background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(19, 1, 1, 0.3));
 }
 
-.smooth-scroll {
-  scroll-behavior: smooth;
-}
+
 
 </style>
