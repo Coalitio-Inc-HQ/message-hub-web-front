@@ -56,7 +56,7 @@ function extractTimeFromTimestamp(timestamp) {
     console.log("Текущий часовой пояс пользователя:", timeZone);
 
     const localDate = moment.tz(timestamp, timeZone);
-    const utcDate = moment.utc(timestamp);
+    //const utcDate = moment.utc(timestamp);
 
     const localTimeString = localDate.format('YYYY-MM-DDTHH:mm:ss.SSSZ');
     const timezoneOffset = localDate.format('Z');
