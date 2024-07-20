@@ -118,6 +118,11 @@ html, body, .full-height {
   border-radius: 5px; 
   width: max-content;
   display: inline-flex;
+
+
+  word-break: break-word; 
+  max-width: 100%; 
+  /* white-space: normal;  перенос текста на новую строку */
 }
 
 

@@ -14,7 +14,11 @@
       <div class="button-container-log">
         <button type="submit">Войти</button>
       </div>
+<!--     
       <p class="switch-form">Еще не зарегистрированы? <a href="#" @click="toggleRegister">Регистрация</a></p>
+     -->
+    
+    
     </form>
   </template>
   
