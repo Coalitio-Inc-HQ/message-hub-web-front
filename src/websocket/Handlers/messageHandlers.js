@@ -47,6 +47,18 @@ export async function handleGetChatsByUser(context, message) {
 }
 
 
+import moment from 'moment-timezone';
+
+function extractTimeFromTimestamp(timestamp) {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const localDate = moment.tz(timestamp, timeZone);
+    const localTimeString = localDate.format('HH:mm');
+    const timezoneOffset = localDate.format('Z');
+    console.log("Смещение относительно UTC:", `UTC${timezoneOffset}`);
+    return localTimeString;
+}
+
+
 
 // get_messages_by_chat
 export async function handleGetMessagesByChat(context, message) {
@@ -58,6 +70,9 @@ export async function handleGetMessagesByChat(context, message) {
     if (messages.length>0){
         for (let index = 0; index < context.chats.length; index++) {
             if (context.chats[index].id == messages[0].chat_id){
+                messages.forEach(msg => {
+                    msg.sended_at = extractTimeFromTimestamp(msg.sended_at);
+                });
                 context.chats[index].messages = messages;
                 break;
             }        
