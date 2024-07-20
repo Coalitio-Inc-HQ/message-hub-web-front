@@ -89,8 +89,6 @@ export default {
 .name-display {
   display: flex;
   padding: 8px;
- 
- 
 }
 .button_exit{
 

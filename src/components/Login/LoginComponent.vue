@@ -200,27 +200,35 @@
 <template>
   <div class="login-body">
     <div :class="['login-container', {'expanded': registerActive}]">
-      <login-form
-        v-if="!registerActive"
-        :formData="loginData"
+      <!-- <login-form      
+        v-if="!registerActive"  
+      :formData="loginData"
+        @update:formData="updateLoginData"
+        :onLogin="login"
+        :toggleRegister="toggleRegister"
+      /> -->
+
+      <login-form      
+    
+      :formData="loginData"
         @update:formData="updateLoginData"
         :onLogin="login"
         :toggleRegister="toggleRegister"
       />
-      <register-form
+      <!-- <register-form
         v-else
         :formData="registerData"
         @update:formData="updateRegisterData"
         :onRegister="register"
         :toggleRegister="toggleRegister"
-      />
+      /> -->
     </div>
   </div>
 </template>
 
 <script>
 import LoginForm from './LoginForm.vue';
-import RegisterForm from './RegisterForm.vue';
+//import RegisterForm from './RegisterForm.vue';
 import axios from 'axios';
 import router from "@/router";
 
@@ -231,7 +239,7 @@ const AUTH_LOGIN_URL = `${API_BASE_URL}${process.env.VUE_APP_AUTH_LOGIN_URL}`;
 export default {
   components: {
     LoginForm,
-    RegisterForm
+    //RegisterForm
   },
   data() {
     return {
@@ -240,12 +248,12 @@ export default {
         username: '',
         password: ''
       },
-      registerData: {
-        usernameReg: '',
-        emailReg: '',
-        passwordReg: '',
-        confirmPasswordReg: ''
-      }
+      // registerData: {
+      //   usernameReg: '',
+      //   emailReg: '',
+      //   passwordReg: '',
+      //   confirmPasswordReg: ''
+      // }
     };
   },
   mounted(){
@@ -327,6 +335,7 @@ export default {
       })
       .catch(function (error) {
         console.log(error);
+        alert("Неправильный логин или пароль. Пожалуйста, повторите попытку.");
       });
     },
     setCookie(name, value, days) {
@@ -350,15 +359,17 @@ export default {
 };
 </script>
 
-<style scoped>
-@import '@/assets/LoginComponent.css';
 
-.login-container {
+<!-- .login-container {
   transition: height 0.5s ease;
   overflow: hidden;
 }
 
 .login-container.expanded {
   height: 360px;
-}
+} -->
+<style scoped>
+@import '@/assets/LoginComponent.css';
+
+
 </style>
