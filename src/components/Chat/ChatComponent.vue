@@ -57,10 +57,15 @@ export default {
   },
 
   handle_key_down(event) {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault(); 
-      this.submit_message();     
-    }
+    const textarea = this.$refs.messageInput;
+    
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault(); 
+        this.submit_message();  
+        textarea.style.height = 'initial';    
+      } else if (event.key === 'Enter' && event.shiftKey) {
+        textarea.style.height = `${textarea.scrollHeight + 10}px`;
+      }
   },
 
   extractTimeFromTimestamp(timestamp) {

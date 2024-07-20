@@ -299,7 +299,7 @@ html, body, .full-height {
 .chat-component .toggle-sidebar-btn {
   position: absolute;
   background: none;
-  /* border: none; */
+  border: none;
   left: 25px;
   top: 10px;
   width: 24px;
