@@ -76,6 +76,7 @@ export async function handleGetMessagesByChat(context, message) {
                 messages.forEach(msg => {
                     msg.sended_at = extractTimeFromTimestamp(msg.sended_at);
                 });
+                console.log('new messages:', messages);
                 context.chats[index].messages = messages;
                 break;
             }        
