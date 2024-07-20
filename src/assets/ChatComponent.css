@@ -59,7 +59,7 @@ html, body, .full-height {
   padding: 12px;
   flex: 1;
   overflow-y: auto;
-  scroll-behavior: auto; /* будет в js динамически добавляться*/
+  /* scroll-behavior: auto; будет в js динамически добавляться */
 }
 
 
