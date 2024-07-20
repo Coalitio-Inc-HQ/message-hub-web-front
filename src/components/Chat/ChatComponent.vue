@@ -110,11 +110,11 @@ export default {
             container.style.scrollBehavior = 'smooth';
           } else {
             container.style.scrollBehavior = 'auto';
-            smooth = !smooth;
+         
           }
           container.scrollTop = container.scrollHeight;
           console.log("smooth:", smooth);
-          if (smooth) {
+          if (!smooth) {
             setTimeout(() => {
               container.style.scrollBehavior = 'smooth';
             }, 2000);
