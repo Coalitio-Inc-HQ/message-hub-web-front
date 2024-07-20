@@ -51,15 +51,21 @@ export async function handleGetChatsByUser(context, message) {
 
 const moment = require('moment-timezone');
 
-// Функция для преобразования временной метки в локальное время пользователя
 function extractTimeFromTimestamp(timestamp) {
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    console.log("Текущий часовой пояс:", timeZone);
+    console.log("Текущий часовой пояс пользователя:", timeZone);
 
     const localDate = moment.tz(timestamp, timeZone);
+    const utcDate = moment.utc(timestamp);
+
     const localTimeString = localDate.format('YYYY-MM-DDTHH:mm:ss.SSSZ');
     const timezoneOffset = localDate.format('Z');
+    const offsetInHours = localDate.utcOffset() / 60;
+
     console.log("Смещение относительно UTC:", `UTC${timezoneOffset}`);
+    console.log("Разница во времени между локальным и UTC в часах:", offsetInHours);
+    console.log("Локальное время:", localTimeString);
+
     return localTimeString;
 }
 
@@ -73,9 +79,9 @@ export async function handleGetMessagesByChat(context, message) {
     if (messages.length>0){
         for (let index = 0; index < context.chats.length; index++) {
             if (context.chats[index].id == messages[0].chat_id){
-                messages.forEach(msg => {
-                    msg.sended_at = extractTimeFromTimestamp(msg.sended_at);
-                });
+                for (let i = 0; i < messages.length; i++) {
+                    messages[i].sended_at = extractTimeFromTimestamp(messages[i].sended_at);
+                }
                 console.log('new messages:', messages);
                 context.chats[index].messages = messages;
                 break;
