@@ -209,8 +209,7 @@
       /> -->
 
       <login-form      
-    
-      :formData="loginData"
+        :formData="loginData"
         @update:formData="updateLoginData"
         :onLogin="login"
         :toggleRegister="toggleRegister"

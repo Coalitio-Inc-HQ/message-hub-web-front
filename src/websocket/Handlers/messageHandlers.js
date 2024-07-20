@@ -123,7 +123,7 @@ export async function handleAddUserToChat(context, message) {
     for (let index = 0; index < context.chats.length; index++) {
         if(context.chats[index].id == chat_users.chat_id){
             context.chats[index].waiting_connaction = false;
-
+            context.chat[index].is_not_connected = false;
             context.chats[index].waiting_messages.forEach(message => {
                 send_message_to_chat_Request(context.connection.send.bind(context.connection), message);
             }); 
