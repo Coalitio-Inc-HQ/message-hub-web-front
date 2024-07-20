@@ -116,7 +116,7 @@ export default {
           if (smooth) {
             setTimeout(() => {
               container.style.scrollBehavior = 'auto';
-            }, 300);
+            }, 2000);
           }
         }
       });
