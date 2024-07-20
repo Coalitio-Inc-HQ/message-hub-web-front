@@ -56,7 +56,6 @@ function extractTimeFromTimestamp(timestamp) {
     console.log("Текущий часовой пояс пользователя:", timeZone);
 
     const localDate = moment.tz(timestamp, timeZone);
-    //const utcDate = moment.utc(timestamp);
 
     const localTimeString = localDate.format('YYYY-MM-DDTHH:mm:ss.SSSZ');
     const timezoneOffset = localDate.format('Z');
@@ -64,9 +63,15 @@ function extractTimeFromTimestamp(timestamp) {
 
     console.log("Смещение относительно UTC:", `UTC${timezoneOffset}`);
     console.log("Разница во времени между локальным и UTC в часах:", offsetInHours);
-    console.log("Локальное время:", localTimeString);
+    console.log("Локальное время до корректировки:", localTimeString);
 
-    return localTimeString;
+    // Добавление разницы в часах к локальному времени
+    const adjustedLocalDate = localDate.add(offsetInHours, 'hours');
+    const adjustedLocalTimeString = adjustedLocalDate.format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+
+    console.log("Локальное время после корректировки:", adjustedLocalTimeString);
+
+    return adjustedLocalTimeString;
 }
 
 // get_messages_by_chat
