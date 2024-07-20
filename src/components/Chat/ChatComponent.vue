@@ -35,7 +35,7 @@ export default {
   watch: {
     'current_chat.messages': {
       handler() {
-        this.scroll_down(true);
+        this.scroll_down(false);
       },
       deep: true
     }
