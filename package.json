@@ -12,6 +12,7 @@
     "axios": "^1.7.2",
     "core-js": "^3.8.3",
     "cors": "^2.8.5",
+    "moment-timezone": "^0.5.45",
     "socket.io-client": "^4.7.5",
     "vue": "^3.2.13",
     "vue-router": "^4.4.0"

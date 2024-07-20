@@ -23,7 +23,7 @@
 
 <script>
 import router from "@/router";
-
+import moment from 'moment-timezone';
 export default {
   props: [
     "this_user_id",
@@ -68,12 +68,18 @@ export default {
       }
   },
 
+
+
   extractTimeFromTimestamp(timestamp) {
-  const date = new Date(timestamp);
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  return `${hours}:${minutes}`;
-  },
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const localDate = moment.tz(timestamp, timeZone);
+      const localTimeString = localDate.format('HH:mm');
+      const timezoneOffset = localDate.format('Z');
+      console.log("Смещение относительно UTC:", `UTC${timezoneOffset}`);
+
+      return localTimeString;
+    },
+
 
   delete_cookies() {
       const cookies = document.cookie.split(";");
