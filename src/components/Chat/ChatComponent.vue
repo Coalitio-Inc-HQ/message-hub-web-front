@@ -123,7 +123,7 @@ export default {
     },
   },
   mounted() {
-    this.scroll_down(false);
+    this.scroll_down(true);
   }
 
 };
