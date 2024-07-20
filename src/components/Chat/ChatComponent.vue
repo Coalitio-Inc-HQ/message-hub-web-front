@@ -54,7 +54,7 @@ export default {
     submit_message() {
       this.$emit('send-message', this.message_input);
       this.message_input = ''; 
-      this.scroll_down(true);
+      this.scroll_down(false);
     },
 
     handle_key_down(event) {
@@ -124,7 +124,7 @@ export default {
     },
   },
   mounted() {
-    this.scroll_down(true);
+    this.scroll_down(false);
   }
 
 };
