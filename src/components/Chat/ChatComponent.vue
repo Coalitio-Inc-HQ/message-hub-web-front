@@ -116,7 +116,7 @@ export default {
           console.log("smooth:", smooth);
           if (smooth) {
             setTimeout(() => {
-              container.style.scrollBehavior = 'auto';
+              container.style.scrollBehavior = 'smooth';
             }, 2000);
           }
         }
