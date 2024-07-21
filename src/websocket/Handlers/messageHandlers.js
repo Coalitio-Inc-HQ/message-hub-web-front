@@ -1,4 +1,5 @@
 // import {convertToUTCFormatted} from '@/services/dateUtils';
+const moment = require('moment-timezone');
 import {
     send_message_to_chat_Request
 } from '@/services/wsRequests'
@@ -9,8 +10,8 @@ export function handleGetUserInfo(context, message){
     console.log("Handler get_user_info:", message);
     let body = message.body;
 
-    console.log('User Name:', body.user_info.name);
-    console.log('User ID:', body.user_info.id);
+    //console.log('User Name:', body.user_info.name);
+    //console.log('User ID:', body.user_info.id);
     context.this_user_id= body.user_info.id;
     context.user_name = body.user_info.name;
 }
@@ -49,7 +50,7 @@ export async function handleGetChatsByUser(context, message) {
 
 
 
-const moment = require('moment-timezone');
+
 
 
 function extractTimeFromTimestamp(timestamp) {
@@ -58,13 +59,9 @@ function extractTimeFromTimestamp(timestamp) {
 
     const localDate = moment.tz(timestamp, timeZone);
 
-    const localTimeString = localDate.format('YYYY-MM-DDTHH:mm:ss.SSSZ');
-    const timezoneOffset = localDate.format('Z');
+
     const offsetInHours = localDate.utcOffset() / 60;
 
-    console.log("Смещение относительно UTC:", `UTC${timezoneOffset}`);
-    console.log("Разница во времени между локальным и UTC в часах:", offsetInHours);
-    console.log("Локальное время до корректировки:", localTimeString);
 
     let adjustedLocalDate;
     if (offsetInHours > 0) {
