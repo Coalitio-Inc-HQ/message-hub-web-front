@@ -1,21 +1,28 @@
 <template>
   <div :class="['main', { 'main-expanded': !isSidebarVisible }]">
+  <!-- <div class="main"> -->
     <div :class="['name-display']" >
-      <button class="button_exit" @click="exit_chat">  
-        Выйти
-      </button>
+      <button class="button_exit" @click="exit_chat">Выйти</button>
     </div>
     <ul class="chat" ref="scroll_container">
-        <li v-for="message in this.current_chat.messages" :key="message.sender_id + message.sended_at" :class="{ 'message': true, 'self': message.sender_id == this.this_user_id, 'other': message.sender_id !== this.this_user_id }">
+        <li v-for="message in this.current_chat.messages" 
+        :key="message.sender_id + message.sended_at" 
+        :class="{ 'message': true, 'self': message.sender_id == this.this_user_id, 'other': message.sender_id !== this.this_user_id }">
           <div class="message-content">
             <div class="name">{{ get_user_name(message.sender_id) }}</div>
             <div class="body">{{ message.text }}</div>
-            <div class="timestamp">{{ extractTimeFromTimestamp(message.sended_at) }}</div>
+            <div class="timestamp">{{ format_time_for_display(message.sended_at) }}</div>
           </div>
         </li>
     </ul>
     <form class="form" @submit.prevent="submit_message">
-      <textarea ref="messageInput" v-model="message_input" id="msg" placeholder="Введите сообщение..." @keydown="handle_key_down"></textarea>
+    <textarea 
+      ref="messageInput" 
+      v-model="message_input" 
+      id="msg" 
+      placeholder="Введите сообщение..." 
+      @keydown="handle_key_down">
+    </textarea>
       <button type="submit" class="send" :disabled="!current_chat">Отправить</button>
     </form>
   </div>
@@ -23,8 +30,8 @@
 
 <script>
 import router from "@/router";
-import moment from 'moment-timezone';
-
+//import moment from 'moment-timezone';
+import {format_time_for_display} from '@/services/dateUtils';
 export default {
   props: [
     "this_user_id",
@@ -35,18 +42,23 @@ export default {
   watch: {
     'current_chat.messages': {
       handler() {
-        this.scroll_down(false);
+        this.scroll_down(true);
       },
-      deep: true
+      deep: true,
+      immediate: true
     },
     'current_chat': {
       handler() {
         this.scroll_down(false);
       },
+      deep: false,
       immediate: true
     }
   },
+
   methods: {
+
+    format_time_for_display,
 
     get_user_name(user_id) {
       if (this.this_user_id === user_id) {
@@ -76,16 +88,6 @@ export default {
     },
 
 
-    extractTimeFromTimestamp(timestamp) {
-        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const localDate = moment.tz(timestamp, timeZone);
-        const localTimeString = localDate.format('HH:mm');
-        const timezoneOffset = localDate.format('Z');
-        console.log("Смещение относительно UTC:", `UTC${timezoneOffset}`);
-
-        return localTimeString;
-      },
-
 
     delete_cookies() {
         const cookies = document.cookie.split(";");
@@ -112,18 +114,8 @@ export default {
       this.$nextTick(() => {
         const container = this.$refs.scroll_container;
         if (container) {
-          if (smooth) {
-            container.style.scrollBehavior = 'smooth';
-          } else {
-            container.style.scrollBehavior = 'auto';
-          }
+          container.style.scrollBehavior = smooth ? 'smooth' : 'auto';
           container.scrollTop = container.scrollHeight;
-          
-          if (!smooth) {
-            setTimeout(() => {
-              container.style.scrollBehavior = 'smooth';
-            }, 600);
-          }
 
         }
         console.log("smooth:", smooth);
@@ -156,7 +148,6 @@ export default {
 .button_exit:hover{
   background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(19, 1, 1, 0.3));
 }
-
 
 
 </style>
