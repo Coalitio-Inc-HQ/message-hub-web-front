@@ -35,7 +35,7 @@
   } from '@/websocket/observers/messageObserver';
   import UserChatsComponent from './UserChatsComponent.vue';
   import ChatComponent from './ChatComponent.vue';
-  //import { fillTestData } from '@/services/testData';
+//import { fillTestData } from '@/services/testData';
   import {
     get_messages_by_chat_Request,
     get_users_by_chat_Request,
@@ -58,7 +58,7 @@
         user_name: '',
         this_user_id: null,
         chats: [],
-        current_chat: null,
+        current_chat: [], //null,
         message_iterator: 0,
         isSidebarVisible: true
       };
@@ -70,7 +70,7 @@
         this.connection = new WebSocket(WS_URL + "?token=" + token);
         setupMessageObserver(this, this.connection);
       } else {
-        //fillTestData(this);
+        // fillTestData(this);
         router.push('/login');
       }
     },
@@ -85,11 +85,14 @@
       send_message(text) {
         if (text) {
           let message = create_message(this.current_chat, this.this_user_id, text);
+          console.log('sending message:', message);
 
           if (!this.current_chat.is_not_connected) {
             send_message_to_chat_Request(this.connection.send.bind(this.connection), message);
             this.current_chat.messages.push(message);
+
           } else {
+
             if (!this.current_chat.waiting_connaction) {
               this.current_chat.waiting_messages = [];
               this.current_chat.waiting_connaction = true;
