@@ -54,7 +54,7 @@ export function get_chats_in_which_user_is_not_member_Request(send) {
  */
 export function get_messages_by_chat_Request(send, chatId, count = 50, offsetMessageId = -1) {
   const request = {
-    name: "get_messages_by_chat",
+    name: 'get_messages_by_chat',
     body: {
       chat_id: chatId,
       count: count,
@@ -118,7 +118,7 @@ export function create_message(chat, user_id, text){
  */
 export function send_message_to_chat_Request(send, message) {
   const request = {
-    name: "send_message_to_chat",
+    name: 'send_message_to_chat',
     body: {
       message: message
     }

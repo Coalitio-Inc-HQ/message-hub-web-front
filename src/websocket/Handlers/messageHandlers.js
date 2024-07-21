@@ -1,8 +1,6 @@
-// import {convertToUTCFormatted} from '@/services/dateUtils';
-const moment = require('moment-timezone');
-import {
-    send_message_to_chat_Request
-} from '@/services/wsRequests'
+import {extract_time_from_timestamp_handler} from '@/services/dateUtils';
+// const moment = require('moment-timezone');
+import { send_message_to_chat_Request } from '@/services/wsRequests'
 
 
 //get_user_info
@@ -40,10 +38,14 @@ export async function handleGetChatsByUser(context, message) {
     let chats = body.chats;
 
     console.log('user_chats:', chats);
-    chats.forEach((element) => {
-        element.is_not_connected=false;
-        element.messages=[];
-    });
+    // chats.forEach((element) => {
+    //     element.is_not_connected=false;
+    //     element.messages=[];
+    // });
+    for (let i = 0; i < chats.length; i++) {
+        chats[i].is_not_connected = false;
+        chats[i].messages = [];
+    }
     context.chats = context.chats.concat(chats);
 }
 
@@ -53,28 +55,28 @@ export async function handleGetChatsByUser(context, message) {
 
 
 
-function extractTimeFromTimestamp(timestamp) {
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    console.log("Текущий часовой пояс пользователя:", timeZone);
+// function extractTimeFromTimestamp(timestamp) {
+//     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+//     console.log("Текущий часовой пояс пользователя:", timeZone);
 
-    const localDate = moment.tz(timestamp, timeZone);
-
-
-    const offsetInHours = localDate.utcOffset() / 60;
+//     const localDate = moment.tz(timestamp, timeZone);
 
 
-    let adjustedLocalDate;
-    if (offsetInHours > 0) {
-        adjustedLocalDate = localDate.add(offsetInHours, 'hours');
-    } else {
-        adjustedLocalDate = localDate.subtract(Math.abs(offsetInHours), 'hours');
-    }
+//     const offsetInHours = localDate.utcOffset() / 60;
 
-    const adjustedLocalTimeString = adjustedLocalDate.format('YYYY-MM-DDTHH:mm:ss.SSSZ');
-    console.log("Локальное время после корректировки:", adjustedLocalTimeString);
 
-    return adjustedLocalTimeString;
-}
+//     let adjustedLocalDate;
+//     if (offsetInHours > 0) {
+//         adjustedLocalDate = localDate.add(offsetInHours, 'hours');
+//     } else {
+//         adjustedLocalDate = localDate.subtract(Math.abs(offsetInHours), 'hours');
+//     }
+
+//     const adjustedLocalTimeString = adjustedLocalDate.format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+//     console.log("Локальное время после корректировки:", adjustedLocalTimeString);
+
+//     return adjustedLocalTimeString;
+// }
 
 // get_messages_by_chat
 export async function handleGetMessagesByChat(context, message) {
@@ -87,9 +89,9 @@ export async function handleGetMessagesByChat(context, message) {
         for (let index = 0; index < context.chats.length; index++) {
             if (context.chats[index].id == messages[0].chat_id){
                 for (let i = 0; i < messages.length; i++) {
-                    messages[i].sended_at = extractTimeFromTimestamp(messages[i].sended_at);
+                    messages[i].sended_at = extract_time_from_timestamp_handler(messages[i].sended_at);
                 }
-                console.log('new messages:', messages);
+               
                 context.chats[index].messages = messages;
                 break;
             }        
