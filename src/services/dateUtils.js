@@ -16,7 +16,7 @@ export function extract_time_from_timestamp_handler(timestamp) {
 
 
   const adjusted_local_timeString = adjusted_local_date.format('YYYY-MM-DDTHH:mm:ss.SSSZ');
-  console.log("Локальное время после корректировки:", adjusted_local_timeString);
+  //console.log("Локальное время после корректировки:", adjusted_local_timeString);
   return adjusted_local_timeString;
 }
 
@@ -24,8 +24,8 @@ export function format_time_for_display(timestamp) {
   const time_zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const local_date = moment.tz(timestamp, time_zone);
   const local_TimeString = local_date.format('HH:mm');
-  const timezone_Offset = local_date.format('Z');
-  console.log("Смещение относительно UTC:", `UTC${timezone_Offset}`);
+  //const timezone_Offset = local_date.format('Z');
+  //console.log("Смещение относительно UTC:", `UTC${timezone_Offset}`);
 
   return local_TimeString;
 }
