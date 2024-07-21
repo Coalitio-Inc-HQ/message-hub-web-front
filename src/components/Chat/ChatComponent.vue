@@ -111,7 +111,7 @@ export default {
           }
           container.scrollTop = container.scrollHeight;
           console.log("smooth:", smooth);
-          if (!smooth) {
+          if (smooth) {
             setTimeout(() => {
               container.style.scrollBehavior = 'smooth';
             }, 600);
