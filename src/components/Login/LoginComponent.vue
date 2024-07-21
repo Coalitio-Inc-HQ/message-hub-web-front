@@ -262,10 +262,10 @@ export default {
   },
   methods: {
     login() {
-      if (!this.validateLoginPassword()) {
-        alert('Пароль должен содержать минимум 8 символов');
-        return;
-      }
+      // if (!this.validateLoginPassword()) {
+      //   alert('Пароль должен содержать минимум 8 символов');
+      //   return;
+      // }
       this.request_login(this.loginData.username, this.loginData.password)
     },
     toggleRegister() {
@@ -275,10 +275,10 @@ export default {
       const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{1,}$/;
       return re.test(email);
     },
-    validateLoginPassword() {
-      const minLength = 8;
-      return this.loginData.password.length >= minLength;
-    },
+    // validateLoginPassword() {
+    //   const minLength = 8;
+    //   return this.loginData.password.length >= minLength;
+    // },
     validateRegistrationPassword(value) {
       const minLength = 8;
       return value.length >= minLength;
@@ -369,6 +369,4 @@ export default {
 } -->
 <style scoped>
 @import '@/assets/LoginComponent.css';
-
-
 </style>
