@@ -35,7 +35,7 @@ export default {
   watch: {
     'current_chat.messages': {
       handler() {
-        this.scroll_down();
+        this.scroll_down(true);
       },
       deep: true
     },
@@ -60,7 +60,7 @@ export default {
     submit_message() {
       this.$emit('send-message', this.message_input);
       this.message_input = ''; 
-      this.scroll_down(false);
+      this.scroll_down(true);
     },
 
     handle_key_down(event) {
