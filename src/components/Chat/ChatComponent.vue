@@ -38,6 +38,12 @@ export default {
         this.scroll_down();
       },
       deep: true
+    },
+    'current_chat': {
+      handler() {
+        this.scroll_down(false);
+      },
+      immediate: true
     }
   },
   methods: {
@@ -110,13 +116,15 @@ export default {
             container.style.scrollBehavior = 'smooth';
           }
           container.scrollTop = container.scrollHeight;
-          console.log("smooth:", smooth);
-          if (smooth) {
+          
+          if (!smooth) {
             setTimeout(() => {
               container.style.scrollBehavior = 'smooth';
             }, 600);
           }
+
         }
+        console.log("smooth:", smooth);
       });
     },
   },
