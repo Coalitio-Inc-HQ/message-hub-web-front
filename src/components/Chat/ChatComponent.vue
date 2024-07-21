@@ -41,7 +41,7 @@ export default {
     },
     'current_chat': {
       handler() {
-        this.scroll_down(false);
+        this.scroll_down();
       },
       immediate: true
     }
@@ -119,7 +119,7 @@ export default {
           
           if (!smooth) {
             setTimeout(() => {
-              container.style.scrollBehavior = 'smooth';
+              container.style.scrollBehavior = 'auto';
             }, 600);
           }
 
