@@ -30,7 +30,6 @@
 
 <script>
 import router from "@/router";
-//import moment from 'moment-timezone';
 import {format_time_for_display} from '@/services/dateUtils';
 export default {
   props: [
