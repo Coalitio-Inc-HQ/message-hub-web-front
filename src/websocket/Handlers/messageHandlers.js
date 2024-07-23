@@ -1,5 +1,4 @@
 import {extract_time_from_timestamp_handler} from '@/services/dateUtils';
-// const moment = require('moment-timezone');
 import { send_message_to_chat_Request } from '@/services/wsRequests'
 
 
@@ -10,7 +9,7 @@ export function handleGetUserInfo(context, message){
 
     //console.log('User Name:', body.user_info.name);
     //console.log('User ID:', body.user_info.id);
-    context.this_user_id= body.user_info.id;
+    context.this_user_id = body.user_info.id;
     context.user_name = body.user_info.name;
 }
 
@@ -50,34 +49,6 @@ export async function handleGetChatsByUser(context, message) {
 }
 
 
-
-
-
-
-
-// function extractTimeFromTimestamp(timestamp) {
-//     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-//     console.log("Текущий часовой пояс пользователя:", timeZone);
-
-//     const localDate = moment.tz(timestamp, timeZone);
-
-
-//     const offsetInHours = localDate.utcOffset() / 60;
-
-
-//     let adjustedLocalDate;
-//     if (offsetInHours > 0) {
-//         adjustedLocalDate = localDate.add(offsetInHours, 'hours');
-//     } else {
-//         adjustedLocalDate = localDate.subtract(Math.abs(offsetInHours), 'hours');
-//     }
-
-//     const adjustedLocalTimeString = adjustedLocalDate.format('YYYY-MM-DDTHH:mm:ss.SSSZ');
-//     console.log("Локальное время после корректировки:", adjustedLocalTimeString);
-
-//     return adjustedLocalTimeString;
-// }
-
 // get_messages_by_chat
 export async function handleGetMessagesByChat(context, message) {
     console.log("Handler get_messages_by_chat:", message);
@@ -106,12 +77,12 @@ export async function handleGetUsersByChat(context, message) {
     let body = message.body; 
     let users = body.users;
     let chat_id = body.chat_id;
-
+    //  let chat_id = parseInt(body.chat_id, 10);
     console.log('chat_id:', chat_id);
     console.log('users:', users);
 
     for (let index = 0; index < context.chats.length; index++) {
-        if (context.chats[index].id == chat_id){
+        if (context.chats[index].id === chat_id){
             context.chats[index].users = users;
             break;
         }        
@@ -212,7 +183,7 @@ export async function handleNewMessage(context, message) {
                     }
                 }
 
-                console.log("Дубликат сообщения:", is_found);
+                console.log("Дубликат сообщения: ", is_found);
                 if (!is_found) {
                     context.chats[index].messages.push(msg);
                 }
@@ -244,14 +215,10 @@ const handlers = {
     "get_chats_by_user": handleGetChatsByUser,
     "get_users_by_chat": handleGetUsersByChat,
     "get_messages_by_chat": handleGetMessagesByChat,
-    // "get_messages_by_waiting_chat": handleGetMessagesByWaitingChat,
-    // "connect_to_waiting_chat": handleConnectToWaitingChat,
     "add_user_to_chat": handleAddUserToChat,
     "send_message_to_chat": handleSendMessageToChat,
     "new_user_in_chat": handleNewUserInChat,
-    // "new_broadcast_message":handleNewBroadcastMessage,
     "new_message": handleNewMessage,
-    // "delite_waiting_chats":handleDeliteWaitingChats,
     "new_chat":handleNewChat,
 };
 
