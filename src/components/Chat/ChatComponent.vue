@@ -1,7 +1,6 @@
 <template>
-  <div :class="['main', { 'main-expanded': !isSidebarVisible }]">
-  <!-- <div class="main"> -->
-    <div :class="['name-display']" >
+  <div class="main">
+    <div :class="['name-display']">
       <button class="button_exit" @click="exit_chat">Выйти</button>
     </div>
     <ul class="chat" ref="scroll_container">
@@ -17,7 +16,7 @@
     </ul>
     <form class="form" @submit.prevent="submit_message">
     <textarea 
-      ref="messageInput" 
+      ref="message_input" 
       v-model="message_input" 
       id="msg" 
       placeholder="Введите сообщение..." 
@@ -30,7 +29,7 @@
 
 <script>
 import router from "@/router";
-import {format_time_for_display} from '@/services/dateUtils';
+import { format_time_for_display } from '@/services/dateUtils';
 export default {
   props: [
     "this_user_id",
@@ -75,7 +74,7 @@ export default {
     },
 
     handle_key_down(event) {
-      const textarea = this.$refs.messageInput;
+      const textarea = this.$refs.message_input;
       
         if (event.key === 'Enter' && !event.shiftKey) {
           event.preventDefault(); 
@@ -85,8 +84,6 @@ export default {
           textarea.style.height = `${textarea.scrollHeight + 10}px`;
         }
     },
-
-
 
     delete_cookies() {
         const cookies = document.cookie.split(";");
@@ -98,13 +95,13 @@ export default {
             document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
             console.log(`Cookie удалена: ${name}`);
           } else {
-            console.log('Куки не обнаружены для удаления.');
+            console.log("Куки не обнаружены для удаления.");
         }
       }
     },
 
     exit_chat() {
-      alert('Вы вышли из системы');  
+      alert("Вы вышли из системы");  
       this.delete_cookies();
       router.push('/login');
     },
@@ -112,15 +109,16 @@ export default {
     scroll_down(smooth = false) {
       this.$nextTick(() => {
         const container = this.$refs.scroll_container;
+        
         if (container) {
           container.style.scrollBehavior = smooth ? 'smooth' : 'auto';
           container.scrollTop = container.scrollHeight;
-
         }
         console.log("smooth:", smooth);
       });
     },
   },
+
   mounted() {
     this.scroll_down(false);
   }

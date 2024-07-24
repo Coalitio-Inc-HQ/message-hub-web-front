@@ -1,7 +1,7 @@
 <template>
   <div class="login-body">
     <div class="login-container">
-      <login-form      
+      <LoginForm      
         :form_data="login_data"
         @update:form_data="update_login_data"
         :on_login="login"

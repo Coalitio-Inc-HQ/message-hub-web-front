@@ -28,23 +28,23 @@ export function setupMessageObserver(context, ws) {
   ws.onmessage = async (event) => {
     console.log("Мы в главном обработчике handlers");
     console.log(event);
-    let newData = event.data;
-    if (newData) {
-      const dict_message = JSON.parse(newData);
+    let new_data = event.data;
+    if (new_data) {
+      const dict_message = JSON.parse(new_data);
 
       // Проверка типа сообщения и вызов соответствующего хендлера
-      const messageType = dict_message.name;
-      if (handlers[messageType]) {
+      const message_type = dict_message.name;
+      if (handlers[message_type]) {
         try {
-          await handlers[messageType](context, dict_message);
+          await handlers[message_type](context, dict_message);
         } catch (error) {
-          console.error(`При обработке сообщения типа ${messageType} произошла ошибка:`, error);
+          console.error(`При обработке сообщения типа ${message_type} произошла ошибка:`, error);
           console.error(`Error name: ${error.name}`);
           console.error(`Error message: ${error.message}`);
           console.error(`Error stack: ${error.stack}`);
         }
       } else {
-        console.warn(`Не найден обработчик для сообщения типа: ${messageType}`);
+        console.warn(`Не найден обработчик для сообщения типа: ${message_type}`);
       }
     }
   }; 

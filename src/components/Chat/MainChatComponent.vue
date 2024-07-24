@@ -1,7 +1,7 @@
 <template>
   <div class="chat-component full-height">
     <div class="wrapper">
-      <div :class="['sidebar-container', { 'sidebar-container-hidden': !isSidebarVisible }]">
+      <div :class="['sidebar-container', { 'sidebar-container-hidden': !is_sidebar_visible }]">
         <div class="toggle-btn-container">
           <button @click="toggle_sidebar" class="toggle-sidebar-btn" title="toggle-sidebar" type="button">
             <svg viewBox="0 0 24 24" fill="none">
@@ -11,8 +11,7 @@
             </svg>
           </button>
         </div>
-        
-        <div :class="['sidebar', { 'sidebar-hidden': !isSidebarVisible }]">
+        <div :class="['sidebar', { 'sidebar-hidden': !is_sidebar_visible }]">
           <UserChatsComponent 
             :chats="chats" 
             :current_chat="current_chat" 
@@ -33,6 +32,7 @@
   import { setupMessageObserver } from '@/websocket/observers/messageObserver';
   import UserChatsComponent from './UserChatsComponent.vue';
   import ChatComponent from './ChatComponent.vue';
+  import router from "@/router";
   import {
     get_messages_by_chat_Request,
     get_users_by_chat_Request,
@@ -40,7 +40,7 @@
     add_user_to_chat_Request,
     create_message
   } from '@/services/wsRequests';
-  import router from "@/router";
+  
 
   const WS_URL = process.env.VUE_APP_WS_URL;
 

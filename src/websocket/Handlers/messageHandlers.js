@@ -1,4 +1,4 @@
-import {extract_time_from_timestamp_handler} from '@/services/dateUtils';
+import { extract_time_from_timestamp_handler } from '@/services/dateUtils';
 import { send_message_to_chat_Request } from '@/services/wsRequests'
 
 
@@ -7,8 +7,6 @@ export function handleGetUserInfo(context, message){
     console.log("Handler get_user_info:", message);
     let body = message.body;
 
-    //console.log('User Name:', body.user_info.name);
-    //console.log('User ID:', body.user_info.id);
     context.this_user_id = body.user_info.id;
     context.user_name = body.user_info.name;
 }
@@ -20,11 +18,11 @@ export async function handleGetChatsInWhichUserIsNotMember(context, message) {
     let body = message.body; 
     let chats = body.chats;
 
-    console.log('chats in which user is not member:', chats);
+    console.log("chats in which user is not member:", chats);
 
-    chats.forEach((element) =>{
-        element.is_not_connected=true;
-        element.messages=[];
+    chats.forEach((element) => {
+        element.is_not_connected = true;
+        element.messages = [];
     });
     context.chats = context.chats.concat(chats);
 }
@@ -35,7 +33,7 @@ export async function handleGetChatsByUser(context, message) {
     console.log("Handler get_chats_by_user:", message);
     let body = message.body; 
     let chats = body.chats;
-    console.log('user_chats:', chats);
+    console.log("user_chats:", chats);
 
     for (let i = 0; i < chats.length; i++) {
         chats[i].is_not_connected = false;
@@ -51,14 +49,13 @@ export async function handleGetMessagesByChat(context, message) {
     let body = message.body; 
     let messages = body.messages;
 
-    console.log('messages:', messages);
-    if (messages.length>0){
+    console.log("messages:", messages);
+    if (messages.length > 0){
         for (let index = 0; index < context.chats.length; index++) {
             if (context.chats[index].id == messages[0].chat_id){
                 for (let i = 0; i < messages.length; i++) {
                     messages[i].sended_at = extract_time_from_timestamp_handler(messages[i].sended_at);
-                }
-               
+                }              
                 context.chats[index].messages = messages;
                 break;
             }        
@@ -73,9 +70,8 @@ export async function handleGetUsersByChat(context, message) {
     let body = message.body; 
     let users = body.users;
     let chat_id = body.chat_id;
-    //  let chat_id = parseInt(body.chat_id, 10);
-    console.log('chat_id:', chat_id);
-    console.log('users:', users);
+    console.log("chat_id:", chat_id);
+    console.log("users:", users);
 
     for (let index = 0; index < context.chats.length; index++) {
         if (context.chats[index].id === chat_id){
@@ -90,25 +86,20 @@ export async function handleGetUsersByChat(context, message) {
 export async function handleSendMessageToChat(context, message) {
     console.log("Handler send_message_to_chat:", message);
     let body = message.body;
-  
     let front_message_id = body.front_message_id;
     let id = body.message_id;
-    console.log('front_message_id:', front_message_id);
-    console.log('message_id:', id);
+    console.log("front_message_id:", front_message_id);
+    console.log("message_id:", id);
 
     for (let index = 0; index < context.chats.length; index++) {
         if(context.chats[index].id == message.chat_id){
 
-            for (let i = 0; i < context.chats[index].messages.length; i++) {
-                
-                
+            for (let i = 0; i < context.chats[index].messages.length; i++) {                     
                 if(context.chats[index].messages[i].front_message_id !== undefined && 
-                   context.chats[index].messages[i].front_message_id === front_message_id){
-                    
+                   context.chats[index].messages[i].front_message_id === front_message_id){                   
                     context.chats[index].messages[i].id = id;
                     break;
                 }
-                
             }
             break;
         }
@@ -126,7 +117,7 @@ export async function handleAddUserToChat(context, message) {
         if(context.chats[index].id == chat_users.chat_id){
             context.chats[index].waiting_connaction = false;
             context.chats[index].is_not_connected = false;
-            console.log("is_not_connected: ", context.chats[index].is_not_connected)
+            console.log("is_not_connected:", context.chats[index].is_not_connected)
             context.chats[index].waiting_messages.forEach(message => {
                 send_message_to_chat_Request(context.connection.send.bind(context.connection), message);
             }); 
@@ -167,10 +158,8 @@ export async function handleNewMessage(context, message) {
 
         for (let index = 0; index < context.chats.length; index++) {
             if (context.chats[index].id == msg.chat_id) {
-                
                 for (let i = 0; i < context.chats[index].messages.length; i++) {
-                    console.log(`Сообщение по индексу ${i}, ID сообщения: ${context.chats[index].messages[i].id}`);
-                    
+                    console.log(`Сообщение по индексу ${i}, ID сообщения: ${context.chats[index].messages[i].id}`);                  
                     if (context.chats[index].messages[i].id == msg.id && 
                         context.chats[index].messages[i].sended_at == msg.sended_at && 
                         context.chats[index].messages[i].sender_id == msg.sender_id) {
@@ -179,8 +168,7 @@ export async function handleNewMessage(context, message) {
                         break;
                     }
                 }
-
-                console.log("Дубликат сообщения: ", is_found);
+                console.log("Дубликат сообщения:", is_found);
                 if (!is_found) {
                     context.chats[index].messages.push(msg);
                 }
@@ -193,15 +181,16 @@ export async function handleNewMessage(context, message) {
 
 //new_chat
 export async function handleNewChat(context, message) {
-    console.log("Handler new_chat: ", message);
+    console.log("Handler new_chat:", message);
     let body = message.body; 
-    let chat= body.chat;
+    let chat = body.chat;
 
-    chat.is_not_connected=true;
-    chat.messages=[];
+    chat.is_not_connected = true;
+    chat.messages = [];
 
     context.chats.push(chat);
 }
+
 
 
 const handlers = {
@@ -216,6 +205,5 @@ const handlers = {
     "new_message": handleNewMessage,
     "new_chat":handleNewChat,
 };
-
 
 export default handlers;
