@@ -16,7 +16,7 @@
           <UserChatsComponent 
             :chats="chats" 
             :current_chat="current_chat" 
-            @select-user-chat="select_user_chat"/>
+            @select-user-chat="select_chat"/>
         </div>
       </div>
       <ChatComponent 
@@ -30,12 +30,9 @@
 </template>
 
 <script>
-  import {
-    setupMessageObserver
-  } from '@/websocket/observers/messageObserver';
+  import { setupMessageObserver } from '@/websocket/observers/messageObserver';
   import UserChatsComponent from './UserChatsComponent.vue';
   import ChatComponent from './ChatComponent.vue';
-  //import { fillTestData } from '@/services/testData';
   import {
     get_messages_by_chat_Request,
     get_users_by_chat_Request,
@@ -58,38 +55,49 @@
         user_name: '',
         this_user_id: null,
         chats: [],
-        current_chat: null,
+        current_chat: [],
         message_iterator: 0,
         isSidebarVisible: true
       };
     },
 
     async created() {
-      let token = this.getCookie("token");
+      let token = this.get_cookie("token");
       if (token) {
         this.connection = new WebSocket(WS_URL + "?token=" + token);
         setupMessageObserver(this, this.connection);
       } else {
-        //fillTestData(this);
         router.push('/login');
       }
     },
 
     methods: {
-      select_user_chat(chat) {
-        this.current_chat = chat;
-        get_users_by_chat_Request(this.connection.send.bind(this.connection), this.current_chat.id);
-        get_messages_by_chat_Request(this.connection.send.bind(this.connection), this.current_chat.id);
+      select_chat(chat) {
+        console.log('Мы находимся в select_chat с chatId:', chat.id);
+
+        if (this.current_chat && this.current_chat.id === chat.id) {
+          console.log("Вы уже находитесь в этом чате"); 
+        } else {
+          console.log(`Сообщения для чата ${chat.id} отсутствуют, отправка запроса...`);
+          this.current_chat = []; 
+
+          this.current_chat = chat;
+          get_users_by_chat_Request(this.connection.send.bind(this.connection), this.current_chat.id);
+          get_messages_by_chat_Request(this.connection.send.bind(this.connection), this.current_chat.id);
+        }
       },
 
       send_message(text) {
         if (text) {
           let message = create_message(this.current_chat, this.this_user_id, text);
+          console.log('sending message:', message);
 
           if (!this.current_chat.is_not_connected) {
             send_message_to_chat_Request(this.connection.send.bind(this.connection), message);
             this.current_chat.messages.push(message);
+
           } else {
+
             if (!this.current_chat.waiting_connaction) {
               this.current_chat.waiting_messages = [];
               this.current_chat.waiting_connaction = true;
@@ -106,7 +114,7 @@
         this.isSidebarVisible = !this.isSidebarVisible;
       },
 
-      getCookie(name) {
+      get_cookie(name) {
         var nameEQ = name + "=";
         var ca = document.cookie.split(';');
         for (var i = 0; i < ca.length; i++) {

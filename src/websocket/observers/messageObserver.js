@@ -26,7 +26,7 @@ export function setupMessageObserver(context, ws) {
   };
 
   ws.onmessage = async (event) => {
-    console.log("Мы в onmessage");
+    console.log("Мы в главном обработчике handlers");
     console.log(event);
     let newData = event.data;
     if (newData) {
@@ -44,7 +44,7 @@ export function setupMessageObserver(context, ws) {
           console.error(`Error stack: ${error.stack}`);
         }
       } else {
-        console.warn(`Не найден обработчик для сообщения типа ${messageType}`);
+        console.warn(`Не найден обработчик для сообщения типа: ${messageType}`);
       }
     }
   }; 

@@ -1,21 +1,28 @@
 <template>
   <div :class="['main', { 'main-expanded': !isSidebarVisible }]">
+  <!-- <div class="main"> -->
     <div :class="['name-display']" >
-      <button class="button_exit" @click="exit_chat">  
-        Выйти
-      </button>
+      <button class="button_exit" @click="exit_chat">Выйти</button>
     </div>
-    <ul class="chat">
-        <li v-for="message in this.current_chat.messages" :key="message.sender_id + message.sended_at" :class="{ 'message': true, 'self': message.sender_id == this.this_user_id, 'other': message.sender_id !== this.this_user_id }">
+    <ul class="chat" ref="scroll_container">
+        <li v-for="message in this.current_chat.messages" 
+        :key="message.sender_id + message.sended_at" 
+        :class="{ 'message': true, 'self': message.sender_id == this.this_user_id, 'other': message.sender_id !== this.this_user_id }">
           <div class="message-content">
             <div class="name">{{ get_user_name(message.sender_id) }}</div>
             <div class="body">{{ message.text }}</div>
-            <div class="timestamp">{{ extractTimeFromTimestamp(message.sended_at) }}</div>
+            <div class="timestamp">{{ format_time_for_display(message.sended_at) }}</div>
           </div>
         </li>
     </ul>
     <form class="form" @submit.prevent="submit_message">
-      <textarea ref="messageInput" v-model="message_input" id="msg" placeholder="Введите сообщение..." @keydown="handle_key_down"></textarea>
+    <textarea 
+      ref="messageInput" 
+      v-model="message_input" 
+      id="msg" 
+      placeholder="Введите сообщение..." 
+      @keydown="handle_key_down">
+    </textarea>
       <button type="submit" class="send" :disabled="!current_chat">Отправить</button>
     </form>
   </div>
@@ -23,63 +30,99 @@
 
 <script>
 import router from "@/router";
-
+import {format_time_for_display} from '@/services/dateUtils';
 export default {
   props: [
     "this_user_id",
     "user_name",
     "current_chat"
   ],
+
+  watch: {
+    'current_chat.messages': {
+      handler() {
+        this.scroll_down(true);
+      },
+      deep: true,
+      immediate: true
+    },
+    'current_chat': {
+      handler() {
+        this.scroll_down(false);
+      },
+      deep: false,
+      immediate: true
+    }
+  },
+
   methods: {
 
-  get_user_name(user_id) {
-    if (this.this_user_id === user_id) {
-      return this.user_name;
-    }
+    format_time_for_display,
 
-    const user = this.current_chat.users.find(user => user.id === user_id);
-    return user ? user.name : "null";
-  },
-
-  submit_message() {
-    this.$emit('send-message', this.message_input);
-    this.message_input = ''; 
-  },
-
-  handle_key_down(event) {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault(); 
-      this.submit_message();
-    }
-  },
-
-  extractTimeFromTimestamp(timestamp) {
-  const date = new Date(timestamp);
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  return `${hours}:${minutes}`;
-  },
-
-  delete_cookies() {
-      const cookies = document.cookie.split(";");
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i];
-        const eqPos = cookie.indexOf("=");
-        const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-        if (name) {
-          document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
-          console.log(`Cookie удалена: ${name}`);
-        } else {
-          console.log('Куки не обнаружены для удаления.');
+    get_user_name(user_id) {
+      if (this.this_user_id === user_id) {
+        return this.user_name;
       }
-    }
-  },
 
-  exit_chat() {
-    alert('Вы вышли из системы');  
-    this.delete_cookies();
-    router.push('/login');
-    }
+      const user = this.current_chat.users.find(user => user.id === user_id);
+      return user ? user.name : "null";
+    },
+
+    submit_message() {
+      this.$emit('send-message', this.message_input);
+      this.message_input = ''; 
+      this.scroll_down(true);
+    },
+
+    handle_key_down(event) {
+      const textarea = this.$refs.messageInput;
+      
+        if (event.key === 'Enter' && !event.shiftKey) {
+          event.preventDefault(); 
+          this.submit_message();  
+          textarea.style.height =  `${40}px`;    
+        } else if (event.key === 'Enter' && event.shiftKey) {
+          textarea.style.height = `${textarea.scrollHeight + 10}px`;
+        }
+    },
+
+
+
+    delete_cookies() {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i];
+          const eqPos = cookie.indexOf("=");
+          const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+          if (name) {
+            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+            console.log(`Cookie удалена: ${name}`);
+          } else {
+            console.log('Куки не обнаружены для удаления.');
+        }
+      }
+    },
+
+    exit_chat() {
+      alert('Вы вышли из системы');  
+      this.delete_cookies();
+      router.push('/login');
+    },
+    
+    scroll_down(smooth = false) {
+      this.$nextTick(() => {
+        const container = this.$refs.scroll_container;
+        if (container) {
+          container.style.scrollBehavior = smooth ? 'smooth' : 'auto';
+          container.scrollTop = container.scrollHeight;
+
+        }
+        console.log("smooth:", smooth);
+      });
+    },
+  },
+  mounted() {
+    this.scroll_down(false);
   }
 
 };
@@ -89,8 +132,6 @@ export default {
 .name-display {
   display: flex;
   padding: 8px;
- 
- 
 }
 .button_exit{
 
@@ -106,5 +147,6 @@ export default {
 .button_exit:hover{
   background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(19, 1, 1, 0.3));
 }
+
 
 </style>

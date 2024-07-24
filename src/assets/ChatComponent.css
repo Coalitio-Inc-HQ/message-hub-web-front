@@ -59,6 +59,7 @@ html, body, .full-height {
   padding: 12px;
   flex: 1;
   overflow-y: auto;
+  /* scroll-behavior: auto; будет в js динамически добавляться */
 }
 
 
@@ -117,6 +118,11 @@ html, body, .full-height {
   border-radius: 5px; 
   width: max-content;
   display: inline-flex;
+
+
+  word-break: break-word; 
+  max-width: 100%; 
+  /* white-space: normal;  перенос текста на новую строку */
 }
 
 
@@ -171,7 +177,7 @@ html, body, .full-height {
   bottom: 5px;
   right: 5px;
   width: 15px;
-  height: 15px;
+  height:  40px;
   background: transparent;
   cursor: se-resize;
 }
@@ -298,7 +304,7 @@ html, body, .full-height {
 .chat-component .toggle-sidebar-btn {
   position: absolute;
   background: none;
-  /* border: none; */
+  border: none;
   left: 25px;
   top: 10px;
   width: 24px;

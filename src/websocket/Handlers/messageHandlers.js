@@ -1,7 +1,5 @@
-// import {convertToUTCFormatted} from '@/services/dateUtils';
-import {
-    send_message_to_chat_Request
-} from '@/services/wsRequests'
+import {extract_time_from_timestamp_handler} from '@/services/dateUtils';
+import { send_message_to_chat_Request } from '@/services/wsRequests'
 
 
 //get_user_info
@@ -9,9 +7,9 @@ export function handleGetUserInfo(context, message){
     console.log("Handler get_user_info:", message);
     let body = message.body;
 
-    console.log('User Name:', body.user_info.name);
-    console.log('User ID:', body.user_info.id);
-    context.this_user_id= body.user_info.id;
+    //console.log('User Name:', body.user_info.name);
+    //console.log('User ID:', body.user_info.id);
+    context.this_user_id = body.user_info.id;
     context.user_name = body.user_info.name;
 }
 
@@ -39,13 +37,16 @@ export async function handleGetChatsByUser(context, message) {
     let chats = body.chats;
 
     console.log('user_chats:', chats);
-    chats.forEach((element) => {
-        element.is_not_connected=false;
-        element.messages=[];
-    });
+    // chats.forEach((element) => {
+    //     element.is_not_connected=false;
+    //     element.messages=[];
+    // });
+    for (let i = 0; i < chats.length; i++) {
+        chats[i].is_not_connected = false;
+        chats[i].messages = [];
+    }
     context.chats = context.chats.concat(chats);
 }
-
 
 
 // get_messages_by_chat
@@ -58,6 +59,10 @@ export async function handleGetMessagesByChat(context, message) {
     if (messages.length>0){
         for (let index = 0; index < context.chats.length; index++) {
             if (context.chats[index].id == messages[0].chat_id){
+                for (let i = 0; i < messages.length; i++) {
+                    messages[i].sended_at = extract_time_from_timestamp_handler(messages[i].sended_at);
+                }
+               
                 context.chats[index].messages = messages;
                 break;
             }        
@@ -72,12 +77,12 @@ export async function handleGetUsersByChat(context, message) {
     let body = message.body; 
     let users = body.users;
     let chat_id = body.chat_id;
-
+    //  let chat_id = parseInt(body.chat_id, 10);
     console.log('chat_id:', chat_id);
     console.log('users:', users);
 
     for (let index = 0; index < context.chats.length; index++) {
-        if (context.chats[index].id == chat_id){
+        if (context.chats[index].id === chat_id){
             context.chats[index].users = users;
             break;
         }        
@@ -123,7 +128,8 @@ export async function handleAddUserToChat(context, message) {
     for (let index = 0; index < context.chats.length; index++) {
         if(context.chats[index].id == chat_users.chat_id){
             context.chats[index].waiting_connaction = false;
-
+            context.chats[index].is_not_connected = false;
+            console.log("is_not_connected: ", context.chats[index].is_not_connected)
             context.chats[index].waiting_messages.forEach(message => {
                 send_message_to_chat_Request(context.connection.send.bind(context.connection), message);
             }); 
@@ -179,7 +185,7 @@ export async function handleNewMessage(context, message) {
                     }
                 }
 
-                console.log("Дубликат сообщения:", is_found);
+                console.log("Дубликат сообщения: ", is_found);
                 if (!is_found) {
                     context.chats[index].messages.push(msg);
                 }
@@ -193,7 +199,7 @@ export async function handleNewMessage(context, message) {
 
 //new_chat
 export async function handleNewChat(context, message) {
-    console.log("Handler new_chat:", message);
+    console.log("Handler new_chat: ", message);
     let body = message.body; 
     let chat= body.chat;
 
@@ -211,14 +217,10 @@ const handlers = {
     "get_chats_by_user": handleGetChatsByUser,
     "get_users_by_chat": handleGetUsersByChat,
     "get_messages_by_chat": handleGetMessagesByChat,
-    // "get_messages_by_waiting_chat": handleGetMessagesByWaitingChat,
-    // "connect_to_waiting_chat": handleConnectToWaitingChat,
     "add_user_to_chat": handleAddUserToChat,
     "send_message_to_chat": handleSendMessageToChat,
     "new_user_in_chat": handleNewUserInChat,
-    // "new_broadcast_message":handleNewBroadcastMessage,
     "new_message": handleNewMessage,
-    // "delite_waiting_chats":handleDeliteWaitingChats,
     "new_chat":handleNewChat,
 };
 
