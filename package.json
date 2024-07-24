@@ -21,6 +21,11 @@
   "devDependencies": {
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
+    "@types/eslint": "^9.6.0",
+    "@types/estree": "^1.0.5",
+    "@types/html-minifier-terser": "^7.0.2",
+    "@types/json-schema": "^7.0.15",
+    "@types/minimist": "^1.2.5",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
