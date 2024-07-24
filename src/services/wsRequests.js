@@ -1,6 +1,8 @@
 // wsRequests.js
 
 
+
+
 /**
  * Отправляет запрос на получение информации о пользователе.
  * @param {Function} send - Функция для отправки запроса.
@@ -11,19 +13,18 @@ export function get_user_info(send){
     body: {}
   };
   console.log(`Запрос ${request.name}:`, request);
-
   send(JSON.stringify(request));
 }
 
+
 /**
- * Отправляет запрос на получение прочитанных чатов веб-пользователя.
+ * Отправляет запрос на получение списка чатов, связанных с пользователем.
  * @param {Function} send - Функция для отправки запроса.
- * @param {string} userId - Идентификатор пользователя.
  */
 export function get_chats_by_user_Request(send) {
   const request = {
     name: 'get_chats_by_user',
-    body: {  }
+    body: {}
   };
   console.log(`Отправка запросика ${request.name}:`, request);
   send(JSON.stringify(request));
@@ -31,7 +32,8 @@ export function get_chats_by_user_Request(send) {
 
 
 /**
- * Отправляет запрос на получение ожидающих чатов веб-пользователя.
+ * Отправляет запрос на получение списка чатов, в которых пользователь не является участником.
+ * Используется для определения чатов для присоединения.
  * @param {Function} send - Функция для отправки запроса.
  */
 export function get_chats_in_which_user_is_not_member_Request(send) {
@@ -46,9 +48,8 @@ export function get_chats_in_which_user_is_not_member_Request(send) {
 
 /**
  * Отправляет запрос на получение сообщений чата по его идентификатору chatId,
- * он берется из запросов get_waiting_chats_Request и get_chats_by_user_Request.
  * @param {Function} send - Функция для отправки запроса.
- * @param {string} chatId - Идентификатор чата.
+ * @param {number} chatId - Идентификатор чата.
  * @param {number} [count=50] - Количество сообщений для получения (по умолчанию 50).
  * @param {number} [offsetMessageId=-1] - Идентификатор сообщения для смещения (по умолчанию -1).
  */
@@ -66,14 +67,12 @@ export function get_messages_by_chat_Request(send, chatId, count = 50, offsetMes
 }
 
 
-
 /**
  * Отправляет запрос на получение пользователей по идентификатору чата.
  * @param {Function} send - Функция для отправки запроса.
- * @param {string} chat_id - Идентификатор чата.
- * @return {void} Эта функция ничего не возвращает.
+ * @param {string} chat_id - Идентификатор чата, для которого требуется получить список пользователей.
  */
-export function get_users_by_chat_Request(send,chat_id) {
+export function get_users_by_chat_Request(send, chat_id) {
   const request = {
     name: 'get_users_by_chat',
     body: { chat_id: chat_id }
@@ -85,18 +84,16 @@ export function get_users_by_chat_Request(send,chat_id) {
 
 /**
  * Создает сообщение для отправки в чат.
- * @param {Object} context - Контекст, в котором происходит отправка сообщения.
- * @param {number} user_id - Идентификатор пользователя, который отправляет сообщение.
- * @param {number} chat_id - Идентификатор чата, в который отправляется сообщение.
- * @param {string} text - Текст сообщения, которое будет отправлено.
- * @param {number} front_message_id - Идентификатор сообщения, которое было отправлено с фронтенда.
- * @returns {Object} - Созданное сообщение, которое будет отправлено.
+ * @param {Object} chat - Объект чата, который содержит текущее состояние итератора сообщений.
+ * @param {string} user_id - Идентификатор пользователя, отправляющего сообщение.
+ * @param {string} text - Текст сообщения.
+ * @returns {Object} Возвращает объект сообщения.
  */
 export function create_message(chat, user_id, text){
   if(chat.message_iterator){
-    chat.message_iterator=chat.message_iterator=+1;
+    chat.message_iterator = chat.message_iterator=+1;
   }else{
-    chat.message_iterator=0;
+    chat.message_iterator = 0;
   }
   return {
     id: -1,
@@ -109,12 +106,11 @@ export function create_message(chat, user_id, text){
 }
 
 
-
 /**
  * Отправляет запрос на отправку сообщения в чат.
  * @param {Function} send - Функция для отправки запроса.
  * @param {Object} message - Сообщение, которое будет отправлено в чат.
- * @returns {Object} - Message, которое было отправлено.
+ * @returns {Object}  Возвращает объект сообщения, который был отправлен.
  */
 export function send_message_to_chat_Request(send, message) {
   const request = {
@@ -128,15 +124,17 @@ export function send_message_to_chat_Request(send, message) {
   return message;
 }
 
+
 /**
- * Отправляет запрос на подключение к ожидающему чату по его идентификатору chatId.
+ * Отправляет запрос на добавление пользователя в чат. 
  * @param {Function} send - Функция для отправки запроса.
- * @param {string} chat_id - Идентификатор чата.
+ * @param {number} chat_id - Идентификатор чата.
+ * @param {number} user_id - Идентификатор пользователя, которого нужно добавить в чат.
  */
-export function add_user_to_chat_Request(send, chat_id,user_id) {
+export function add_user_to_chat_Request(send, chat_id, user_id) {
   const request = {
     name: 'add_user_to_chat',
-    body: { chat_id: chat_id, user_id:user_id }
+    body: { chat_id: chat_id, user_id: user_id }
   };
   console.log(`Запрос ${request.name}:`, request);
   send(JSON.stringify(request));

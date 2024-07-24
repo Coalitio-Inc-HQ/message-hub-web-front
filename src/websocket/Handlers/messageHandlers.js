@@ -35,12 +35,8 @@ export async function handleGetChatsByUser(context, message) {
     console.log("Handler get_chats_by_user:", message);
     let body = message.body; 
     let chats = body.chats;
-
     console.log('user_chats:', chats);
-    // chats.forEach((element) => {
-    //     element.is_not_connected=false;
-    //     element.messages=[];
-    // });
+
     for (let i = 0; i < chats.length; i++) {
         chats[i].is_not_connected = false;
         chats[i].messages = [];
@@ -88,6 +84,7 @@ export async function handleGetUsersByChat(context, message) {
         }        
     }
 }
+
 
 // send_message_to_chat
 export async function handleSendMessageToChat(context, message) {
@@ -194,7 +191,6 @@ export async function handleNewMessage(context, message) {
 }
 
 
-
 //new_chat
 export async function handleNewChat(context, message) {
     console.log("Handler new_chat: ", message);
@@ -206,7 +202,6 @@ export async function handleNewChat(context, message) {
 
     context.chats.push(chat);
 }
-
 
 
 const handlers = {

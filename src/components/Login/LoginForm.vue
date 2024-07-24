@@ -1,53 +1,47 @@
 <template>
-    <form @submit.prevent="handleLogin">
+  <form @submit.prevent="handle_login">
       <h4>Войти</h4>
       <div class="input-box">
-        <input type="text" id="username" v-model="localFormData.username" required />
+        <input type="text" id="username" v-model="local_form_data.username" required />
         <span>Логин</span>
         <i></i>
       </div>
       <div class="input-box">
-        <input type="password" id="password" v-model="localFormData.password" required />
+        <input type="password" id="password" v-model="local_form_data.password" required />
         <span>Пароль</span>
         <i></i>
       </div>
       <div class="button-container-log">
         <button type="submit">Войти</button>
       </div>
-<!--     
-      <p class="switch-form">Еще не зарегистрированы? <a href="#" @click="toggleRegister">Регистрация</a></p>
-     -->
-    
-    
-    </form>
-  </template>
+  </form>
+</template>
+
   
-  <script>
-  export default {
-    props: {
-      formData: Object,
-      onLogin: Function,
-      toggleRegister: Function
-    },
-    data() {
-      return {
-        localFormData: { ...this.formData }
-      };
-    },
-    watch: {
-      formData: {
-        handler(newVal) {
-          this.localFormData = { ...newVal };
-        },
-        deep: true
-      }
-    },
-    methods: {
-      handleLogin() {
-        this.$emit('update:formData', this.localFormData);
-        this.onLogin();
-      }
+<script>
+export default {
+  props: {
+    form_data: Object,
+    on_login: Function
+  },
+  data() {
+    return {
+      local_form_data: { ...this.form_data }
+    };
+  },
+  watch: {
+    form_data: {
+      handler(new_val) {
+        this.local_form_data = { ...new_val };
+      },
+      deep: true
     }
-  };
-  </script>
-  
+  },
+  methods: {
+    handle_login() {
+      this.$emit('update:form_data', this.local_form_data);
+      this.on_login();
+    }
+  }
+};
+</script>

@@ -3,7 +3,7 @@
     <div class="wrapper">
       <div :class="['sidebar-container', { 'sidebar-container-hidden': !isSidebarVisible }]">
         <div class="toggle-btn-container">
-          <button @click="toggleSidebar" class="toggle-sidebar-btn" title="toggle-sidebar" type="button">
+          <button @click="toggle_sidebar" class="toggle-sidebar-btn" title="toggle-sidebar" type="button">
             <svg viewBox="0 0 24 24" fill="none">
               <path d="M3 12H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M3 6H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -57,7 +57,7 @@
         chats: [],
         current_chat: [],
         message_iterator: 0,
-        isSidebarVisible: true
+        is_sidebar_visible : true
       };
     },
 
@@ -73,7 +73,7 @@
 
     methods: {
       select_chat(chat) {
-        console.log('Мы находимся в select_chat с chatId:', chat.id);
+        console.log('Мы находимся в select_chat с chat_id:', chat.id);
 
         if (this.current_chat && this.current_chat.id === chat.id) {
           console.log("Вы уже находитесь в этом чате"); 
@@ -110,8 +110,8 @@
         }
       },
 
-      toggleSidebar() {
-        this.isSidebarVisible = !this.isSidebarVisible;
+      toggle_sidebar() {
+        this.is_sidebar_visible = !this.is_sidebar_visible;
       },
 
       get_cookie(name) {
