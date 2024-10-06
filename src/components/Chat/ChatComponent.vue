@@ -5,15 +5,17 @@
       <button class="button_exit" @click="exit_chat">Выйти</button>
     </div>
     <ul class="chat" ref="scroll_container">
-        <li v-for="message in this.current_chat.messages" 
-        :key="message.sender_id + message.sended_at" 
-        :class="{ 'message': true, 'self': message.sender_id == this.this_user_id, 'other': message.sender_id !== this.this_user_id }">
-          <div class="message-content">
-            <div class="name">{{ get_user_name(message.sender_id) }}</div>
-            <div class="body">{{ message.text }}</div>
-            <div class="timestamp">{{ format_time_for_display(message.sended_at) }}</div>
-          </div>
-        </li>
+        <template v-if="this.current_chat">
+          <li v-for="message in this.current_chat.messages" 
+          :key="message.sender_id + message.sended_at" 
+          :class="{ 'message': true, 'self': message.sender_id == this.this_user_id, 'other': message.sender_id !== this.this_user_id }">
+            <div class="message-content">
+              <div class="name">{{ get_user_name(message.sender_id) }}</div>
+              <div class="body">{{ message.text }}</div>
+              <div class="timestamp">{{ format_time_for_display(message.sended_at) }}</div>
+            </div>
+          </li>
+        </template>
     </ul>
     <form class="form" @submit.prevent="submit_message">
     <textarea 

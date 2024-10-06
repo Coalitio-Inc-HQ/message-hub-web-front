@@ -8,7 +8,7 @@ module.exports = defineConfig({
       new webpack.DefinePlugin({
         'process.env': {
           VUE_APP_WS_URL: JSON.stringify(
-            process.env.VUE_APP_API_BASE_URL.replace(/^https/, 'wss') + '/ws_listener'
+            process.env.VUE_APP_API_BASE_URL.replace(/^http/, 'ws') + '/ws_listener'
           )
         }
       })

@@ -1,9 +1,10 @@
 import router from "@/router";
 import handlers from "@/websocket/Handlers/messageHandlers.js";
 import {
-  get_chats_by_user_Request, 
-  get_chats_in_which_user_is_not_member_Request,
-  get_user_info 
+//   get_chats_by_user_Request, 
+//   get_chats_in_which_user_is_not_member_Request,
+  get_user_info,
+  get_chats_Request
 } from "@/services/wsRequests";
 
 export function setupMessageObserver(context, ws) {
@@ -21,8 +22,9 @@ export function setupMessageObserver(context, ws) {
   ws.onopen = () => {
     console.log("WebSocket connection opened");
     get_user_info(ws.send.bind(ws));
-    get_chats_by_user_Request(ws.send.bind(ws));
-    get_chats_in_which_user_is_not_member_Request(ws.send.bind(ws));
+    // get_chats_by_user_Request(ws.send.bind(ws));
+    // get_chats_in_which_user_is_not_member_Request(ws.send.bind(ws));
+    get_chats_Request(ws.send.bind(ws));
   };
 
   ws.onmessage = async (event) => {

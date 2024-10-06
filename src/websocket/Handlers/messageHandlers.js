@@ -14,41 +14,6 @@ export function handleGetUserInfo(context, message){
 }
 
 
-//get_chats_in_which_user_is_not_member
-export async function handleGetChatsInWhichUserIsNotMember(context, message) {
-    console.log("Handler get_chats_in_which_user_is_not_member:", message);
-    let body = message.body; 
-    let chats = body.chats;
-
-    console.log('chats in which user is not member:', chats);
-
-    chats.forEach((element) =>{
-        element.is_not_connected=true;
-        element.messages=[];
-    });
-    context.chats = context.chats.concat(chats);
-}
-
-
-//get_chats_by_user
-export async function handleGetChatsByUser(context, message) {
-    console.log("Handler get_chats_by_user:", message);
-    let body = message.body; 
-    let chats = body.chats;
-
-    console.log('user_chats:', chats);
-    // chats.forEach((element) => {
-    //     element.is_not_connected=false;
-    //     element.messages=[];
-    // });
-    for (let i = 0; i < chats.length; i++) {
-        chats[i].is_not_connected = false;
-        chats[i].messages = [];
-    }
-    context.chats = context.chats.concat(chats);
-}
-
-
 // get_messages_by_chat
 export async function handleGetMessagesByChat(context, message) {
     console.log("Handler get_messages_by_chat:", message);
@@ -129,6 +94,7 @@ export async function handleAddUserToChat(context, message) {
         if(context.chats[index].id == chat_users.chat_id){
             context.chats[index].waiting_connaction = false;
             context.chats[index].is_not_connected = false;
+            context.chats[index].is_waiting_answer = false;
             console.log("is_not_connected: ", context.chats[index].is_not_connected)
             context.chats[index].waiting_messages.forEach(message => {
                 send_message_to_chat_Request(context.connection.send.bind(context.connection), message);
@@ -210,11 +176,68 @@ export async function handleNewChat(context, message) {
 }
 
 
+//get_chats
+export async function handleGetChats(context, message) {
+    console.log("Handler get_chats:", message);
+    let body = message.body; 
+    let chats = body.chats;
+
+    console.log('user_chats:', chats);
+    for (let i = 0; i < chats.length; i++) {
+        if (chats[i].last_read_message_id == null){
+            chats[i].is_not_connected = true;
+        }
+        else{
+            chats[i].is_not_connected = false;
+        }
+        chats[i].messages = [];
+    }
+    context.chats = context.chats.concat(chats);
+}
+
+//chat.update
+export async function handleChatUpdate(context, message) {
+    console.log("handleChatUpdate", message);
+    let body = message.body; 
+    let chat = body.chat; 
+
+    let find_chat = null;
+    let index_chat = null;
+    for (let i = 0; i < context.chats.length; i++){
+        if (context.chats[i].id == chat.id){
+            find_chat =context.chats[i];
+            index_chat = i;
+            break;
+        }
+    }
+    if (find_chat){
+        if (chat.is_waiting_answer){
+            find_chat.is_waiting_answer=chat.is_waiting_answer;
+            find_chat.is_archive=chat.is_archive;
+        } else{
+            if (find_chat.is_not_connected && !find_chat.waiting_connaction){
+                context.chats.splice(index_chat, 1);
+                context.current_chat=null;
+            } else{
+                find_chat.is_waiting_answer=chat.is_waiting_answer;
+                find_chat.is_archive=chat.is_archive;
+            }
+        }
+    }
+    else{
+        if (chat.is_waiting_answer){
+            chat.is_not_connected = true;
+            chat.messages = [];
+            context.chats.push(chat);
+        } else{
+            // is_waiting_answer == False значит чат уже приветный
+        }
+    }
+}
+
 
 const handlers = {
     "get_user_info": handleGetUserInfo,
-    "get_chats_in_which_user_is_not_member": handleGetChatsInWhichUserIsNotMember,
-    "get_chats_by_user": handleGetChatsByUser,
     "get_users_by_chat": handleGetUsersByChat,
     "get_messages_by_chat": handleGetMessagesByChat,
     "add_user_to_chat": handleAddUserToChat,
@@ -222,6 +245,8 @@ const handlers = {
     "new_user_in_chat": handleNewUserInChat,
     "new_message": handleNewMessage,
     "new_chat":handleNewChat,
+    "get_chats": handleGetChats,
+    "chat.update":handleChatUpdate,
 };
 
 

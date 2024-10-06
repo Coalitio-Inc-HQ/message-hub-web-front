@@ -104,7 +104,8 @@ export function create_message(chat, user_id, text){
     sender_id: user_id,
     sended_at: new Date().toISOString(),
     text: text,
-    front_message_id: chat.message_iterator
+    front_message_id: chat.message_iterator,
+    attachments:{}
   }
 }
 
@@ -137,6 +138,17 @@ export function add_user_to_chat_Request(send, chat_id,user_id) {
   const request = {
     name: 'add_user_to_chat',
     body: { chat_id: chat_id, user_id:user_id }
+  };
+  console.log(`Запрос ${request.name}:`, request);
+  send(JSON.stringify(request));
+}
+
+
+
+export function get_chats_Request(send) {
+  const request = {
+    name: 'get_chats',
+    body: {}
   };
   console.log(`Запрос ${request.name}:`, request);
   send(JSON.stringify(request));
