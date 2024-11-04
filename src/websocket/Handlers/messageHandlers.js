@@ -184,12 +184,13 @@ export async function handleGetChats(context, message) {
 
     console.log('user_chats:', chats);
     for (let i = 0; i < chats.length; i++) {
-        if (chats[i].last_read_message_id == null){
-            chats[i].is_not_connected = true;
-        }
-        else{
-            chats[i].is_not_connected = false;
-        }
+        // if (chats[i].last_read_message_id == null){
+        //     chats[i].is_not_connected = true;
+        // }
+        // else{
+        //     chats[i].is_not_connected = false;
+        // }
+        chats[i].is_not_connected = !chats[i].user_in_chat
         chats[i].messages = [];
     }
     context.chats = context.chats.concat(chats);
@@ -202,36 +203,52 @@ export async function handleChatUpdate(context, message) {
     let chat = body.chat; 
 
     let find_chat = null;
-    let index_chat = null;
+    // let index_chat = null;
     for (let i = 0; i < context.chats.length; i++){
         if (context.chats[i].id == chat.id){
             find_chat =context.chats[i];
-            index_chat = i;
+            // index_chat = i;
             break;
         }
     }
+    // if (find_chat){
+    //     if (chat.is_waiting_answer){
+    //         find_chat.is_waiting_answer=chat.is_waiting_answer;
+    //         find_chat.is_archive=chat.is_archive;
+    //         // Добавить сброс участия в чате
+    //     } else{
+    //         if (find_chat.is_not_connected && !find_chat.waiting_connaction){
+    //             context.chats.splice(index_chat, 1);
+    //             context.current_chat=null;
+    //         } else{
+    //             find_chat.is_waiting_answer=chat.is_waiting_answer;
+    //             find_chat.is_archive=chat.is_archive;
+    //         }
+    //     }
+    // }
+    // else{
+    //     if (chat.is_waiting_answer){
+    //         chat.is_not_connected = true;
+    //         chat.messages = [];
+    //         context.chats.push(chat);
+    //     } else{
+    //         // is_waiting_answer == False значит чат уже приветный
+    //     }
+    // }
     if (find_chat){
-        if (chat.is_waiting_answer){
-            find_chat.is_waiting_answer=chat.is_waiting_answer;
-            find_chat.is_archive=chat.is_archive;
-        } else{
-            if (find_chat.is_not_connected && !find_chat.waiting_connaction){
-                context.chats.splice(index_chat, 1);
-                context.current_chat=null;
-            } else{
-                find_chat.is_waiting_answer=chat.is_waiting_answer;
-                find_chat.is_archive=chat.is_archive;
-            }
+        find_chat.is_waiting_answer=chat.is_waiting_answer;
+        find_chat.is_archive=chat.is_archive;
+        // Добавить сброс участия в чате
+        // при is_archive == True
+        if (chat.is_archive){
+            find_chat.is_not_connected=true
         }
     }
     else{
-        if (chat.is_waiting_answer){
-            chat.is_not_connected = true;
-            chat.messages = [];
-            context.chats.push(chat);
-        } else{
-            // is_waiting_answer == False значит чат уже приветный
-        }
+        // is_archive == True?
+        chat.is_not_connected = true;
+        chat.messages = [];
+        context.chats.push(chat);
     }
 }
 

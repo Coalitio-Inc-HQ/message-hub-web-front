@@ -20,7 +20,23 @@
     <ul class="chat-list read-chats">
       <template v-for="chat in chats" >
         <il 
-          v-if="!chat.is_waiting_answer && !chat.is_archive"
+          v-if="!chat.is_waiting_answer && !chat.is_archive && !chat.is_not_connected"
+          :key="chat.id" 
+          :data-chat-id="chat.id" 
+          :class="{ 'chat-item': true, 'active': current_chat && chat.id == current_chat.id }" 
+          @click="$emit('select-user-chat', chat)"
+          >
+          {{ chat.name }}
+        </il>
+      </template>
+    </ul>
+  </div>
+  <div v-if="chats.length != 0">
+    <h3>Чужие чаты</h3>
+    <ul class="chat-list read-chats">
+      <template v-for="chat in chats" >
+        <il 
+          v-if="!chat.is_waiting_answer && !chat.is_archive && chat.is_not_connected"
           :key="chat.id" 
           :data-chat-id="chat.id" 
           :class="{ 'chat-item': true, 'active': current_chat && chat.id == current_chat.id }" 
