@@ -10,7 +10,11 @@
             :class="{ 'chat-item': true, 'active': current_chat && chat.id == current_chat.id }" 
             @click="$emit('select-user-chat', chat)"
             >
-            {{ chat.name }}
+            <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
+              <img :src="chat.icon_url" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
+            </Avatar>
+            <Avatar v-else :label="chat.name[0]"/>
+            <p class="chat-item-text">{{ chat.name }}</p>
           </il>
         </template>
       </ul>
@@ -26,7 +30,11 @@
           :class="{ 'chat-item': true, 'active': current_chat && chat.id == current_chat.id }" 
           @click="$emit('select-user-chat', chat)"
           >
-          {{ chat.name }}
+          <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
+            <img :src="chat.icon_url" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
+          </Avatar>
+          <Avatar v-else :label="chat.name[0]"/>
+          <p class="chat-item-text">{{ chat.name }}</p>
         </il>
       </template>
     </ul>
@@ -42,7 +50,11 @@
           :class="{ 'chat-item': true, 'active': current_chat && chat.id == current_chat.id }" 
           @click="$emit('select-user-chat', chat)"
           >
-          {{ chat.name }}
+          <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
+              <img :src="chat.icon_url" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
+            </Avatar>
+            <Avatar v-else :label="chat.name[0]"/>
+          <p class="chat-item-text">{{ chat.name }}</p>
         </il>
       </template>
     </ul>
@@ -58,7 +70,11 @@
           :class="{ 'chat-item': true, 'active': current_chat && chat.id == current_chat.id }" 
           @click="$emit('select-user-chat', chat)"
           >
-          {{ chat.name }}
+          <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
+              <img :src="chat.icon_url" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
+            </Avatar>
+            <Avatar v-else :label="chat.name[0]"/>
+          <p class="chat-item-text">{{ chat.name }}</p>
         </il>
       </template>
     </ul>
@@ -66,7 +82,12 @@
 </template>
 
 <script>
-export default {
-props: ["chats","current_chat"]
-};
+  import Avatar from 'primevue/avatar';
+
+  export default {
+    props: ["chats","current_chat"],
+    components:{
+      Avatar
+    }
+  };
 </script>

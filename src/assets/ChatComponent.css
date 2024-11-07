@@ -241,7 +241,6 @@ html, body, .full-height {
   list-style: none;
   padding: 0;
   margin-bottom: 2px;
-
 }
 
 
@@ -253,10 +252,15 @@ html, body, .full-height {
   border-radius: 10px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  display: block;
+  /* display: block; */
 
+  display: flex; 
+  align-items: center; 
 }
 
+.chat-item-text{
+  margin-left: 5px;
+}
 
 .chat-component .chat-item:hover {
   background-color: #52404083;
