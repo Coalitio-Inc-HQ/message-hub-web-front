@@ -1,35 +1,43 @@
 <template>
   <div class="chat-component full-height">
     <div class="wrapper">
-      <div :class="['sidebar-container', { 'sidebar-container-hidden': !isSidebarVisible }]">
-        <div class="toggle-btn-container">
-          <button @click="toggleSidebar" class="toggle-sidebar-btn" title="toggle-sidebar" type="button">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M3 12H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M3 6H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M3 18H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-        </div>
-        
-        <div :class="['sidebar', { 'sidebar-hidden': !isSidebarVisible }]">
-          <UserChatsComponent 
-            :chats="chats" 
-            :current_chat="current_chat" 
-            @select-user-chat="select_chat"/>
-        </div>
-      </div>
-      <ChatComponent 
-        :this_user_id="this_user_id" 
-        :user_name="user_name" 
-        :current_chat="current_chat" 
-        ref="сhat_сomponent"
-        @send-message="send_message"/>
+      <Splitter style="min-height: 100%; min-width: 100%;" class="mb-8">
+        <SplitterPanel class="flex items-center justify-center" style="min-width: 15em;" :size="1">
+          <!-- <div class="toggle-btn-container">
+            <button @click="toggleSidebar" class="toggle-sidebar-btn" title="toggle-sidebar" type="button">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M3 12H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M3 6H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M3 18H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div> -->
+          <div style="display: flex; flex-flow: column; height: 100%;">
+          <div><p>Некая шапка</p></div>
+          <div style="flex-grow: 1;">
+            <UserChatsComponent
+              :chats="chats" 
+              :current_chat="current_chat" 
+              @select-user-chat="select_chat"/>
+            </div>
+          </div>
+        </SplitterPanel>
+        <SplitterPanel class="flex items-center justify-center" size="99">
+          <ChatComponent 
+          :this_user_id="this_user_id" 
+          :user_name="user_name" 
+          :current_chat="current_chat" 
+          ref="сhat_сomponent"
+          @send-message="send_message"/>
+        </SplitterPanel>
+      </Splitter>
     </div>
   </div>
 </template>
 
 <script>
+  import Splitter from 'primevue/splitter';
+  import SplitterPanel from 'primevue/splitterpanel';
   import { setupMessageObserver } from '@/websocket/observers/messageObserver';
   import UserChatsComponent from './UserChatsComponent.vue';
   import ChatComponent from './ChatComponent.vue';
@@ -38,7 +46,7 @@
     get_users_by_chat_Request,
     send_message_to_chat_Request,
     add_user_to_chat_Request,
-    create_message
+    create_message,
   } from '@/services/wsRequests';
   import router from "@/router";
 
@@ -48,6 +56,8 @@
     components: {
       UserChatsComponent,
       ChatComponent,
+      Splitter,
+      SplitterPanel,
     },
 
     data() {

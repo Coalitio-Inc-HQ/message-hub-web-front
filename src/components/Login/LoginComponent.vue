@@ -6,6 +6,7 @@
         @update:formData="updateLoginData"
         :onLogin="login"
         :toggleRegister="toggleRegister"
+        :loginfail="loginfail"
       />
     </div>
   </div>
@@ -23,6 +24,7 @@ export default {
   data() {
     return {
       registerActive: false,
+      loginfail: false,
       loginData: {
         username: '',
         password: ''
@@ -41,7 +43,6 @@ export default {
     toggleRegister() {
       this.registerActive = !this.registerActive;
     },
-
 
     set_cookie(name, value, days) {
       var expires = "";

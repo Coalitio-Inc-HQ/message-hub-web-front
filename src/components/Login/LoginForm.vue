@@ -1,33 +1,36 @@
 <template>
-    <form @submit.prevent="handleLogin">
-      <h4>Войти</h4>
-      <div class="input-box">
-        <input type="text" id="username" v-model="localFormData.username" required />
-        <span>Логин</span>
-        <i></i>
-      </div>
-      <div class="input-box">
-        <input type="password" id="password" v-model="localFormData.password" required />
-        <span>Пароль</span>
-        <i></i>
-      </div>
-      <div class="button-container-log">
-        <button type="submit">Войти</button>
-      </div>
-<!--     
-      <p class="switch-form">Еще не зарегистрированы? <a href="#" @click="toggleRegister">Регистрация</a></p>
-     -->
-    
-    
-    </form>
-  </template>
+  <form @submit.prevent="handleLogin">
+    <h4>MessageHub</h4>
+    <div class="input-box">
+      <input type="text" id="username" v-model="localFormData.username" required />
+      <span>Логин</span>
+      <i></i>
+    </div>
+    <div class="input-box">
+      <input type="password" id="password" v-model="localFormData.password" required />
+      <span>Пароль</span>
+      <i></i>
+    </div>
+    <div class="button-container-log">
+      <button type="submit">Войти</button>
+    </div>
+  <!--     
+    <p class="switch-form">Еще не зарегистрированы? <a href="#" @click="toggleRegister">Регистрация</a></p>
+    -->
   
-  <script>
+  
+  </form>
+</template>
+  
+<script>
   export default {
+    components:{
+    },
     props: {
       formData: Object,
       onLogin: Function,
-      toggleRegister: Function
+      toggleRegister: Function,
+      loginfail:Boolean
     },
     data() {
       return {
@@ -49,5 +52,5 @@
       }
     }
   };
-  </script>
+</script>
   
