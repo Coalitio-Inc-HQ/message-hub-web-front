@@ -3,23 +3,15 @@
     <div class="wrapper">
       <Splitter style="min-height: 100%; min-width: 100%;" class="mb-8">
         <SplitterPanel class="flex items-center justify-center" style="min-width: 15em;" :size="1">
-          <!-- <div class="toggle-btn-container">
-            <button @click="toggleSidebar" class="toggle-sidebar-btn" title="toggle-sidebar" type="button">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M3 12H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M3 6H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M3 18H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-          </div> -->
-          <div style="display: flex; flex-flow: column; height: 100%;">
-          <div><p>Некая шапка</p></div>
-          <div style="flex-grow: 1;">
+          <div class="left-panel">
+            <div class="left-panel-header-container">
+              <Button size="small" icon="pi pi-bars" />
+              <InputText type="text" v-model="value" style="flex-grow: 1;"/>
+            </div>
             <UserChatsComponent
               :chats="chats" 
               :current_chat="current_chat" 
               @select-user-chat="select_chat"/>
-            </div>
           </div>
         </SplitterPanel>
         <SplitterPanel class="flex items-center justify-center" size="99">
@@ -36,6 +28,8 @@
 </template>
 
 <script>
+  import InputText from 'primevue/inputtext';
+
   import Splitter from 'primevue/splitter';
   import SplitterPanel from 'primevue/splitterpanel';
   import { setupMessageObserver } from '@/websocket/observers/messageObserver';
@@ -50,6 +44,8 @@
   } from '@/services/wsRequests';
   import router from "@/router";
 
+  import Button from 'primevue/button';
+
   const WS_URL = process.env.VUE_APP_WS_URL;
 
   export default {
@@ -58,6 +54,8 @@
       ChatComponent,
       Splitter,
       SplitterPanel,
+      Button,
+      InputText
     },
 
     data() {
@@ -140,4 +138,5 @@
 
 <style scoped>
 @import '@/assets/ChatComponent.css'; 
+@import 'primeicons/primeicons.css';
 </style>
