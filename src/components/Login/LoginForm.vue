@@ -1,30 +1,32 @@
 <template>
-  <form @submit.prevent="handleLogin">
-    <h4>MessageHub</h4>
-    <div class="input-box">
-      <input type="text" id="username" v-model="localFormData.username" required />
-      <span>Логин</span>
-      <i></i>
+  <form class="flex-list" @submit.prevent="handleLogin">
+    <h4 class="heder">MessageHub</h4>
+    <FloatLabel class="input-field-box">
+      <InputText class="input-field" name="username" type="text" id="username" v-model="localFormData.username"/>
+      <label for="username">Логин</label>
+    </FloatLabel>
+    <FloatLabel class="input-field-box">
+      <Password inputClass="input-field" class="input-field" v-model="localFormData.password" :feedback="false" toggleMask />
+      <label for="password">Пароль</label>
+    </FloatLabel>
+    <div class="button-container">
+      <Button type="submit">Войти</button>
     </div>
-    <div class="input-box">
-      <input type="password" id="password" v-model="localFormData.password" required />
-      <span>Пароль</span>
-      <i></i>
-    </div>
-    <div class="button-container-log">
-      <button type="submit">Войти</button>
-    </div>
-  <!--     
-    <p class="switch-form">Еще не зарегистрированы? <a href="#" @click="toggleRegister">Регистрация</a></p>
-    -->
-  
-  
+  <!-- <p class="switch-form">Еще не зарегистрированы? <a href="#" @click="toggleRegister">Регистрация</a></p> -->
   </form>
 </template>
   
 <script>
+  import InputText from 'primevue/inputtext';
+  import FloatLabel from 'primevue/floatlabel';
+  import Password from 'primevue/password';
+  import Button from 'primevue/button';
   export default {
     components:{
+      InputText,
+      FloatLabel,
+      Password,
+      Button
     },
     props: {
       formData: Object,

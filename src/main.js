@@ -14,19 +14,6 @@ app.use(router);
 
 const MyPreset = definePreset(Aura, {
     semantic: {
-        // primary: {
-        //     50: '{indigo.50}',
-        //     100: '{indigo.100}',
-        //     200: '{indigo.200}',
-        //     300: '{indigo.300}',
-        //     400: '{indigo.400}',
-        //     500: '{indigo.500}',
-        //     600: '{indigo.600}',
-        //     700: '{indigo.700}',
-        //     800: '{indigo.800}',
-        //     900: '{indigo.900}',
-        //     950: '{indigo.950}'
-        // },
         primary: {
             50: '{slate.50}',
             100: '{slate.100}',
@@ -63,9 +50,13 @@ const MyPreset = definePreset(Aura, {
                 "button-highlight-text-color":'{primary.50}',
             },
             dark:{
-                "background-color":'{primary.600}',
+                "background-color":'{primary.700}',
+                "second-background-color":'{primary.100}',
+
+                "heder-font-color":'{primary.700}',
+
+
                 "panel-background-color":'{primary.500}',
-                "second-background-color":'{primary.50}',
                 "border-color":'{primary.500}',
                 "highlight-color":'{primary.500}',
                 "button-color":'{primary.800}',
@@ -73,13 +64,12 @@ const MyPreset = definePreset(Aura, {
                 "content-background":'{primary.600}',
                 "splitter-gutter-background":'{primary.500}',
 
-                "heder-font-color":'{primary.700}',
 
                 "text-font-color":'{primary.700}{primary.700}',
                 "text-font-highlight-color":'{primary.50}',
 
-                "button-text-color":'{primary.50}',
-                "button-highlight-text-color":'{primary.50}',
+                // "button-text-color":'{primary.50}',
+                // "button-highlight-text-color":'{primary.50}',
                 
             }
         }

@@ -21,6 +21,7 @@
           :current_chat="current_chat" 
           ref="сhat_сomponent"
           @send-message="send_message"/>
+          
         </SplitterPanel>
       </Splitter>
     </div>
@@ -139,4 +140,5 @@
 <style scoped>
 @import '@/assets/ChatComponent.css'; 
 @import 'primeicons/primeicons.css';
+@import '@/assets/Layout.css';
 </style>

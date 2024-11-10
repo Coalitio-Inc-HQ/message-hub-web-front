@@ -1,152 +1,36 @@
 
 /* LoginComponent.css */
-.login-body * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+.login-container {
+  width: 25rem;
+
+  border-radius: 14px;
+  padding: 15px;
+
+  background-color:  var(--p-second-background-color);
+
   font-family: sans-serif;
 }
 
-.login-body {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* background-color: #1e1e1e; */
-  background-color: var(--p-background-color);
+.heder{
+  margin: 0.25em;
+  padding: 0px;
+  text-align: center; 
+
+  color: var(--p-heder-font-color);
+  font-size: var(--p-heder-font-size);
 }
 
-.login-container {
-  position: relative;
-  /* width: 340px;
-  height: 240px; */
-  width: 20em;
-  overflow: hidden;
+.input-field-box {
+  margin: 1em 0 1em 0;
+  height: 3em;
 }
 
-.login-container form {
-  /* position: absolute; */
-  inset: 4px;
-  /* background: #fff; */
-  background-color:  var(--p-second-background-color);
-  padding: 15px 16px;
-  border-radius: 14px;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-}
-
-.input-box {
-  position: relative;
+.input-field {
   width: 100%;
-  height: 50px;
-  margin-bottom: 10px;
-}
-
-.input-box input {
-    position: relative;
-    width: 100%;
-    padding: 22px 10px 12px;
-    background: transparent;
-    border: none;
-    outline: none;
-    box-shadow: none;
-    /* color: #000; */
-    color: var(--p-text-font-color);
-
-    font-size: 16px;
-    letter-spacing: 1px;
-    transition: 0.5s;
-    z-index: 1;
-}
-
-.input-box span {
-  position: absolute;
-  left: 0;
-  padding: 26px 0;
-  
-  font-size: 15px;
-  color: var(--p-text-font-size);
-
-  color: #000;
-  color: var(--p-text-font-color);
-
-  pointer-events: none;
-  transition: 0.5s;
-}
-
-.input-box i {
-  position: absolute;
-
-  
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 1px;
-  background: white; 
-  border: 2px solid; 
-  border-color: var(--p-border-color);
-  border-radius: 12px;
-  overflow: hidden;
-  transition: 0.5s;
-  pointer-events: none;
- 
-}
-
-
-.input-box i svg {
-  position: relative;
-  cursor: pointer;
-  top: 50%;
-  transform: translateY(-50%);
-  right: -90%;
-  z-index: 10;
-  pointer-events: all;
-}
-
-.fa-eye, .fa-eye-slash {
-  font-size: 1.2em;
-  color: #000;
-}
-
-.input-box input:valid ~ span,
-.input-box input:focus ~ span,
-.input-box.focused span {
-  /* color: #000; */
-  color: var(--p-text-font-color);
-  font-size: 12px;
-  transform: translateY(-34px);
-}
-
-/* .input-box input:valid ~ i,
-.input-box input:focus ~ i {
-  height: 40px;
-} */
-/* 
-.input-box input:valid ~ i,
-.input-box input:focus ~ i, */
-
-
-.input-box input:valid ~ i,
-.input-box input:focus ~ i,
-.input-box.focused i {
-  height: 40px;
-}
-
-.input-box i, .input-box i svg {
-  user-select: none; /* Отключение выделения текста */
-  -webkit-user-select: none; /* Отключение выделения текста для Safari и iOS */
-}
-
-.button-container {
-  margin-top: 10px; 
-  width: 100%;
-  display: flex;
-  justify-content: center; 
+  height: 100%;
 }
 
 .button-container-log {
-  
   margin-top: 5%; 
   width: 100%; 
   display: flex;
@@ -154,43 +38,8 @@
 }
 
 
-button {
-  padding: 10px 20px;
-  height: 40px;
-  width: 90%;
-  /* background-color: #000; */
-  background-color: var(--p-button-color);
-  font-size: 15px;
-  font-family:"Helvetica Neue",sans-serif;
-
-  /* color: #fff; */
-  color: var(--p-button-text-color);
-
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-
-button:hover {
-  /* background-color: #52404083; */
-  color: var(--p-button-highlight-text-color);
-  background-color: var(--p-highlight-color);
-}
-
-.login-container h4 {
-  padding: 0px 10px;
-  /* color: #000;  */
-  color: var(--p-heder-font-color);
-  font-size: var(--p-heder-font-size);
-  text-align: center; 
-}
-
-
-
-p.switch-form {
-  margin-top: 10px; 
+.switch-form {
+  margin-top: 0.5rem; 
   color:#000;
   text-align: center; 
 }

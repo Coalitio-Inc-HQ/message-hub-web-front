@@ -1,5 +1,5 @@
 <template>
-  <div class="login-body">
+  <div class="full-screen center-container">
     <div :class="['login-container', {'expanded': registerActive}]">
       <login-form      
         :formData="loginData"
@@ -68,4 +68,5 @@ export default {
 
 <style scoped>
 @import '@/assets/LoginComponent.css';
+@import '@/assets/Layout.css';
 </style>

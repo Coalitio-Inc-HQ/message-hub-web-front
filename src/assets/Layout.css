@@ -1,6 +1,7 @@
+/* Полный экран */
 .full-screen{
-    width: 100vw;
-    height: 100vh;
+    min-width: 100vw;
+    min-height: 100vh;
 }
 
 /* Выравнивение по центру */
@@ -9,9 +10,14 @@
     padding: 0;
     width: 100%;
     height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-.center-component {
-    position: relative;
-    top: 50%;
-    left: 50%;
+
+/* Список flex */
+.flex-list{
+    display: flex;
+    flex-direction: column;
 }
