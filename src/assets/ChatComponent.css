@@ -18,13 +18,13 @@ body{
 }
 
 .left-panel{
-  padding: 0.1rem;
+  padding: 0.3rem;
 
   background-color: var(--p-panel-background-color);
 }
 
 .left-panel-header-container{
-  margin: 0.2rem 0.2rem 0.2rem 0;
+  margin: 0.2rem 0 0.2rem 0;
 
   gap: 0.2rem;
 
@@ -41,27 +41,49 @@ body{
   height: 100%;
 }
 
-.chat-list{
-  margin: 0;
-  padding: 0;
-
-  overflow-y: auto;
-}
-
-.button-container-chat-list{
+.chat-group-button-box{
   width: 100%;
-  /* border: solid; */
-  border-top: 2px solid;  
-  border-bottom: 2px solid;
-  border-color: var(--p-border-color);
 }
 
-.chat-list-button {
+.chat-group-button {
   height: 2rem;
   --p-button-border-radius: 0px;
+
+  --p-button-primary-background: var(--p-panel-background-color);
+  --p-button-primary-border-color: var(--p-panel-background-color);
+  --p-button-primary-color: var(--p-button-secondary-color);
 }
 
+.chat-group-inner-box{
+  border-radius: 1rem;
+  border: solid 2px;
+  border-color: var(--p-content-border-color);
 
+  background-color: var(--p-background-color);
+}
+
+.chat-list{
+  margin: 0  0.25rem 0  0.25rem;
+  padding: 0;
+}
+
+.chat-item {
+  padding: 0.1rem 0 0.1rem 0.7rem;
+  margin-bottom: 0.3rem;
+  background-color: var(--p-button-secondary-background);
+  
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.chat-item.active {
+  background-color: var(--p-button-secondary-active-color); 
+}
+
+.chat-item:hover {
+  background-color: var(--p-button-secondary-hover-color); 
+}
 
 
 
@@ -278,36 +300,13 @@ body{
   background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(19, 1, 1, 0.3));
 }
 
-.chat-item {
-  padding: 0.1rem 0 0.1rem 0.7rem;
-  margin-bottom: 0.3rem;
-  background-color: #1e1e1e;
-  
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-
-  display: flex; 
-  align-items: center; 
-}
-
-.chat-item.active {
-  background-color: #555; 
-}
 
 
 .chat-item-text{
   margin-left: 5px;
 }
 
-.chat-component .chat-item:hover {
-  background-color: #52404083;
-}
 
-
-.chat-component .chat-item.active {
-  background-color: #9b9b9b;
-}
 
 
 .chat-component h3 {

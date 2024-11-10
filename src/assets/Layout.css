@@ -37,3 +37,17 @@
 .flex-scale{
     flex-grow: 1;
 }
+
+/*  */
+.overflow-h-hiddne{
+    overflow-y: hidden;
+}
+
+/*  */
+.overflow-h-auto{
+    overflow-y: auto;
+}
+
+.align-items-center{
+    align-items: center;
+}

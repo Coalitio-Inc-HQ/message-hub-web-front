@@ -52,19 +52,18 @@ const MyPreset = definePreset(Aura, {
             dark:{
                 "background-color":'{primary.700}',
                 "second-background-color":'{primary.100}',
+                "panel-background-color":'{primary.500}',
 
                 "heder-font-color":'{primary.700}',
 
 
-                "panel-background-color":'{primary.500}',
+
                 "border-color":'{primary.500}',
                 "highlight-color":'{primary.500}',
                 "button-color":'{primary.800}',
                 "button-hover-color":'{primary.500}',
                 "content-background":'{primary.600}',
                 "splitter-gutter-background":'{primary.500}',
-
-
                 "text-font-color":'{primary.700}{primary.700}',
                 "text-font-highlight-color":'{primary.50}',
 

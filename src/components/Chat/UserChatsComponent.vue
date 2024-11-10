@@ -1,84 +1,101 @@
 <template>
-    <div class="button-container-chat-list">
-      <Button class="chat-list-button" @click="ClicOnButtonInListWaitingChats" >Ожидающие ответа чаты</button>
+  <div :class="{'flex-scale':button_waiting_chats, 'flex-list': true, 'overflow-h-hiddne': true}">
+    <div class="chat-group-button-box">
+      <Button class="chat-group-button" @click="ClicOnButtonInListWaitingChats" >Ожидающие ответа чаты</button>
     </div>
-    <ScrollPanel :class="{'chat-list': true, 'flex-scale':button_waiting_chats}" v-if="button_waiting_chats">
-      <template v-for="chat in chats">
-        <il 
-          v-if="chat.is_waiting_answer" 
-          :key="chat.id" 
-          :data-chat-id="chat.id" 
-          :class="{ 'chat-item': true, 'active': current_chat && chat.id == current_chat.id }" 
-          @click="$emit('select-user-chat', chat)"
-          >
-          <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
-            <img :src="chat.icon_url" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
-          </Avatar>
-          <Avatar v-else :label="chat.name[0]"/>
-          <p class="chat-item-text">{{ chat.name }}</p>
-        </il>
-      </template>
-    </ScrollPanel>
-    <div class="button-container-chat-list">
-      <Button class="chat-list-button"  @click="ClicOnButtonInListMyChats">Ваши чаты</Button>
+    <div class="chat-group-inner-box overflow-h-hiddne flex-list flex-scale" v-if="button_waiting_chats">
+      <ScrollPanel class="chat-list overflow-h-hiddne">
+        <template v-for="chat in chats">
+          <il 
+            v-if="chat.is_waiting_answer" 
+            :key="chat.id" 
+            :data-chat-id="chat.id" 
+            :class="{ 'chat-item': true,  'flex-list-w': true, 'align-items-center':true, 'active': current_chat && chat.id == current_chat.id }" 
+            @click="$emit('select-user-chat', chat)"
+            >
+            <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
+              <img :src="chat.icon_url" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
+            </Avatar>
+            <Avatar v-else :label="chat.name[0]"/>
+            <p class="chat-item-text">{{ chat.name }}</p>
+          </il>
+        </template>
+      </ScrollPanel>
     </div>
-    <ul :class="{'chat-list': true, 'flex-scale':button_my_chats}" v-if="button_my_chats">
-      <template v-for="chat in chats" >
-        <il 
+  </div>
+  <div :class="{'flex-scale':button_my_chats, 'flex-list': true, 'overflow-h-hiddne': true}">
+    <div class="chat-group-button-box">
+      <Button class="chat-group-button" @click="ClicOnButtonInListMyChats" >Ваши чаты</button>
+    </div>
+    <div class="chat-group-inner-box overflow-h-hiddne flex-list flex-scale" v-if="button_my_chats">
+      <ScrollPanel class="chat-list overflow-h-hiddne">
+        <template v-for="chat in chats">
+          <il 
           v-if="!chat.is_waiting_answer && !chat.is_archive && !chat.is_not_connected"
           :key="chat.id" 
           :data-chat-id="chat.id" 
-          :class="{ 'chat-item': true, 'active': current_chat && chat.id == current_chat.id }" 
+          :class="{ 'chat-item': true, 'flex-list-w': true, 'align-items-center':true, 'active': current_chat && chat.id == current_chat.id }" 
           @click="$emit('select-user-chat', chat)"
           >
-          <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
-            <img :src="chat.icon_url" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
-          </Avatar>
-          <Avatar v-else :label="chat.name[0]"/>
-          <p class="chat-item-text">{{ chat.name }}</p>
-        </il>
-      </template>
-    </ul>
-    <div class="button-container-chat-list">
-      <Button class="chat-list-button" @click="ClicOnButtonInListOtherChats" >Остальные чаты</button>
+            <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
+              <img :src="chat.icon_url" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
+            </Avatar>
+            <Avatar v-else :label="chat.name[0]"/>
+            <p class="chat-item-text">{{ chat.name }}</p>
+          </il>
+        </template>
+      </ScrollPanel>
     </div>
-    <ul :class="{'chat-list': true, 'flex-scale':button_other_chats}" v-if="button_other_chats">
-      <template v-for="chat in chats" >
-        <il 
+  </div>
+  <div :class="{'flex-scale':button_other_chats, 'flex-list': true, 'overflow-h-hiddne': true}">
+    <div class="chat-group-button-box">
+      <Button class="chat-group-button" @click="ClicOnButtonInListOtherChats" >Остальные чаты</button>
+    </div>
+    <div class="chat-group-inner-box overflow-h-hiddne flex-list flex-scale" v-if="button_other_chats">
+      <ScrollPanel class="chat-list overflow-h-hiddne">
+        <template v-for="chat in chats">
+          <il 
           v-if="!chat.is_waiting_answer && !chat.is_archive && chat.is_not_connected"
           :key="chat.id" 
           :data-chat-id="chat.id" 
-          :class="{ 'chat-item': true, 'active': current_chat && chat.id == current_chat.id }" 
+          :class="{ 'chat-item': true, 'flex-list-w': true,'align-items-center':true, 'active': current_chat && chat.id == current_chat.id }" 
           @click="$emit('select-user-chat', chat)"
           >
-          <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
-              <img :src="chat.icon_url" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
-            </Avatar>
-            <Avatar v-else :label="chat.name[0]"/>
-          <p class="chat-item-text">{{ chat.name }}</p>
-        </il>
-      </template>
-    </ul>
-    <div class="button-container-chat-list">
-      <Button class="chat-list-button" @click="ClicOnButtonInListArchiveChats" >Архивные чаты</button>
+              <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
+                <img :src="chat.icon_url" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
+              </Avatar>
+              <Avatar v-else :label="chat.name[0]"/>
+            <p class="chat-item-text">{{ chat.name }}</p>
+          </il>
+        </template>
+      </ScrollPanel>
     </div>
-    <ul :class="{'chat-list': true, 'flex-scale':button_archive_chats}" v-if="button_archive_chats">
-      <template v-for="chat in chats" >
-        <il 
+  </div>
+
+  <div :class="{'flex-scale':button_archive_chats, 'flex-list': true, 'overflow-h-hiddne': true}">
+    <div class="chat-group-button-box">
+      <Button class="chat-group-button" @click="ClicOnButtonInListArchiveChats" >Архивные чаты</button>
+    </div>
+    <div class="chat-group-inner-box overflow-h-hiddne flex-list flex-scale" v-if="button_archive_chats">
+      <ScrollPanel class="chat-list overflow-h-hiddne">
+        <template v-for="chat in chats">
+          <il 
           v-if="chat.is_archive"
           :key="chat.id" 
           :data-chat-id="chat.id" 
-          :class="{ 'chat-item': true, 'active': current_chat && chat.id == current_chat.id }" 
+          :class="{ 'chat-item': true, 'flex-list-w': true, 'align-items-center':true, 'active': current_chat && chat.id == current_chat.id }" 
           @click="$emit('select-user-chat', chat)"
           >
-          <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
+            <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
               <img :src="chat.icon_url" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
             </Avatar>
             <Avatar v-else :label="chat.name[0]"/>
           <p class="chat-item-text">{{ chat.name }}</p>
         </il>
-      </template>
-    </ul>
+        </template>
+      </ScrollPanel>
+    </div>
+  </div>
 </template>
 
 <script>
