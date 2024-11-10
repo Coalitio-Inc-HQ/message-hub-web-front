@@ -17,6 +17,55 @@ body{
   height: 100vh;
 }
 
+.left-panel{
+  padding: 0.1rem;
+
+  background-color: var(--p-panel-background-color);
+}
+
+.left-panel-header-container{
+  margin: 0.2rem 0.2rem 0.2rem 0;
+
+  gap: 0.2rem;
+
+  border-color: var(--p-border-color);
+}
+
+.search-field-box {
+  /* margin: 1em 0 1em 0;
+  height: 3em; */
+}
+
+.search-field {
+  width: 100%;
+  height: 100%;
+}
+
+.chat-list{
+  margin: 0;
+  padding: 0;
+
+  overflow-y: auto;
+}
+
+.button-container-chat-list{
+  width: 100%;
+  /* border: solid; */
+  border-top: 2px solid;  
+  border-bottom: 2px solid;
+  border-color: var(--p-border-color);
+}
+
+.chat-list-button {
+  height: 2rem;
+  --p-button-border-radius: 0px;
+}
+
+
+
+
+
+
 
 
 
@@ -69,12 +118,6 @@ body{
   border-radius: 10px;
   /* word-wrap: break-word;  */
 }
-
-
-.chat-component .chat-item.active {
-  background-color: #555; 
-}
-
 
 .chat-component .message {
   display: flex;
@@ -235,19 +278,23 @@ body{
   background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(19, 1, 1, 0.3));
 }
 
-.chat-component .chat-item {
-  padding: 10px;
-  margin-bottom: 12px;
+.chat-item {
+  padding: 0.1rem 0 0.1rem 0.7rem;
+  margin-bottom: 0.3rem;
   background-color: #1e1e1e;
-  color: white;
+  
   border-radius: 10px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  /* display: block; */
 
   display: flex; 
   align-items: center; 
 }
+
+.chat-item.active {
+  background-color: #555; 
+}
+
 
 .chat-item-text{
   margin-left: 5px;
@@ -360,41 +407,3 @@ button {
 
 
 
-.left-panel{
-  display: flex; 
-  flex-flow: column; 
-  height: 100%;
-
-  background-color: var(--p-panel-background-color);
-}
-
-.left-panel-header-container{
-  border-color: var(--p-border-color);
-  
-  display: flex;
-  flex-flow: row;
-}
-
-.chat-list{
-  margin: 0;
-  padding: 0;
-
-  overflow-y: auto;
-}
-
-.chat-list-active{
-  flex-grow: 1;
-}
-
-.button-container-chat-list{
-  width: 100%;
-  /* border: solid; */
-  border-top: 2px solid;  
-  border-bottom: 2px solid;
-  border-color: var(--p-border-color);
-}
-
-.chat-list-button {
-  height: 40px;
-  border-radius: 0;
-}

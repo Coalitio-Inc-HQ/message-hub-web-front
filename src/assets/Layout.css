@@ -4,6 +4,11 @@
     min-height: 100vh;
 }
 
+/* Полная высота */
+.full-height{
+    height: 100vh;
+}
+
 /* Выравнивение по центру */
 .center-container {
     margin: 0;
@@ -20,4 +25,15 @@
 .flex-list{
     display: flex;
     flex-direction: column;
+}
+
+/* Список flex */
+.flex-list-w{
+    display: flex;
+    flex-direction: row;
+}
+
+/* Заполнитель flex */
+.flex-scale{
+    flex-grow: 1;
 }

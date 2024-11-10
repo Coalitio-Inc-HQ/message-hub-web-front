@@ -2,7 +2,7 @@
     <div class="button-container-chat-list">
       <Button class="chat-list-button" @click="ClicOnButtonInListWaitingChats" >Ожидающие ответа чаты</button>
     </div>
-    <ul :class="{'chat-list': true, 'chat-list-active':button_waiting_chats}" v-if="button_waiting_chats">
+    <ScrollPanel :class="{'chat-list': true, 'flex-scale':button_waiting_chats}" v-if="button_waiting_chats">
       <template v-for="chat in chats">
         <il 
           v-if="chat.is_waiting_answer" 
@@ -18,11 +18,11 @@
           <p class="chat-item-text">{{ chat.name }}</p>
         </il>
       </template>
-    </ul>
+    </ScrollPanel>
     <div class="button-container-chat-list">
       <Button class="chat-list-button"  @click="ClicOnButtonInListMyChats">Ваши чаты</Button>
     </div>
-    <ul :class="{'chat-list': true, 'chat-list-active':button_my_chats}" v-if="button_my_chats">
+    <ul :class="{'chat-list': true, 'flex-scale':button_my_chats}" v-if="button_my_chats">
       <template v-for="chat in chats" >
         <il 
           v-if="!chat.is_waiting_answer && !chat.is_archive && !chat.is_not_connected"
@@ -42,7 +42,7 @@
     <div class="button-container-chat-list">
       <Button class="chat-list-button" @click="ClicOnButtonInListOtherChats" >Остальные чаты</button>
     </div>
-    <ul :class="{'chat-list': true, 'chat-list-active':button_other_chats}" v-if="button_other_chats">
+    <ul :class="{'chat-list': true, 'flex-scale':button_other_chats}" v-if="button_other_chats">
       <template v-for="chat in chats" >
         <il 
           v-if="!chat.is_waiting_answer && !chat.is_archive && chat.is_not_connected"
@@ -62,7 +62,7 @@
     <div class="button-container-chat-list">
       <Button class="chat-list-button" @click="ClicOnButtonInListArchiveChats" >Архивные чаты</button>
     </div>
-    <ul :class="{'chat-list': true, 'chat-list-active':button_archive_chats}" v-if="button_archive_chats">
+    <ul :class="{'chat-list': true, 'flex-scale':button_archive_chats}" v-if="button_archive_chats">
       <template v-for="chat in chats" >
         <il 
           v-if="chat.is_archive"
@@ -84,12 +84,14 @@
 <script>
   import Avatar from 'primevue/avatar';
   import Button from 'primevue/button';
+  import ScrollPanel from 'primevue/scrollpanel';
 
   export default {
     props: ["chats","current_chat"],
     components:{
       Avatar,
       Button,
+      ScrollPanel
     },
     methods:{
       ClicOnButtonInListWaitingChats() {

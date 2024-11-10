@@ -3,10 +3,15 @@
     <div class="wrapper">
       <Splitter style="min-height: 100%; min-width: 100%;" class="mb-8">
         <SplitterPanel class="flex items-center justify-center" style="min-width: 15em;" :size="1">
-          <div class="left-panel">
-            <div class="left-panel-header-container">
-              <Button size="small" icon="pi pi-bars" />
-              <InputText type="text" v-model="value" style="flex-grow: 1;"/>
+          <div class="left-panel flex-list full-height ">
+            <div class="left-panel-header-container flex-list-w">
+              <Button variant="text" size="small" icon="pi pi-bars" />
+              <!-- <InputText type="text" v-model="value" style="flex-grow: 1;"/> -->
+              <IconField class="flex-scale search-field-box">
+                  <InputIcon class="pi pi-search" />
+                  <InputText class="search-field " v-model="value1" placeholder="Поиск" />
+              </IconField>
+
             </div>
             <UserChatsComponent
               :chats="chats" 
@@ -31,6 +36,9 @@
 <script>
   import InputText from 'primevue/inputtext';
 
+  import IconField from 'primevue/iconfield';
+  import InputIcon from 'primevue/inputicon';
+
   import Splitter from 'primevue/splitter';
   import SplitterPanel from 'primevue/splitterpanel';
   import { setupMessageObserver } from '@/websocket/observers/messageObserver';
@@ -51,6 +59,8 @@
 
   export default {
     components: {
+      IconField,
+      InputIcon,
       UserChatsComponent,
       ChatComponent,
       Splitter,
