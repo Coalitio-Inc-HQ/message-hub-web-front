@@ -38,10 +38,16 @@
     flex-grow: 1;
 }
 
+
 /*  */
 .overflow-h-hiddne{
     overflow-y: hidden;
 }
+
+.overflow-w-hiddne{
+    overflow-x: hidden;
+}
+
 
 /*  */
 .overflow-h-auto{

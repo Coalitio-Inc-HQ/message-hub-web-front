@@ -2,7 +2,7 @@
   <div class="chat-component full-height">
     <div class="wrapper">
       <Splitter style="min-height: 100%; min-width: 100%;" class="mb-8">
-        <SplitterPanel class="flex items-center justify-center" style="min-width: 15em;" :size="1">
+        <SplitterPanel v-if="!this.is_min_window  ||  this.is_min_window  &&  !this.current_chat" class="flex items-center justify-center" style="min-width: 15em;" :size="1">
           <div class="left-panel flex-list full-height ">
             <div class="left-panel-header-container flex-list-w">
               <Button variant="text" size="small" icon="pi pi-bars" />
@@ -19,14 +19,15 @@
               @select-user-chat="select_chat"/>
           </div>
         </SplitterPanel>
-        <SplitterPanel class="flex items-center justify-center" size="99">
+        <SplitterPanel v-if="!this.is_min_window  ||  this.is_min_window  &&  this.current_chat" class="flex items-center justify-center" size="99">
           <ChatComponent 
           :this_user_id="this_user_id" 
           :user_name="user_name" 
           :current_chat="current_chat" 
           ref="сhat_сomponent"
-          @send-message="send_message"/>
-          
+          @send-message="send_message"
+          @set-null-chat="set_null_chat"
+          />
         </SplitterPanel>
       </Splitter>
     </div>
@@ -74,9 +75,10 @@
         user_name: '',
         this_user_id: null,
         chats: [],
-        current_chat: [],
+        current_chat: null,
         message_iterator: 0,
-        isSidebarVisible: true
+        isSidebarVisible: true,
+        is_min_window: window.innerWidth <= 768? true : false,
       };
     },
 
@@ -90,7 +92,21 @@
       }
     },
 
+    mounted(){
+      window.addEventListener("resize", this.resize_window);
+    },
+    unmounted() {
+      window.removeEventListener("resize", this.resize_window);
+    },
+
     methods: {
+      set_null_chat(){
+        this.current_chat = null;
+      },
+
+      resize_window(){
+        this.is_min_window = window.innerWidth <= 768? true : false;
+      },
       select_chat(chat) {
         console.log('Мы находимся в select_chat с chatId:', chat.id);
 

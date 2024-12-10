@@ -87,8 +87,92 @@ body{
   background-color: var(--p-button-secondary-hover-color); 
 }
 
+.dialog-main{
+  height: 100%;
+
+  background-color: var(--p-background-color);
+}
+
+.dialog-header-container{
+  padding: 0.5rem 0 0.2rem 0;
+
+  background-color: var(--p-panel-background-color);
+
+  border: solid ;
+  border-width: 0px 0px 2px 0px;
+  border-color: var(--p-content-border-color);
+}
+
+.dialog-messges-base {
+  list-style: none;
+  padding: 12px;
+  margin: 0px;
+  gap: 12px;
+}
+
+.message {
+  width: -moz-fit-content; 
+  width: fit-content; 
+  min-width: 120px;
+
+  padding: 6px;
+
+  border: solid 2px;
+  border-radius: 6px;
+  border-color: var(--p-content-border-color);
+}
+
+.message-self {
+  background-color: var(--p-primary-color); 
+
+  margin-left: auto;   
+}
+
+.message-self.max-mode{
+  margin-left: 0px;
+  margin-right: auto;
+}
+
+.message-other {
+  background-color: var(--p-primary-contrast-color); 
+
+  margin-right: auto;
+}
+
+.message-sender-name {
+  font-weight: bold; 
+  font-size: 0.75rem;
+  
+  padding: 0px 4px 0 4px; 
+  border-radius: 5px; 
+  width: max-content;
+  display: inline-flex;
 
 
+  word-break: break-word; 
+  max-width: 100%; 
+
+
+  color: var(--p-text-color); 
+  background: var(--p-primary-500);
+}
+
+
+.message-timestamp {
+  font-size: 0.5rem;
+  align-self: flex-end; 
+  color: var(--p-button-secondary-hover-color);
+}
+
+
+.message-text {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-width: 100%;
+  width: -moz-fit-content; /* Для поддержки Firefox */
+  width: fit-content; /* Для остальных браузеров */
+  word-break: break-word;  
+}
 
 
 
@@ -116,23 +200,6 @@ body{
 }
 
 
-.chat-component .main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-
-  background-color: var(--p-background-color);
-}
-
-
-.chat-component .chat {
-  list-style: none;
-  padding: 12px;
-  flex: 1;
-  overflow-y: auto;
-  /* scroll-behavior: auto; будет в js динамически добавляться */
-}
 
 
 .chat-component .chat li {
@@ -143,81 +210,7 @@ body{
   /* word-wrap: break-word;  */
 }
 
-.chat-component .message {
-  display: flex;
-  flex-direction: column;
-  /* height: auto; */
-  width: -moz-fit-content; 
-  width: fit-content; 
-  min-width: 120px;
-}
 
-
-.chat-component .message.self {
-  align-self: flex-end; 
-  background-color: #424242;
-  border-bottom-right-radius: 0; 
-  margin-left: auto;   
-}
-
-
-.chat-component .message.other {
-  align-self: flex-start; 
-  background-color: #424242;
-  border-bottom-left-radius: 0;
-  margin-right: auto;
-}
-
-
-.chat-component .message-content {
-  display: flex;
-  flex-direction: column;
-}
-
-
-.chat-component .message-content .name {
-  font-weight: bold; 
-  font-size: 13.5px;
-  color: #ffffff; 
-  padding: 0px 4px 0 4px; 
-  background: linear-gradient(45deg, #918d8d60, #5a5858);
-  border-radius: 5px; 
-  width: max-content;
-  display: inline-flex;
-
-
-  word-break: break-word; 
-  max-width: 100%; 
-  /* white-space: normal;  перенос текста на новую строку */
-}
-
-
-.chat-component .message-content .timestamp {
-  font-size: 12px;
-  align-self: flex-end; 
-  color: #8f8e8e;
-}
-
-
-.chat-component .message-content .body {
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  max-width: 100%;
-  width: -moz-fit-content; /* Для поддержки Firefox */
-  width: fit-content; /* Для остальных браузеров */
-  word-break: break-word;  
-}
-
-
-.chat-component .form {
-  display: flex;
-  align-items: center;
-  background: #3e3e3e;
-  border-radius: 14px;
-  gap: 15px;
-  padding: 10px;
-  margin: 10px;
-}
 
 
 .chat-component textarea {
@@ -276,6 +269,17 @@ body{
   background-color: #444; 
 }
 
+
+.form {
+  background: var(--p-panel-background-color);
+
+  border: solid 2px var(--p-content-border-color);
+  border-radius: 14px;
+
+  gap: 15px;
+  padding: 10px;
+  margin: 10px;
+}
 
 .chat-component .form .send {
   display: flex;
@@ -407,4 +411,21 @@ button {
 
 
 
+.name-display {
+  display: flex;
+  padding: 8px;
+}
+.button_exit{
 
+  margin-left: auto;
+  height: 30px;  
+  width: 70px;
+  background-color: #3e3e3e;
+  border-width: 0;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+} 
+.button_exit:hover{
+  background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(19, 1, 1, 0.3));
+}
