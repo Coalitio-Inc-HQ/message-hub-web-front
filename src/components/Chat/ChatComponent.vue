@@ -6,7 +6,7 @@
       <!-- Перенести в меню -->
       <button class="button_exit" @click="exit_chat">Выйти</button>
     </div>
-    <ScrollPanel class="flex-scale overflow-h-hiddne overflow-w-hiddne">
+    <ScrollPanel class="flex-scale overflow-h-hiddne overflow-w-hiddne" ref="chat_scroll_container">
       <div class="dialog-messges-base flex-list">
         <!-- <template v-if="this.current_chat">
           <div 
@@ -31,21 +31,29 @@
           >
             <div class="message-sender-name">{{ get_user_name(message.sender_id) }}</div>
             <div class="message-text">{{ message.text }}</div>
-            <div class="message-timestamp">{{ format_time_for_display(message.sended_at) }}</div>
+            <div class="message-timestamp">
+              <template v-if="message.id!=-1">
+                {{ format_time_for_display(message.sended_at) }}
+              </template>
+              <i v-else class="pi pi-spin pi-spinner" style="font-size: 0.5rem"></i>
+            </div>
           </div>
         </template>
       </div>
     </ScrollPanel>
 
-    <form class="form flex-list-w" @submit.prevent="submit_message">
+    <form class="dialog-submit-form flex-list-w" >
       <textarea 
         ref="messageInput" 
         v-model="message_input" 
         id="msg" 
         placeholder="Введите сообщение..." 
-        @keydown="handle_key_down">
-      </textarea>
-      <button type="submit" class="send" :disabled="!current_chat">Отправить</button>
+        @keydown="handle_key_down"
+        @input="autoResize"
+        class="p-inputtext  p-component flex-scale dialog-submit-message-text"
+      />
+      <!-- <button type="submit" class="send" :disabled="!current_chat">Отправить</button> -->
+      <Button class="dialog-button-send" :disabled="!current_chat" @click="submit_message">Отправить</Button>
     </form>
   </div>
 </template>
@@ -53,14 +61,16 @@
 <script>
   import Button from 'primevue/button';
   import ScrollPanel from 'primevue/scrollpanel';
-
+  // import Textarea from 'primevue/textarea';
+  // console.log(Textarea)
   import router from "@/router";
   import {format_time_for_display} from '@/services/dateUtils';
   // import { noop } from '@vueuse/core';
   export default {
     components:{
       Button,
-      ScrollPanel
+      ScrollPanel,
+      // Textarea,
     },
     props: [
       "this_user_id",
@@ -93,6 +103,29 @@
     },
 
     methods: {
+      onScroll(e){
+        console.log(e);
+        if (this.$refs.chat_scroll_container.$el.querySelector('.p-scrollpanel-content').scrollTop === 0) {
+          console.log("Scrolled to the top!");
+        }
+      },
+
+      autoResize(){
+        this.$refs.messageInput.style.height = 'auto'; // Сбрасываем текущую высоту
+        const scrollHeight = this.$refs.messageInput.scrollHeight;
+
+        const style = getComputedStyle(this.$refs.messageInput);
+        var maxHeight = null;
+        if (style.lineHeight=="normal"){
+          maxHeight = parseInt(style.fontSize.slice(0, -2)) * 10; // Высота для 5 строк
+        }
+        else{
+          maxHeight = parseInt(style.lineHeight.slice(0, -2)) * 10; // Высота для 5 строк
+        }
+        this.$refs.messageInput.style.height = Math.min(scrollHeight, maxHeight) + 'px'; // Устанавливаем высоту, но не больше maxHeight
+        this.$refs.messageInput.style.overflowY = scrollHeight > maxHeight? "auto": "hidden";
+      },
+
       handleResize () {
         console.log(this.main_div)
       },
@@ -111,19 +144,31 @@
       submit_message() {
         this.$emit('send-message', this.message_input);
         this.message_input = ''; 
+        this.$refs.messageInput.value = '';
         this.scroll_down(true);
       },
 
       handle_key_down(event) {
-        const textarea = this.$refs.messageInput;
-        
-          if (event.key === 'Enter' && !event.shiftKey) {
+        if (event.key === 'Enter') {
+          if (!event.ctrlKey){
             event.preventDefault(); 
-            this.submit_message();  
-            textarea.style.height =  `${40}px`;    
-          } else if (event.key === 'Enter' && event.shiftKey) {
-            textarea.style.height = `${textarea.scrollHeight + 10}px`;
+            this.submit_message(); 
+          } else{
+            const cursorPos = this.$refs.messageInput.selectionStart; // Позиция курсора
+            const cursorEnd = this.$refs.messageInput.selectionEnd; // Позиция окончания курсора
+            const textBefore = this.$refs.messageInput.value.substring(0, cursorPos); // Текст до курсора
+            const textAfter = this.$refs.messageInput.value.substring(cursorEnd); // Текст после курсора
+            
+            // Обновляем значение textarea, добавив \n в позицию курсора
+            this.$refs.messageInput.value = textBefore + '\n' + textAfter;
+            this.message_input = textBefore + '\n' + textAfter;
+
+            // Устанавливаем курсор в правильную позицию (после вставленного \n)
+            this.$refs.messageInput.selectionStart = this.$refs.messageInput.selectionEnd = cursorPos + 1;
+
+            this.autoResize();
           }
+        }
       },
 
 
@@ -151,11 +196,10 @@
       
       scroll_down(smooth = false) {
         this.$nextTick(() => {
-          const container = this.$refs.scroll_container;
+          const container = this.$refs.chat_scroll_container.$el.querySelector('.p-scrollpanel-content');
           if (container) {
             container.style.scrollBehavior = smooth ? 'smooth' : 'auto';
             container.scrollTop = container.scrollHeight;
-
           }
           console.log("smooth:", smooth);
         });
@@ -170,10 +214,13 @@
       this.scroll_down(false);
       this.observer = new ResizeObserver(this.onResize)
       this.observer.observe(this.$refs.main_div)
+
+      this.$refs.chat_scroll_container.$el.querySelector('.p-scrollpanel-content').addEventListener('scroll', this.onScroll);
     },
 
     beforeUnmount () {
       this.observer.unobserve(this.$refs.main_div)
+      this.$refs.chat_scroll_container.$el.querySelector('.p-scrollpanel-content').removeEventListener('scroll', this.onScroll);
     }
 
     // computed: {

@@ -94,9 +94,9 @@ export function get_users_by_chat_Request(send,chat_id) {
  */
 export function create_message(chat, user_id, text){
   if(chat.message_iterator){
-    chat.message_iterator=chat.message_iterator=+1;
+    chat.message_iterator=chat.message_iterator+=1;
   }else{
-    chat.message_iterator=0;
+    chat.message_iterator=1;
   }
   return {
     id: -1,

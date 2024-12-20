@@ -61,11 +61,13 @@ export async function handleSendMessageToChat(context, message) {
   
     let front_message_id = body.front_message_id;
     let id = body.message_id;
+    let chat_id = body.chat_id;
     console.log('front_message_id:', front_message_id);
     console.log('message_id:', id);
+    console.log('chat_id:', chat_id);
 
     for (let index = 0; index < context.chats.length; index++) {
-        if(context.chats[index].id == message.chat_id){
+        if(context.chats[index].id == chat_id){
 
             for (let i = 0; i < context.chats[index].messages.length; i++) {
                 
