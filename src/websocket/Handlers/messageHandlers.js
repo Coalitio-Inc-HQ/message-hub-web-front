@@ -28,11 +28,14 @@ export async function handleGetMessagesByChat(context, message) {
                     messages[i].sended_at = extract_time_from_timestamp_handler(messages[i].sended_at);
                 }
                
-                context.chats[index].messages = messages;
+                context.chats[index].messages = messages.concat( (context.chats[index].messages?context.chats[index].messages:[]));
+
+                context.chats[index].await_messages = false;
                 break;
             }        
         }
     }
+
 }
 
 

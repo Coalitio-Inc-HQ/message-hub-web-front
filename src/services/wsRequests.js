@@ -48,21 +48,24 @@ export function get_chats_in_which_user_is_not_member_Request(send) {
  * Отправляет запрос на получение сообщений чата по его идентификатору chatId,
  * он берется из запросов get_waiting_chats_Request и get_chats_by_user_Request.
  * @param {Function} send - Функция для отправки запроса.
- * @param {string} chatId - Идентификатор чата.
+ * @param {string} chat - чат.
  * @param {number} [count=50] - Количество сообщений для получения (по умолчанию 50).
  * @param {number} [offsetMessageId=-1] - Идентификатор сообщения для смещения (по умолчанию -1).
  */
-export function get_messages_by_chat_Request(send, chatId, count = 50, offsetMessageId = -1) {
-  const request = {
-    name: 'get_messages_by_chat',
-    body: {
-      chat_id: chatId,
-      count: count,
-      offset_message_id: offsetMessageId
-    }
-  };
-  console.log(`Запрос ${request.name}:`, request);
-  send(JSON.stringify(request));
+export function get_messages_by_chat_Request(send, chat, count = 50, offsetMessageId = -1) {
+  if (!chat.await_messages){
+    chat.await_messages = true;
+    const request = {
+      name: 'get_messages_by_chat',
+      body: {
+        chat_id: chat.id,
+        count: count,
+        offset_message_id: offsetMessageId
+      }
+    };
+    console.log(`Запрос ${request.name}:`, request);
+    send(JSON.stringify(request));
+  }
 }
 
 

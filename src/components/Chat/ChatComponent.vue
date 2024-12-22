@@ -80,8 +80,25 @@
 
     watch: {
       'current_chat.messages': {
-        handler() {
-          this.scroll_down(true);
+        handler(newValue, oldValue) {
+          // console.log(oldValue,newValue, oldValue.length ==0);
+          if (oldValue==null || oldValue.length ==0){
+            this.scroll_down(true);
+          } 
+          else{
+            const scrollPanel = this.$refs.chat_scroll_container.$el;
+            const scrollContainer = scrollPanel.querySelector('.p-scrollpanel-content');
+
+            const previousScrollHeight = scrollContainer.scrollHeight;
+            const previousScrollTop = scrollContainer.scrollTop;
+
+            this.$nextTick(() => {
+              const newScrollHeight = scrollContainer.scrollHeight;
+              const heightDiff = newScrollHeight - previousScrollHeight;
+
+              scrollContainer.scrollTop = previousScrollTop + heightDiff;
+            });
+          }
         },
         deep: true,
         immediate: true
@@ -103,10 +120,11 @@
     },
 
     methods: {
-      onScroll(e){
-        console.log(e);
+      onScroll(){
+        // console.log(e);
         if (this.$refs.chat_scroll_container.$el.querySelector('.p-scrollpanel-content').scrollTop === 0) {
           console.log("Scrolled to the top!");
+          this.$emit('scrolled-top');
         }
       },
 

@@ -27,6 +27,7 @@
           ref="сhat_сomponent"
           @send-message="send_message"
           @set-null-chat="set_null_chat"
+          @scrolled-top="scrolled_top"
           />
         </SplitterPanel>
       </Splitter>
@@ -100,6 +101,12 @@
     },
 
     methods: {
+      scrolled_top(){
+        if (this.current_chat.users){
+          get_messages_by_chat_Request(this.connection.send.bind(this.connection), this.current_chat, 50, this.current_chat.messages[0].id);
+        }
+      },
+
       set_null_chat(){
         this.current_chat = null;
       },
@@ -114,11 +121,13 @@
           console.log("Вы уже находитесь в этом чате"); 
         } else {
           console.log(`Сообщения для чата ${chat.id} отсутствуют, отправка запроса...`);
-          this.current_chat = []; 
+          // this.current_chat = []; 
 
           this.current_chat = chat;
-          get_users_by_chat_Request(this.connection.send.bind(this.connection), this.current_chat.id);
-          get_messages_by_chat_Request(this.connection.send.bind(this.connection), this.current_chat.id);
+          if (!chat.users){
+            get_users_by_chat_Request(this.connection.send.bind(this.connection), this.current_chat.id);
+            get_messages_by_chat_Request(this.connection.send.bind(this.connection), this.current_chat);
+          }
         }
       },
 
