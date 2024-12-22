@@ -156,3 +156,18 @@ export function get_chats_Request(send) {
   console.log(`Запрос ${request.name}:`, request);
   send(JSON.stringify(request));
 }
+
+/**
+ * Отправляет запрос на отправку в архив чата.
+ * @param {Function} send - Функция для отправки запроса.
+ * @param {string} chat_id - Идентификатор чата.
+ * @return {void} Эта функция ничего не возвращает.
+ */
+export function remove_to_archive_Request(send,chat_id) {
+  const request = {
+    name: 'remove_to_archive',
+    body: { chat_id: chat_id }
+  };
+  console.log(`Запрос ${request.name}:`, request);
+  send(JSON.stringify(request));
+}

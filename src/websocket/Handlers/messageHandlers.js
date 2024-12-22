@@ -258,6 +258,14 @@ export async function handleChatUpdate(context, message) {
 }
 
 
+export async function handleRemoveChatToArchive(context, message) {
+    console.log("handleRemoveChatToArchive", message);
+    let body = message.body; 
+    let chat_id = body.chat_id; 
+    console.log("Чат отправлен в архив", chat_id);
+}
+
+
 const handlers = {
     "get_user_info": handleGetUserInfo,
     "get_users_by_chat": handleGetUsersByChat,
@@ -269,6 +277,7 @@ const handlers = {
     "new_chat":handleNewChat,
     "get_chats": handleGetChats,
     "chat.update":handleChatUpdate,
+    "remove_to_archive":handleRemoveChatToArchive,
 };
 
 

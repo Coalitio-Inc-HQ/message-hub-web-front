@@ -9,13 +9,14 @@
               <!-- <InputText type="text" v-model="value" style="flex-grow: 1;"/> -->
               <IconField class="flex-scale search-field-box">
                   <InputIcon class="pi pi-search" />
-                  <InputText class="search-field " v-model="value1" placeholder="Поиск" />
+                  <InputText class="search-field " v-model="search_name" placeholder="Поиск" />
               </IconField>
 
             </div>
             <UserChatsComponent
               :chats="chats" 
               :current_chat="current_chat" 
+              :search_name="search_name"
               @select-user-chat="select_chat"/>
           </div>
         </SplitterPanel>
@@ -28,6 +29,7 @@
           @send-message="send_message"
           @set-null-chat="set_null_chat"
           @scrolled-top="scrolled_top"
+          @chat-remove-to-archive="chat_remove_to_archive"
           />
         </SplitterPanel>
       </Splitter>
@@ -52,6 +54,7 @@
     send_message_to_chat_Request,
     add_user_to_chat_Request,
     create_message,
+    remove_to_archive_Request,
   } from '@/services/wsRequests';
   import router from "@/router";
 
@@ -73,6 +76,7 @@
 
     data() {
       return {
+        search_name: '',
         user_name: '',
         this_user_id: null,
         chats: [],
@@ -101,6 +105,13 @@
     },
 
     methods: {
+      chat_remove_to_archive(){
+        this.current_chat.is_waiting_answer = false;
+        this.current_chat.is_archive = true;
+        this.current_chat.is_not_connected = true;
+        remove_to_archive_Request(this.connection.send.bind(this.connection), this.current_chat.id);
+      },
+
       scrolled_top(){
         if (this.current_chat.users){
           get_messages_by_chat_Request(this.connection.send.bind(this.connection), this.current_chat, 50, this.current_chat.messages[0].id);

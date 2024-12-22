@@ -7,7 +7,7 @@
       <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_waiting_chats">
         <template v-for="chat in chats">
           <il 
-            v-if="chat.is_waiting_answer" 
+            v-if="chat.is_waiting_answer && (!search_name ||chat.name.toLowerCase().includes(search_name))" 
             :key="chat.id" 
             :data-chat-id="chat.id" 
             :class="{ 'chat-item': true,  'flex-list-w': true, 'align-items-center':true, 'active': current_chat && chat.id == current_chat.id }" 
@@ -31,7 +31,7 @@
       <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_my_chats">
         <template v-for="chat in chats">
           <il 
-          v-if="!chat.is_waiting_answer && !chat.is_archive && !chat.is_not_connected"
+          v-if="!chat.is_waiting_answer && !chat.is_archive && !chat.is_not_connected && (!search_name ||chat.name.toLowerCase().includes(search_name))"
           :key="chat.id" 
           :data-chat-id="chat.id" 
           :class="{ 'chat-item': true, 'flex-list-w': true, 'align-items-center':true, 'active': current_chat && chat.id == current_chat.id }" 
@@ -55,7 +55,7 @@
       <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_other_chats">
         <template v-for="chat in chats">
           <il 
-          v-if="!chat.is_waiting_answer && !chat.is_archive && chat.is_not_connected"
+          v-if="!chat.is_waiting_answer && !chat.is_archive && chat.is_not_connected && (!search_name ||chat.name.toLowerCase().includes(search_name))"
           :key="chat.id" 
           :data-chat-id="chat.id" 
           :class="{ 'chat-item': true, 'flex-list-w': true,'align-items-center':true, 'active': current_chat && chat.id == current_chat.id }" 
@@ -80,7 +80,7 @@
       <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_archive_chats">
         <template v-for="chat in chats">
           <il 
-          v-if="chat.is_archive"
+          v-if="chat.is_archive && (!search_name ||chat.name.toLowerCase().includes(search_name))"
           :key="chat.id" 
           :data-chat-id="chat.id" 
           :class="{ 'chat-item': true, 'flex-list-w': true, 'align-items-center':true, 'active': current_chat && chat.id == current_chat.id }" 
@@ -104,7 +104,7 @@
   import ScrollPanel from 'primevue/scrollpanel';
 
   export default {
-    props: ["chats","current_chat"],
+    props: ["chats","current_chat","search_name"],
     components:{
       Avatar,
       Button,

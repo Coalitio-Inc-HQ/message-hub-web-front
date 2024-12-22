@@ -5,6 +5,7 @@
 
       <!-- Перенести в меню -->
       <button class="button_exit" @click="exit_chat">Выйти</button>
+      <Button @click="this.$emit('chat-remove-to-archive')" style="width: auto;">Отправить в архив</Button>
     </div>
     <ScrollPanel class="flex-scale overflow-h-hiddne overflow-w-hiddne" ref="chat_scroll_container">
       <div class="dialog-messges-base flex-list">
