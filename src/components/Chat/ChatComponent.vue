@@ -9,16 +9,6 @@
     </div>
     <ScrollPanel class="flex-scale overflow-h-hiddne overflow-w-hiddne" ref="chat_scroll_container">
       <div class="dialog-messges-base flex-list">
-        <!-- <template v-if="this.current_chat">
-          <div 
-            v-for="group in messages_in_chat" 
-            :key=""
-            class="dialog-messges-group"
-            >
-            {{ group.length}} 
-          </div>
-        </template> -->
-        
         <template v-if="this.current_chat">
           <div v-for="message in this.current_chat.messages" 
           :key="message.sender_id + message.sended_at" 
@@ -31,6 +21,15 @@
             }"
           >
             <div class="message-sender-name">{{ get_user_name(message.sender_id) }}</div>
+            <ImageVideoGalleria v-if="message.attachments && (message.attachments.images && message.attachments.images.length>0 || message.attachments.videos && message.attachments.videos.length>0)" 
+              :attachments="message.attachments"
+              :is_temp_messge="message.is_temp_messge"
+              :is_min_window="is_min_window"
+              />
+            <FileList v-if="message.attachments && message.attachments.files && message.attachments.files.length>0"
+            :attachments="message.attachments"
+            :is_temp_messge="message.is_temp_messge"  
+            />
             <div class="message-text">{{ message.text }}</div>
             <div class="message-timestamp">
               <template v-if="message.id!=-1">
@@ -43,18 +42,30 @@
       </div>
     </ScrollPanel>
 
-    <form class="dialog-submit-form flex-list-w" >
-      <textarea 
-        ref="messageInput" 
-        v-model="message_input" 
-        id="msg" 
-        placeholder="Введите сообщение..." 
-        @keydown="handle_key_down"
-        @input="autoResize"
-        class="p-inputtext  p-component flex-scale dialog-submit-message-text"
-      />
-      <!-- <button type="submit" class="send" :disabled="!current_chat">Отправить</button> -->
-      <Button class="dialog-button-send" :disabled="!current_chat" @click="submit_message">Отправить</Button>
+    <form class="dialog-submit-form flex-list" >
+      <div v-if="this.selected_files.length!=0" class="flex-list-w dialog-submit-file-scroll overflow-h-hiddne w-scrollbar">
+        <FileAvatar v-for="file in this.selected_files" 
+        :key="file.value.name"
+        :file_info="file.value"
+        :is_min_window="is_min_window"
+        />
+      </div>
+      <div class="flex-list-w dialog-submit-div">
+        <textarea 
+          ref="messageInput" 
+          v-model="message_input" 
+          id="msg" 
+          placeholder="Введите сообщение..." 
+          @keydown="handle_key_down"
+          @input="autoResize"
+          class="p-inputtext  p-component flex-scale dialog-submit-message-text"
+        />
+        <!-- <button type="submit" class="send" :disabled="!current_chat">Отправить</button> -->
+        <div class="flex-list dialog-buttons-group">
+          <Button class="dialog-button-send" :disabled="!current_chat" @click="submit_message" icon="pi pi-send"/>
+          <Button class="dialog-button-send" :disabled="!current_chat" @click="add_file" icon="pi pi-file-plus"/>
+        </div>
+      </div>
     </form>
   </div>
 </template>
@@ -62,21 +73,33 @@
 <script>
   import Button from 'primevue/button';
   import ScrollPanel from 'primevue/scrollpanel';
+
+  import { upload_file } from '@/services/S3Service';
   // import Textarea from 'primevue/textarea';
   // console.log(Textarea)
   import router from "@/router";
   import {format_time_for_display} from '@/services/dateUtils';
+  import FileAvatar from '@/components/File/FileAvatar.vue';
+
+  import ImageVideoGalleria from '@/components/File/ImageVideoGalleria.vue';
+  import FileList from '@/components/File/FileList.vue';
+
+  import { ref, } from 'vue'
   // import { noop } from '@vueuse/core';
   export default {
     components:{
       Button,
       ScrollPanel,
+      FileAvatar,
       // Textarea,
+      ImageVideoGalleria,
+      FileList,
     },
     props: [
       "this_user_id",
       "user_name",
       "current_chat",
+      "is_min_window",
     ],
 
     watch: {
@@ -117,10 +140,76 @@
       return{
         observer: null,
         max_mode: false,
+        selected_files: []
       }
     },
 
     methods: {
+      add_file(){
+        const input = document.createElement('input');
+        input.type = 'file'; // Устанавливаем тип файла
+        input.accept = '*'; // Ограничения на типы файлов (например, '.jpg,.png,.pdf')
+        input.multiple = true;
+
+        input.addEventListener('change', async () => {
+          console.log(input.files)
+          if (input.files.length > 0) {
+            let token = this.get_cookie("token");
+            let fails = [];
+            for (let i = 0; i < input.files.length; i++){
+              if (input.files[i].size > 52428800){
+                fails.push(input.files[i]);
+              }
+              else{
+                let file_info = {
+                  file: input.files[i],
+                  temp_url: URL.createObjectURL(input.files[i]),
+                  uploaded: false,
+                  download_call_back: null,
+                  err_download_call_back: null,
+                  delete: null,
+                };
+                file_info = ref(file_info);
+                file_info.value.delete = ()=> {
+                  this.selected_files.splice(this.selected_files.indexOf(file_info),1);
+                }
+
+                file_info.value.err_download_call_back = () =>{
+                  alert(`Ошибка загрузки файла ${file_info.value.file.name}, он будет удалён из сообщения.`);
+                  file_info.value.delete();
+                }
+
+                this.selected_files.push(file_info);
+
+                await upload_file(file_info, token);
+              }
+            }
+            if (fails.length>0){
+              let msg = "";
+              fails.forEach((item)=>{
+                msg+= item.name + "\n";
+              })
+              msg+="Небыли загруженты так как их размер превышает 100Мб.";
+              alert(msg);
+            }
+          }
+        });
+
+        // Вызываем файловый диалог
+        input.click();
+      },
+
+      get_cookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+          if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+      },
+
       onScroll(){
         // console.log(e);
         if (this.$refs.chat_scroll_container.$el.querySelector('.p-scrollpanel-content').scrollTop === 0) {
@@ -161,7 +250,7 @@
       },
 
       submit_message() {
-        this.$emit('send-message', this.message_input);
+        this.$emit('send-message', this.message_input, this.selected_files);
         this.message_input = ''; 
         this.$refs.messageInput.value = '';
         this.scroll_down(true);
@@ -189,8 +278,6 @@
           }
         }
       },
-
-
 
       delete_cookies() {
           const cookies = document.cookie.split(";");
@@ -241,24 +328,6 @@
       this.observer.unobserve(this.$refs.main_div)
       this.$refs.chat_scroll_container.$el.querySelector('.p-scrollpanel-content').removeEventListener('scroll', this.onScroll);
     }
-
-    // computed: {
-    //   messages_in_chat() {
-    //     var arr = [];
-    //     var last_sender = null;
-    //     var last_arr = null;
-    //     for (var i=0;i<this.current_chat.messages.length; i++){
-    //       if (last_sender != this.current_chat.messags[i].sender_id){
-    //         last_arr = [];
-    //         arr.push(last_arr);
-    //         last_sender = this.current_chat.messags[i].sender_id;
-    //       }
-    //       last_arr.push(this.current_chat.messags[i]);
-    //     }
-    //     return arr;
-    //   }
-    // }
-
   };
 </script>
 

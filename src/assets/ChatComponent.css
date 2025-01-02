@@ -120,11 +120,17 @@ body{
   width: fit-content; 
   min-width: 120px;
 
+
   padding: 6px;
 
   border: solid 2px;
   border-radius: 6px;
   border-color: var(--p-content-border-color);
+}
+
+.message.max-mode{
+  max-width: 50%;
+  gap: 6px;
 }
 
 .message-self {
@@ -178,6 +184,8 @@ body{
 }
 
 
+/* Форма отправки сообщения */
+
 .dialog-submit-form {
   background: var(--p-panel-background-color);
 
@@ -189,15 +197,25 @@ body{
   margin: 10px;
 }
 
+.dialog-submit-div{
+  gap: 15px;
+}
+
 .dialog-submit-message-text {
   resize: none;
 }
 
+.dialog-buttons-group{
+  gap: 5px;
+  flex-direction: column-reverse;
+}
+
 .dialog-button-send {
-  position: relative;
+  /* position: relative;
   top: 50%;
-  transform: translateY(-50%);
-  width: auto;
+  transform: translateY(-50%); */
+  width: 2rem;
+  height: 2rem;
 }
 
 ::-webkit-scrollbar {
@@ -209,6 +227,14 @@ body{
   border-radius: var(--p-scrollpanel-bar-border-radius);
 }
 
+.dialog-submit-file-scroll{
+  gap: 15px;
+}
+
+.w-scrollbar::-webkit-scrollbar {
+  width: auto; 
+  height: var(--p-scrollpanel-bar-size); 
+}
 
 
 
@@ -222,7 +248,7 @@ body{
 
 button {
   /* padding: 10px 20px; */
-  height: 40px;
+  height: 2rem;
   width: 100%;
 
   background-color: var(--p-button-color);

@@ -1,0 +1,13 @@
+.downlad-file-button{
+    width: 100%;
+}
+
+.file-name{
+    margin: 2px;
+
+    text-align: left;
+
+    text-wrap: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;  
+}

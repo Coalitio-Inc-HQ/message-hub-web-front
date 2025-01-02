@@ -1,0 +1,56 @@
+.avatar-border{
+    position: relative;
+
+    min-width: 5rem;
+    width: 5rem;
+    max-width: 5rem;
+    min-height: 5rem;
+    height: 5rem;
+    max-height: 5rem;
+
+    border-radius: var(--p-scrollpanel-bar-border-radius);
+    border: solid 2px var(--p-content-border-color);
+}
+
+.image{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.image-container{
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+.downlad-file-button{
+    width: 100%;
+    height: 100%;
+
+    padding: 1px;
+}
+
+.downlad-file-button-text{
+    width: 100%;
+    text-wrap: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;   /* Добавляем многоточие (...) в конце обрезанного текста */
+    font-size: 0.75rem;
+}
+
+.delete-file-button{
+    position: absolute;
+    top: 0%;
+    left: 100%;
+    transform: translate(-100%, 0%);
+}
+
+.progressbar{
+    position: absolute;
+    top: 100%;
+    left: 100%;
+    transform: translate(-100%, -100%);
+    width: 100%;
+}

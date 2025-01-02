@@ -25,6 +25,7 @@
           :this_user_id="this_user_id" 
           :user_name="user_name" 
           :current_chat="current_chat" 
+          :is_min_window="is_min_window"
           ref="сhat_сomponent"
           @send-message="send_message"
           @set-null-chat="set_null_chat"
@@ -142,26 +143,129 @@
         }
       },
 
-      send_message(text) {
-        if (text) {
-          let message = create_message(this.current_chat, this.this_user_id, text);
-          console.log('sending message:', message);
-
-          if (!this.current_chat.is_not_connected) {
-            send_message_to_chat_Request(this.connection.send.bind(this.connection), message);
-            this.current_chat.messages.push(message);
-
-          } else {
-
-            if (!this.current_chat.waiting_connaction) {
-              this.current_chat.waiting_messages = [];
-              this.current_chat.waiting_connaction = true;
-              add_user_to_chat_Request(this.connection.send.bind(this.connection), this.current_chat.id, this.this_user_id);
+      send_message(text, files) {
+        if (files.length>0 || text){
+          let upload_ok = true;
+          files.forEach(element => {
+            if (!element.value.uploaded){
+              upload_ok = false;
             }
-            this.current_chat.messages.push(message);
-            this.current_chat.waiting_messages.push(message);
+          });
+
+          if (!text){
+            text = "";
           }
-          this.$refs.сhat_сomponent.message_input = '';
+
+          if (upload_ok){
+            let message = create_message(this.current_chat, this.this_user_id, text, files);
+            console.log('sending message:', message);
+
+            if (!this.current_chat.is_not_connected) {
+              send_message_to_chat_Request(this.connection.send.bind(this.connection), message);
+            } else {
+              if (!this.current_chat.waiting_connaction) {
+                this.current_chat.waiting_messages = [];
+                this.current_chat.waiting_connaction = true;
+                add_user_to_chat_Request(this.connection.send.bind(this.connection), this.current_chat.id, this.this_user_id);
+              }
+              this.current_chat.waiting_messages.push(message);
+            }
+
+            this.current_chat.messages.push(message);
+          }
+
+
+          else{
+            let files_copy = files.slice();
+
+            let temp_message = this.create_temp_message(this.current_chat, this.this_user_id, text, files_copy);
+
+            let sendet = false;
+
+            let download_call_back = () =>{
+              //  проверить на отправленность сообщения
+              if (!sendet){
+                let upload_ok = true;
+                files_copy.forEach(element => {
+                  if (!element.value.uploaded){
+                    upload_ok = false;
+                  }
+                });
+                if (upload_ok){
+                  let message = create_message(this.current_chat, this.this_user_id, text, files_copy, temp_message.front_message_id);
+                  console.log('sending message:', message);
+
+                  if (!this.current_chat.is_not_connected) {
+                    send_message_to_chat_Request(this.connection.send.bind(this.connection), message);
+                  } else {
+                    if (!this.current_chat.waiting_connaction) {
+                      this.current_chat.waiting_messages = [];
+                      this.current_chat.waiting_connaction = true;
+                      add_user_to_chat_Request(this.connection.send.bind(this.connection), this.current_chat.id, this.this_user_id);
+                    }
+                    this.current_chat.waiting_messages.push(message);
+                  }
+                  sendet = true;
+                }
+              }
+            };
+
+            files_copy.forEach(element => {
+              element.value.download_call_back = download_call_back;
+              element.value.err_download_call_back = ()=>{
+                alert( `Произошла ошибка загрузки файла ${element.value.file.name}, он будет удалён.`);
+                element.value.delete();
+              };
+              element.value.delete = () =>{
+                if (!sendet){
+                  files_copy.splice(files_copy.indexOf(element),1);
+                  element.value.download_call_back;
+                } else{
+                  alert( `Файл ${element.value.file.name} неможет быть удалён так как сообщение уже отправленно.`);
+                }
+              };
+            });
+
+            this.current_chat.messages.push(temp_message);
+          }
+
+          this.$refs.сhat_сomponent.message_input = ''; 
+          this.$refs.сhat_сomponent.selected_files = [];
+        }
+      },
+
+      create_temp_message(chat, user_id, text, files){
+        if(chat.message_iterator){
+          chat.message_iterator=chat.message_iterator+=1;
+        }else{
+          chat.message_iterator=1;
+        }
+
+        let attachments = {
+          images: [],
+          videos: [],
+          files: [],
+        }
+
+        files.forEach(element => {
+          if (element.value.file.type.startsWith('image/')){
+            attachments.images.push(element);
+          } else if (element.value.file.type.startsWith('video/')){
+            attachments.videos.push(element);
+          } else {
+            attachments.files.push(element);
+          }
+        });
+
+        return {
+          id: -1,
+          chat_id: chat.id,
+          sender_id: user_id,
+          sended_at: new Date().toISOString(),
+          text: text,
+          front_message_id: chat.message_iterator,
+          attachments: attachments,
+          is_temp_messge: true,
         }
       },
 

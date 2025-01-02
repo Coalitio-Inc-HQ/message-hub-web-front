@@ -95,20 +95,48 @@ export function get_users_by_chat_Request(send,chat_id) {
  * @param {number} front_message_id - Идентификатор сообщения, которое было отправлено с фронтенда.
  * @returns {Object} - Созданное сообщение, которое будет отправлено.
  */
-export function create_message(chat, user_id, text){
-  if(chat.message_iterator){
-    chat.message_iterator=chat.message_iterator+=1;
-  }else{
-    chat.message_iterator=1;
+export function create_message(chat, user_id, text, files, front_message_id = null){
+  if (!front_message_id){
+    if(chat.message_iterator){
+      chat.message_iterator=chat.message_iterator+=1;
+    }else{
+      chat.message_iterator=1;
+    }
   }
+
+  let attachments = {
+    images: [],
+    videos: [],
+    files: [],
+  }
+
+  files.forEach(element => {
+    if (element.value.file.type.startsWith('image/')){
+      attachments.images.push({
+        url: element.value.url,
+        name: element.value.file.name,
+      });
+    } else if (element.value.file.type.startsWith('video/')){
+      attachments.videos.push({
+        url: element.value.url,
+        name: element.value.file.name,
+      });
+    } else {
+      attachments.files.push({
+        url: element.value.url,
+        name: element.value.file.name,
+      });
+    }
+  });
+
   return {
     id: -1,
     chat_id: chat.id,
     sender_id: user_id,
     sended_at: new Date().toISOString(),
     text: text,
-    front_message_id: chat.message_iterator,
-    attachments:{}
+    front_message_id: front_message_id? front_message_id: chat.message_iterator,
+    attachments: attachments,
   }
 }
 
