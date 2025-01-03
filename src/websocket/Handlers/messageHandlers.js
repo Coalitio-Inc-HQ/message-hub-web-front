@@ -113,6 +113,24 @@ export async function handleAddUserToChat(context, message) {
 }
 
 
+// // new_user_in_chat
+// export async function handleNewUserInChat(context, message) {
+//     console.log("Handler new_user_in_chat:", message);
+//     let body = message.body; 
+//     let chat = body.chat;
+//     let user = body.user;
+//     console.log(chat);
+//     console.log(user);
+
+
+//     for (let index = 0; index < context.chats.length; index++) {
+//         if(context.chats[index].id == chat.id){
+//             context.chats[index].users.push(user);
+//             break;
+//         }
+//     }
+// }
+
 // new_user_in_chat
 export async function handleNewUserInChat(context, message) {
     console.log("Handler new_user_in_chat:", message);
@@ -130,6 +148,41 @@ export async function handleNewUserInChat(context, message) {
         }
     }
 }
+
+
+// //new_message реджект 
+// export async function handleNewMessage(context, message) {
+//     console.log("Handler new_message:", message);
+//     let body = message.body; 
+//     let msg = body.message;
+
+//     if (msg.chat_id == context.current_chat.id && msg.sender_id != context.this_user_id) {
+//         let is_found = false;
+
+//         for (let index = 0; index < context.chats.length; index++) {
+//             if (context.chats[index].id == msg.chat_id) {
+                
+//                 for (let i = 0; i < context.chats[index].messages.length; i++) {
+//                     console.log(`Сообщение по индексу ${i}, ID сообщения: ${context.chats[index].messages[i].id}`);
+                    
+//                     if (context.chats[index].messages[i].id == msg.id && 
+//                         context.chats[index].messages[i].sended_at == msg.sended_at && 
+//                         context.chats[index].messages[i].sender_id == msg.sender_id) {
+                        
+//                         is_found = true;
+//                         break;
+//                     }
+//                 }
+
+//                 console.log("Дубликат сообщения: ", is_found);
+//                 if (!is_found) {
+//                     context.chats[index].messages.push(msg);
+//                 }
+//                 break;
+//             }
+//         }
+//     }
+// }
 
 
 //new_message реджект 
@@ -165,7 +218,6 @@ export async function handleNewMessage(context, message) {
         }
     }
 }
-
 
 
 //new_chat
@@ -265,6 +317,10 @@ export async function handleRemoveChatToArchive(context, message) {
     console.log("Чат отправлен в архив", chat_id);
 }
 
+export async function handleSetLastReadMessageId(context, message) {
+    console.log("handleSetLastReadMessageId", message);
+}
+
 
 const handlers = {
     "get_user_info": handleGetUserInfo,
@@ -272,12 +328,15 @@ const handlers = {
     "get_messages_by_chat": handleGetMessagesByChat,
     "add_user_to_chat": handleAddUserToChat,
     "send_message_to_chat": handleSendMessageToChat,
-    "new_user_in_chat": handleNewUserInChat,
-    "new_message": handleNewMessage,
+    // "new_user_in_chat": handleNewUserInChat,
+    "chat.add.user": handleNewUserInChat,
+    // "new_message": handleNewMessage,
+    "chat.new_message": handleNewMessage,
     "new_chat":handleNewChat,
     "get_chats": handleGetChats,
     "chat.update":handleChatUpdate,
     "remove_to_archive":handleRemoveChatToArchive,
+    "chat.set.last_read_message_id": handleSetLastReadMessageId,
 };
 
 

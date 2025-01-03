@@ -1,5 +1,9 @@
 // wsRequests.js
-
+function uuidv4() {
+  return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
+    (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
+  );
+}
 
 /**
  * Отправляет запрос на получение информации о пользователе.
@@ -52,7 +56,7 @@ export function get_chats_in_which_user_is_not_member_Request(send) {
  * @param {number} [count=50] - Количество сообщений для получения (по умолчанию 50).
  * @param {number} [offsetMessageId=-1] - Идентификатор сообщения для смещения (по умолчанию -1).
  */
-export function get_messages_by_chat_Request(send, chat, count = 50, offsetMessageId = -1) {
+export function get_messages_by_chat_Request(send, chat, count = 50, offsetMessageId = -1, include_messege=false, mode="up" ) {
   if (!chat.await_messages){
     chat.await_messages = true;
     const request = {
@@ -60,7 +64,9 @@ export function get_messages_by_chat_Request(send, chat, count = 50, offsetMessa
       body: {
         chat_id: chat.id,
         count: count,
-        offset_message_id: offsetMessageId
+        offset_message_id: offsetMessageId,
+        include_messege: include_messege,
+        mode: mode,
       }
     };
     console.log(`Запрос ${request.name}:`, request);
@@ -152,7 +158,8 @@ export function send_message_to_chat_Request(send, message) {
   const request = {
     name: 'send_message_to_chat',
     body: {
-      message: message
+      message: message,
+      event_id: uuidv4(),
     }
   };
   console.log(`Отправка запросика ${request.name}:`, JSON.stringify(request));
@@ -168,7 +175,11 @@ export function send_message_to_chat_Request(send, message) {
 export function add_user_to_chat_Request(send, chat_id,user_id) {
   const request = {
     name: 'add_user_to_chat',
-    body: { chat_id: chat_id, user_id:user_id }
+    body: { 
+      chat_id: chat_id, 
+      user_id:user_id, 
+      event_id: uuidv4(),
+     }
   };
   console.log(`Запрос ${request.name}:`, request);
   send(JSON.stringify(request));
@@ -194,7 +205,10 @@ export function get_chats_Request(send) {
 export function remove_to_archive_Request(send,chat_id) {
   const request = {
     name: 'remove_to_archive',
-    body: { chat_id: chat_id }
+    body: { 
+      chat_id: chat_id,
+      event_id: uuidv4(),
+    }
   };
   console.log(`Запрос ${request.name}:`, request);
   send(JSON.stringify(request));
