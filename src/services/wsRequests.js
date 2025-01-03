@@ -11,6 +11,7 @@ function uuidv4() {
  */
 export function get_user_info(send){
   const request = {
+    id: uuidv4(),
     name: 'get_user_info',
     body: {}
   };
@@ -26,6 +27,7 @@ export function get_user_info(send){
  */
 export function get_chats_by_user_Request(send) {
   const request = {
+    id: uuidv4(),
     name: 'get_chats_by_user',
     body: {}
   };
@@ -40,6 +42,7 @@ export function get_chats_by_user_Request(send) {
  */
 export function get_chats_in_which_user_is_not_member_Request(send) {
   const request = {
+    id: uuidv4(),
     name: 'get_chats_in_which_user_is_not_member',
     body: { count: '50' }
   };
@@ -60,6 +63,7 @@ export function get_messages_by_chat_Request(send, chat, count = 50, offsetMessa
   if (!chat.await_messages){
     chat.await_messages = true;
     const request = {
+      id: uuidv4(),
       name: 'get_messages_by_chat',
       body: {
         chat_id: chat.id,
@@ -84,6 +88,7 @@ export function get_messages_by_chat_Request(send, chat, count = 50, offsetMessa
  */
 export function get_users_by_chat_Request(send,chat_id) {
   const request = {
+    id: uuidv4(),
     name: 'get_users_by_chat',
     body: { chat_id: chat_id }
   };
@@ -156,6 +161,7 @@ export function create_message(chat, user_id, text, files, front_message_id = nu
  */
 export function send_message_to_chat_Request(send, message) {
   const request = {
+    id: uuidv4(),
     name: 'send_message_to_chat',
     body: {
       message: message,
@@ -174,6 +180,7 @@ export function send_message_to_chat_Request(send, message) {
  */
 export function add_user_to_chat_Request(send, chat_id,user_id) {
   const request = {
+    id: uuidv4(),
     name: 'add_user_to_chat',
     body: { 
       chat_id: chat_id, 
@@ -189,6 +196,7 @@ export function add_user_to_chat_Request(send, chat_id,user_id) {
 
 export function get_chats_Request(send) {
   const request = {
+    id: uuidv4(),
     name: 'get_chats',
     body: {}
   };
@@ -204,6 +212,7 @@ export function get_chats_Request(send) {
  */
 export function remove_to_archive_Request(send,chat_id) {
   const request = {
+    id: uuidv4(),
     name: 'remove_to_archive',
     body: { 
       chat_id: chat_id,
