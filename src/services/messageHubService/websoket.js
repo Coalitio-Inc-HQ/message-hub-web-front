@@ -132,7 +132,7 @@ async function onMessageHandler (event) {
 async function sendMessage (action) {
     if (loging) console.log("WebSocket action send:", action);
     sendedActions.push(action);
-    if (connected.value) websocket.send(JSON.stringify(action));
+    if (connected.value==true) websocket.send(JSON.stringify(action));
 }
 
 export function actionRequest(action){

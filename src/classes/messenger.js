@@ -6,7 +6,7 @@ import {
     actionEventHandlers,
 } from '@/services/messageHubService/websoket';
 import { uuidv4 } from "@/utilities/uuid";
-import generateVideoPreview from "@/utilities/VideoMiniature";
+import {generateVideoPreview} from "@/utilities/VideoMiniature";
 
 const loging = true;
 
@@ -51,6 +51,7 @@ export function refreshUser(){
 export let chatContainer = ref({
     loading: false,
     chats: [],
+    current_chat: null,
 });
 
 /**
@@ -182,8 +183,8 @@ actionEventHandlers["chat.add.user"] = function (action_res){
 
 export function refreshMessagesFromChat(chat_id){
     let chat_index = chatContainer.value.chats.findIndex((item)=>{return item.id == chat_id});
-    chatContainer.value.chats[chat_index].loading_messages = true;
-    chatContainer.value.chats[chat_index].messages = {};
+    chatContainer.value.chats[chat_index].messages = messages_struct_init();
+    chatContainer.value.chats[chat_index].messages.loading_messages = true;
 
     actionRequest(
         {
@@ -201,14 +202,14 @@ export function refreshMessagesFromChat(chat_id){
         let messages = action_res.body.messages;
 
         for (let item in messages){
-            msg = convertMessageFromMH(messages[item]);
+            let msg = convertMessageFromMH(messages[item]);
             insertMessage(msg);
         }
 
         let chat_index = chatContainer.value.chats.findIndex((item)=>{return item.id == chat_id});
-        chatContainer.value.chats[chat_index].loading_messages = false;
-        chatContainer.value.chats[chat_index].init_loaded = true;
-        if (messages.length < 50) chatContainer.value.chats[chat_index].scrolled_to_top = true;
+        chatContainer.value.chats[chat_index].messages.loading_messages = false;
+        chatContainer.value.chats[chat_index].messages.init_loaded = true;
+        if (messages.length < 50) chatContainer.value.chats[chat_index].messages.scrolled_to_top = true;
         if (loging) console.log("refreshMessagesFromChat", messages);
     });
 }
@@ -220,21 +221,21 @@ function insertMessage(message_ref){
         let month = message_ref.value.sended_at.getMonth();
         let day = message_ref.value.sended_at.getDay();
 
-        if (! year in msg_arr){
-            chatContainer.value.chats[chat_index].messages[year]={};
+        if (!(year in chatContainer.value.chats[chat_index].messages.messages)){
+            chatContainer.value.chats[chat_index].messages.messages[year]={};
         }
-        if (!month in chatContainer.value.chats[chat_index].messages[year]){
-            chatContainer.value.chats[chat_index].messages[year][month]={};
+        if (!(month in chatContainer.value.chats[chat_index].messages.messages[year])){
+            chatContainer.value.chats[chat_index].messages.messages[year][month]={};
         }
-        if (!day in chatContainer.value.chats[chat_index].messages[year][month]){
-            chatContainer.value.chats[chat_index].messages[year][month][day] = [];
+        if (!(day in chatContainer.value.chats[chat_index].messages.messages[year][month])){
+            chatContainer.value.chats[chat_index].messages.messages[year][month][day] = [];
         }
-        if (chatContainer.value.chats[chat_index].messages[year][month][day].length == 0){
-            chatContainer.value.chats[chat_index].messages[year][month][day].push(message_ref);
+        if (chatContainer.value.chats[chat_index].messages.messages[year][month][day].length == 0){
+            chatContainer.value.chats[chat_index].messages.messages[year][month][day].push(message_ref);
         }else{
-            for (let i in chatContainer.value.chats[chat_index].messages[year][month][day]){
-                if (chatContainer.value.chats[chat_index].messages[year][month][day][i].value.sended_at<message_ref.value.sended_at){
-                    chatContainer.value.chats[chat_index].messages[year][month][day].splice(i,0,message_ref);
+            for (let i in chatContainer.value.chats[chat_index].messages.messages[year][month][day]){
+                if (chatContainer.value.chats[chat_index].messages.messages[year][month][day][i].value.sended_at<message_ref.value.sended_at){
+                    chatContainer.value.chats[chat_index].messages.messages[year][month][day].splice(i,0,message_ref);
                 }
             }
         }
@@ -242,17 +243,17 @@ function insertMessage(message_ref){
 }
 
 function convertMessageFromMH(message){
-    res = ref({
+    let res = ref({
         id: message.id,
         chat_id: message.chat_id,
         sender_id: message.sender_id,
-        sended_at: Date.parse(message.sended_at),
+        sended_at:new Date(message.sended_at),
         text: message.text,
         attachments: message.attachments,
     });
 
     if ("videos" in res.value.attachments && res.value.attachments.videos.length>0){
-        for (item in res.value.attachments.videos){
+        for (let item in res.value.attachments.videos){
             res.value.attachments.videos[item].miniature = {
                 loging: true,
                 url: null,
@@ -270,8 +271,8 @@ function convertMessageFromMH(message){
 
 export function getMessagesFromChatTop(chat_id){
     let chat_index = chatContainer.value.chats.findIndex((item)=>{return item.id == chat_id});
-    if (!chatContainer.value.chats[chat_index].loading_messages&&chatContainer.value.chats[chat_index].init_loaded&&!chatContainer.value.chats[chat_index].scrolled_to_top){
-        chatContainer.value.chats[chat_index].loading_messages = true;
+    if (!chatContainer.value.chats[chat_index].messages.loading_messages&&chatContainer.value.chats[chat_index].messages.init_loaded&&!chatContainer.value.chats[chat_index].messages.scrolled_to_top){
+        chatContainer.value.chats[chat_index].messages.loading_messages = true;
 
         actionRequest(
             {
@@ -280,7 +281,7 @@ export function getMessagesFromChatTop(chat_id){
                 body: {
                   chat_id: chat_id,
                   count: 50,
-                  offset_message_id: Object.keys(Object.keys(Object.keys(chatContainer.value.chats[chat_index].messages)[0])[0])[0][0].value.id,
+                  offset_message_id: Object.keys(Object.keys(Object.keys(chatContainer.value.chats[chat_index].messages.messages)[0])[0])[0][0].value.id,
                   include_messege: false,
                   mode: "up",
                 }
@@ -289,12 +290,12 @@ export function getMessagesFromChatTop(chat_id){
             let messages = action_res.body.messages;
     
             for (let item in messages){
-                msg = convertMessageFromMH(messages[item]);
+                let msg = convertMessageFromMH(messages[item]);
                 insertMessage(msg);
             }
     
             let chat_index = chatContainer.value.chats.findIndex((item)=>{return item.id == chat_id});
-            chatContainer.value.chats[chat_index].loading_messages = false;
+            chatContainer.value.chats[chat_index].messages.loading_messages = false;
             if (messages.length < 50) chatContainer.value.chats[chat_index].scrolled_to_top = true;
             if (loging) console.log("getMessagesFromChatTop", messages);
         });
@@ -338,10 +339,10 @@ files{
 */
 
 export function sendMessageToChat(chat_id, text, files){
-    let chat_index = chatContainer.value.chats.findIndex((item)=>{return item.id == chat.id});
+    let chat_index = chatContainer.value.chats.findIndex((item)=>{return item.id == chat_id});
 
     if (chat_index>-1){
-        msg = ref({
+        let msg = ref({
             id: -1,
             chat_id: chat_id,
             sender_id: user.value.id,
@@ -355,21 +356,21 @@ export function sendMessageToChat(chat_id, text, files){
             }
         });
 
-        msg.value.attachments.images.forEach(item => {
-            item.value.download_call_back = (response) =>{
-                item.value.download_call_back(response);
-                sendMessage(msg);
-            };
-            item.value.err_download_call_back = (error)=>{
-                alert(`Ошибка загрузки файла ${sg.value.attachments.images.value.name}. Он будет удалён.`);
-                item.value.delete_call();
-                if (loging) console.log(error);
-            }
-            item.value.delete_call = () =>{
-                msg.value.attachments.images.remove(item);
-                sendMessage(msg);
-            };
-        });
+        // msg.value.attachments.images.forEach(item => {
+        //     item.value.download_call_back = (response) =>{
+        //         item.value.download_call_back(response);
+        //         sendMessage(msg);
+        //     };
+        //     item.value.err_download_call_back = (error)=>{
+        //         alert(`Ошибка загрузки файла ${msg.value.attachments.images.value.name}. Он будет удалён.`);
+        //         item.value.delete_call();
+        //         if (loging) console.log(error);
+        //     }
+        //     item.value.delete_call = () =>{
+        //         msg.value.attachments.images.remove(item);
+        //         sendMessage(msg);
+        //     };
+        // });
         
         let func = (item) => {
             item.value.download_call_back = (response) =>{
@@ -377,7 +378,7 @@ export function sendMessageToChat(chat_id, text, files){
                 sendMessage(msg);
             };
             item.value.err_download_call_back = (error)=>{
-                alert(`Ошибка загрузки файла ${sg.value.attachments.images.value.name}. Он будет удалён.`);
+                alert(`Ошибка загрузки файла ${msg.value.attachments.images.value.name}. Он будет удалён.`);
                 item.value.delete_call();
                 if (loging) console.log(error);
             }
@@ -398,18 +399,18 @@ export function sendMessageToChat(chat_id, text, files){
                 chatContainer.value.chats[chat_index].send_requset_to_connect_to_chat = true;
                 connectToChat(chat_id, 
                     (action_res)=>{
-                        let chat_index = chatContainer.value.chats.findIndex((item)=>{return item.id == chat.id});
+                        let chat_index = chatContainer.value.chats.findIndex((item)=>{return item.id == chat_id});
                         chatContainer.value.chats[chat_index].send_requset_to_connect_to_chat = false;
                         chatContainer.value.chats[chat_index].user_in_chat = true;
                         
-                        for (let i in chatContainer.value.chats[chat_index].awaited_messages){
-                            sendMessage(chatContainer.value.chats[chat_index].awaited_messages[i]);
+                        for (let i in chatContainer.value.chats[chat_index].messages.awaited_messages){
+                            sendMessage(chatContainer.value.chats[chat_index].messages.awaited_messages[i]);
                         }
                         if (loging) console.log("connectToChat", action_res);
                     }
                 );
             }
-            chatContainer.value.chats[chat_index].awaited_messages.push(msg);
+            chatContainer.value.chats[chat_index].messages.awaited_messages.push(msg);
         } else{
             sendMessage(msg);
         }
@@ -431,7 +432,7 @@ export function connectToChat(chat_id, call_back){
 let ingnoreNewMessageEventId = []
 
 function sendMessage(msg){
-    if (!"sended" in msg.value || !msg.value.sended){
+    if (!("sended" in msg.value) || !msg.value.sended){
         let uploaded_files = true;
         
         let func = (item) =>{
@@ -444,16 +445,16 @@ function sendMessage(msg){
 
         if (uploaded_files){
             msg.value.sended = true;
-            sended_msg = convertInputMessageToMH(msg);
+            let sended_msg = convertInputMessageToMH(msg);
 
-            event_id = uuidv4();
+            let event_id = uuidv4();
             ingnoreNewMessageEventId.push(event_id);
 
             actionRequest({
                 id: uuidv4(),
                 name: 'send_message_to_chat',
                 body: {
-                    message: message,
+                    message: sended_msg,
                     event_id: event_id,
                 }
             }).then((action_res)=>{
@@ -508,7 +509,7 @@ actionEventHandlers["chat.new_message"] = function (action_res){
     let id_index = ingnoreNewMessageEventId.findIndex((item)=>{return event_id == item;})
 
     if (id_index==-1){
-        msg = convertMessageFromMH(messages[item]);
+        let msg = convertMessageFromMH(message);
         insertMessage(msg);
     }
 
@@ -524,7 +525,7 @@ export function removeChatToArchive(chat_id){
           event_id: uuidv4(),
         }
     }).then((action_res)=>{
-        let chat_index = chatContainer.value.chats.findIndex((item)=>{return item.id == chat.id});
+        let chat_index = chatContainer.value.chats.findIndex((item)=>{return item.id == chat_id});
 
         chatContainer.value.chats[chat_index].is_waiting_answer = false;
         chatContainer.value.chats[chat_index].is_archive = true;
