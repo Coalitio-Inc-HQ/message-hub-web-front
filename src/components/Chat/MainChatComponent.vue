@@ -46,7 +46,6 @@
 
   import Splitter from 'primevue/splitter';
   import SplitterPanel from 'primevue/splitterpanel';
-  import { setupMessageObserver } from '@/websocket/observers/messageObserver';
   import UserChatsComponent from './UserChatsComponent.vue';
   import ChatComponent from './ChatComponent.vue';
   import {
@@ -61,7 +60,10 @@
 
   import Button from 'primevue/button';
 
+  import {connect} from '@/services/messageHubService/websoket.js'
+
   const WS_URL = process.env.VUE_APP_WS_URL;
+  import { setupMessageObserver } from '@/websocket/observers/messageObserver';
 
   export default {
     components: {
@@ -93,6 +95,7 @@
       if (token) {
         this.connection = new WebSocket(WS_URL + "?token=" + token);
         setupMessageObserver(this, this.connection);
+        connect(token);
       } else {
         router.push('/login');
       }
