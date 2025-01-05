@@ -1,3 +1,4 @@
+<!-- /* Не используется */ -->
 <template>
     <div class="avatar-border">
         <Image v-if="file_info.file.type.startsWith('image/')" :src="file_info.temp_url" alt="Image" class="image-container" imageClass="image" preview />

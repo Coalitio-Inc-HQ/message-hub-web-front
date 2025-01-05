@@ -1,9 +1,4 @@
-// wsRequests.js
-function uuidv4() {
-  return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
-    (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
-  );
-}
+import { uuidv4 } from '@/utilities/uuid';
 
 /**
  * Отправляет запрос на получение информации о пользователе.
@@ -106,53 +101,47 @@ export function get_users_by_chat_Request(send,chat_id) {
  * @param {number} front_message_id - Идентификатор сообщения, которое было отправлено с фронтенда.
  * @returns {Object} - Созданное сообщение, которое будет отправлено.
  */
-export function create_message(chat, user_id, text, files, front_message_id = null){
-  if (!front_message_id){
-    if(chat.message_iterator){
-      chat.message_iterator=chat.message_iterator+=1;
-    }else{
-      chat.message_iterator=1;
-    }
-  }
-
+export function create_message(msg){
   let attachments = {
     images: [],
     videos: [],
     files: [],
   }
 
-  files.forEach(element => {
-    if (element.value.file.type.startsWith('image/')){
-      attachments.images.push({
-        url: element.value.url,
-        name: element.value.file.name,
-      });
-    } else if (element.value.file.type.startsWith('video/')){
-      attachments.videos.push({
-        url: element.value.url,
-        name: element.value.file.name,
-      });
-    } else {
-      attachments.files.push({
-        url: element.value.url,
-        name: element.value.file.name,
-      });
-    }
+  msg.attachments.images.forEach(element => {
+    attachments.images.push({
+      url: element.value.url,
+      name: element.value.name,
+    });
+  });
+
+  msg.attachments.videos.forEach(element => {
+    attachments.videos.push({
+      url: element.value.url,
+      name: element.value.name,
+    });
+  });
+
+  msg.attachments.files.forEach(element => {
+    attachments.files.push({
+      url: element.value.url,
+      name: element.value.name,
+    });
   });
 
   return {
-    id: -1,
-    chat_id: chat.id,
-    sender_id: user_id,
-    sended_at: new Date().toISOString(),
-    text: text,
-    front_message_id: front_message_id? front_message_id: chat.message_iterator,
+    id: msg.id,
+    chat_id: msg.chat_id,
+    sender_id: msg.sender_id,
+    sended_at: msg.sended_at,
+    text: msg.text,
+    front_message_id: msg.front_message_id,
     attachments: attachments,
   }
 }
 
 
-
+export let ignoreEventId = []
 /**
  * Отправляет запрос на отправку сообщения в чат.
  * @param {Function} send - Функция для отправки запроса.
@@ -160,14 +149,16 @@ export function create_message(chat, user_id, text, files, front_message_id = nu
  * @returns {Object} - Message, которое было отправлено.
  */
 export function send_message_to_chat_Request(send, message) {
+  let event_id = uuidv4();
   const request = {
     id: uuidv4(),
     name: 'send_message_to_chat',
     body: {
       message: message,
-      event_id: uuidv4(),
+      event_id:event_id,
     }
   };
+  ignoreEventId.push(event_id);
   console.log(`Отправка запросика ${request.name}:`, JSON.stringify(request));
   send(JSON.stringify(request));
   return message;
@@ -179,15 +170,17 @@ export function send_message_to_chat_Request(send, message) {
  * @param {string} chat_id - Идентификатор чата.
  */
 export function add_user_to_chat_Request(send, chat_id,user_id) {
+  let event_id = uuidv4();
   const request = {
     id: uuidv4(),
     name: 'add_user_to_chat',
     body: { 
       chat_id: chat_id, 
       user_id:user_id, 
-      event_id: uuidv4(),
+      event_id: event_id,
      }
   };
+  ignoreEventId.push(event_id);
   console.log(`Запрос ${request.name}:`, request);
   send(JSON.stringify(request));
 }

@@ -1,6 +1,10 @@
 import {extract_time_from_timestamp_handler} from '@/services/dateUtils';
 import { send_message_to_chat_Request } from '@/services/wsRequests'
+import { ignoreEventId } from '@/services/wsRequests';
 
+import {ref} from 'vue';
+import { uuidv4 } from '@/utilities/uuid';
+import {generateVideoPreview} from "@/utilities/VideoMiniature";
 
 //get_user_info
 export function handleGetUserInfo(context, message){
@@ -20,6 +24,8 @@ export async function handleGetMessagesByChat(context, message) {
     let body = message.body; 
     let messages = body.messages;
 
+    messages.forEach(messagePrepere);
+
     console.log('messages:', messages);
     if (messages.length>0){
         for (let index = 0; index < context.chats.length; index++) {
@@ -38,6 +44,36 @@ export async function handleGetMessagesByChat(context, message) {
 
 }
 
+function messagePrepere(msg){
+    if ("attachments" in msg){
+        if ("images" in msg.attachments){
+            msg.attachments.images.forEach((item)=>{item.id = uuidv4();});
+        }
+
+        if ("videos" in msg.attachments){
+            msg.attachments.videos.forEach((item)=>{
+                item.id = uuidv4();
+                let ref_m = ref({
+                    loading: true,
+                    url: null,
+                });
+
+                item.miniature = ref_m;
+
+                generateVideoPreview(320, 240,item.url).then((url)=>{
+                    ref_m.value = {
+                        loading: false,
+                        url: url,
+                    };
+                }).catch((e)=>{console.log(e);});
+            });
+        }
+
+        if ("files" in msg.attachments){
+            msg.attachments.files.forEach((item)=>{item.id = uuidv4();});
+        }
+    }
+}
 
 // get_users_by_chat
 export async function handleGetUsersByChat(context, message) {
@@ -189,34 +225,44 @@ export async function handleNewUserInChat(context, message) {
 export async function handleNewMessage(context, message) {
     console.log("Handler new_message:", message);
     let body = message.body; 
-    let msg = body.message;
+    let msg = messagePrepere(body.message);
+    let event_id = body.event_id;
 
-    if (msg.chat_id == context.current_chat.id && msg.sender_id != context.this_user_id) {
-        let is_found = false;
+    let event_index = ignoreEventId.findIndex((item)=>{return item == event_id;});
 
-        for (let index = 0; index < context.chats.length; index++) {
-            if (context.chats[index].id == msg.chat_id) {
-                
-                for (let i = 0; i < context.chats[index].messages.length; i++) {
-                    console.log(`Сообщение по индексу ${i}, ID сообщения: ${context.chats[index].messages[i].id}`);
-                    
-                    if (context.chats[index].messages[i].id == msg.id && 
-                        context.chats[index].messages[i].sended_at == msg.sended_at && 
-                        context.chats[index].messages[i].sender_id == msg.sender_id) {
-                        
-                        is_found = true;
-                        break;
-                    }
-                }
-
-                console.log("Дубликат сообщения: ", is_found);
-                if (!is_found) {
-                    context.chats[index].messages.push(msg);
-                }
-                break;
-            }
+    if (event_index==-1){
+        let chat_index = context.chats.findIndex((item)=>{return item.id == msg.chat_id;});
+        if (chat_index>-1){
+            context.chats[chat_index].messages.push(msg);
         }
     }
+
+    // if (msg.chat_id == context.current_chat.id && msg.sender_id != context.this_user_id) {
+    //     let is_found = false;
+
+    //     for (let index = 0; index < context.chats.length; index++) {
+    //         if (context.chats[index].id == msg.chat_id) {
+                
+    //             for (let i = 0; i < context.chats[index].messages.length; i++) {
+    //                 console.log(`Сообщение по индексу ${i}, ID сообщения: ${context.chats[index].messages[i].id}`);
+                    
+    //                 if (context.chats[index].messages[i].id == msg.id && 
+    //                     context.chats[index].messages[i].sended_at == msg.sended_at && 
+    //                     context.chats[index].messages[i].sender_id == msg.sender_id) {
+                        
+    //                     is_found = true;
+    //                     break;
+    //                 }
+    //             }
+
+    //             console.log("Дубликат сообщения: ", is_found);
+    //             if (!is_found) {
+    //                 context.chats[index].messages.push(msg);
+    //             }
+    //             break;
+    //         }
+    //     }
+    // }
 }
 
 

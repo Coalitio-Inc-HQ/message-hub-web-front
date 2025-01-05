@@ -34,6 +34,6 @@ export function generateVideoPreview(width, height, url) {
         videoElement.load();
         videoElement.play().catch(function() {
             reject();
-          });
+        });
     })
 }

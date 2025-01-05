@@ -21,15 +21,20 @@
             }"
           >
             <div class="message-sender-name">{{ get_user_name(message.sender_id) }}</div>
-            <ImageVideoGalleria v-if="message.attachments && (message.attachments.images && message.attachments.images.length>0 || message.attachments.videos && message.attachments.videos.length>0)" 
+            <template v-if="'use_ref' in message.attachments && message.attachments.use_ref">
+              <ImageVideoGalleriaUseRefs v-if="message.attachments && (message.attachments.images && message.attachments.images.length>0 || message.attachments.videos && message.attachments.videos.length>0)" 
               :attachments="message.attachments"
-              :is_temp_messge="message.is_temp_messge"
-              :is_min_window="is_min_window"
               />
-            <FileList v-if="message.attachments && message.attachments.files && message.attachments.files.length>0"
-            :attachments="message.attachments"
-            :is_temp_messge="message.is_temp_messge"  
-            />
+            </template>
+            <template v-else>
+              <ImageVideoGalleria v-if="message.attachments && (message.attachments.images && message.attachments.images.length>0 || message.attachments.videos && message.attachments.videos.length>0)" 
+              :attachments="message.attachments"
+              />
+              <!-- <FileList v-if="message.attachments && message.attachments.files && message.attachments.files.length>0"
+              :attachments="message.attachments"
+              :is_temp_messge="message.is_temp_messge"  
+              /> -->
+            </template>
             <div class="message-text">{{ message.text }}</div>
             <div class="message-timestamp">
               <template v-if="message.id!=-1">
@@ -43,13 +48,14 @@
     </ScrollPanel>
 
     <form class="dialog-submit-form flex-list" >
-      <div v-if="this.selected_files.length!=0" class="flex-list-w dialog-submit-file-scroll overflow-h-hiddne w-scrollbar">
+      <!-- <div v-if="this.selected_files.length!=0" class="flex-list-w dialog-submit-file-scroll overflow-h-hiddne w-scrollbar">
         <FileAvatar v-for="file in this.selected_files" 
         :key="file.value.name"
         :file_info="file.value"
         :is_min_window="is_min_window"
         />
-      </div>
+      </div> -->
+      <UploadedFileList :files="this.selected_files"/>
       <div class="flex-list-w dialog-submit-div">
         <textarea 
           ref="messageInput" 
@@ -63,7 +69,7 @@
         <!-- <button type="submit" class="send" :disabled="!current_chat">Отправить</button> -->
         <div class="flex-list dialog-buttons-group">
           <Button class="dialog-button-send" :disabled="!current_chat" @click="submit_message" icon="pi pi-send"/>
-          <Button class="dialog-button-send" :disabled="!current_chat" @click="add_file" icon="pi pi-file-plus"/>
+          <Button class="dialog-button-send" :disabled="!current_chat" @click="choise_files" icon="pi pi-file-plus"/>
         </div>
       </div>
     </form>
@@ -79,21 +85,27 @@
   // console.log(Textarea)
   import router from "@/router";
   import {format_time_for_display} from '@/services/dateUtils';
-  import FileAvatar from '@/components/File/FileAvatar.vue';
+  // import FileAvatar from '@/components/File/FileAvatar.vue';
 
   import ImageVideoGalleria from '@/components/File/ImageVideoGalleria.vue';
-  import FileList from '@/components/File/FileList.vue';
+  import ImageVideoGalleriaUseRefs from '../File/ImageVideoGalleriaUseRefs.vue';
+  // import FileList from '@/components/File/FileList.vue';
 
-  import { ref, } from 'vue'
+  import { getCookie, deleteCookies } from '@/utilities/cookie';
+
+  import UploadedFileList from '../File/UploadedFileList.vue';
+  // import { ref, } from 'vue'
   // import { noop } from '@vueuse/core';
   export default {
     components:{
       Button,
       ScrollPanel,
-      FileAvatar,
+      // FileAvatar,
       // Textarea,
       ImageVideoGalleria,
-      FileList,
+      ImageVideoGalleriaUseRefs,
+      // FileList,
+      UploadedFileList,
     },
     props: [
       "this_user_id",
@@ -145,43 +157,31 @@
     },
 
     methods: {
-      add_file(){
+      choise_files(){
         const input = document.createElement('input');
         input.type = 'file'; // Устанавливаем тип файла
         input.accept = '*'; // Ограничения на типы файлов (например, '.jpg,.png,.pdf')
         input.multiple = true;
 
-        input.addEventListener('change', async () => {
-          console.log(input.files)
+        input.addEventListener('change', () => {
           if (input.files.length > 0) {
-            let token = this.get_cookie("token");
-            let fails = [];
+            let token = getCookie("token");
+            let fails = []
             for (let i = 0; i < input.files.length; i++){
-              if (input.files[i].size > 52428800){
-                fails.push(input.files[i]);
-              }
-              else{
-                let file_info = {
-                  file: input.files[i],
-                  temp_url: URL.createObjectURL(input.files[i]),
-                  uploaded: false,
-                  download_call_back: null,
-                  err_download_call_back: null,
-                  delete: null,
+              try{
+                let u_file = upload_file(input.files[i], token)
+                u_file.value.delete_call = ()=>{
+                  let index = this.selected_files.indexOf(u_file);
+                  if (index>-1) this.selected_files.splice(index,1);
                 };
-                file_info = ref(file_info);
-                file_info.value.delete = ()=> {
-                  this.selected_files.splice(this.selected_files.indexOf(file_info),1);
-                }
-
-                file_info.value.err_download_call_back = () =>{
-                  alert(`Ошибка загрузки файла ${file_info.value.file.name}, он будет удалён из сообщения.`);
-                  file_info.value.delete();
-                }
-
-                this.selected_files.push(file_info);
-
-                await upload_file(file_info, token);
+                u_file.value.err_download_call_back = ()=>{
+                  alert(`Ошибка загрузки файла ${u_file.value.name}. Он будет удалён.`);
+                  u_file.value.delete_call();
+                };
+                this.selected_files.push(u_file);
+              }catch (e){
+                fails.push(input.files[i]);
+                console.log(e);
               }
             }
             if (fails.length>0){
@@ -189,29 +189,16 @@
               fails.forEach((item)=>{
                 msg+= item.name + "\n";
               })
-              msg+="Небыли загруженты так как их размер превышает 100Мб.";
+              msg+="Небыли загруженты так как их размер превышает 50Мб.";
               alert(msg);
             }
           }
         });
 
-        // Вызываем файловый диалог
         input.click();
       },
 
-      get_cookie(name) {
-        var nameEQ = name + "=";
-        var ca = document.cookie.split(';');
-        for (var i = 0; i < ca.length; i++) {
-          var c = ca[i];
-          while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-          if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-        }
-        return null;
-      },
-
       onScroll(){
-        // console.log(e);
         if (this.$refs.chat_scroll_container.$el.querySelector('.p-scrollpanel-content').scrollTop === 0) {
           console.log("Scrolled to the top!");
           this.$emit('scrolled-top');
@@ -279,24 +266,9 @@
         }
       },
 
-      delete_cookies() {
-          const cookies = document.cookie.split(";");
-          for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i];
-            const eqPos = cookie.indexOf("=");
-            const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-            if (name) {
-              document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
-              console.log(`Cookie удалена: ${name}`);
-            } else {
-              console.log('Куки не обнаружены для удаления.');
-          }
-        }
-      },
-
       exit_chat() {
         alert('Вы вышли из системы');  
-        this.delete_cookies();
+        deleteCookies();
         router.push('/login');
       },
       
