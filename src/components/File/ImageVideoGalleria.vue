@@ -39,7 +39,7 @@
             
                 <i v-if="this.visible_slide_buttons && (this.openIndex>0 && this.openType=='images' || this.openType=='videos' && this.openIndex>0 || this.openType=='videos' && 'images' in this.$props.attachments && this.$props.attachments.images.length>0)" class="pi pi-chevron-left icon-slide-left" 
                     @click="if (this.openIndex-1>-1){this.openIndex=this.openIndex-1;} else {if (this.openType=='videos'){this.openIndex = this.$props.attachments.images.length-1; this.openType = 'images';}}  "/>
-                <i v-if="this.visible_slide_buttons && (this.openType=='images' && this.openIndex<this.$props.attachments.images.length-1 || this.openType=='images' && 'videos' in this.$props.attachments && this.$props.attachments.videos.length>0 || this.openType=='videos' &&  this.openIndex>0 <  this.$props.attachments.videos.length-1)" class="pi pi-chevron-right icon-slide-right" 
+                <i v-if="this.visible_slide_buttons && (this.openType=='images' && this.openIndex<this.$props.attachments.images.length-1 || this.openType=='images' && 'videos' in this.$props.attachments && this.$props.attachments.videos.length>0 || this.openType=='videos' &&  this.openIndex<this.$props.attachments.videos.length-1)" class="pi pi-chevron-right icon-slide-right" 
                     @click="if (this.openType=='images' && this.openIndex+1 == this.$props.attachments.images.length){this.openIndex=0;this.openType='videos';}else{ this.openIndex=this.openIndex+1;}"/>
             </div>
 

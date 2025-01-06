@@ -25,15 +25,17 @@
               <ImageVideoGalleriaUseRefs v-if="message.attachments && (message.attachments.images && message.attachments.images.length>0 || message.attachments.videos && message.attachments.videos.length>0)" 
               :attachments="message.attachments"
               />
+              <FileListUseRefs v-if="message.attachments && message.attachments.files && message.attachments.files.length>0"
+              :attachments="message.attachments"  
+              />
             </template>
             <template v-else>
               <ImageVideoGalleria v-if="message.attachments && (message.attachments.images && message.attachments.images.length>0 || message.attachments.videos && message.attachments.videos.length>0)" 
               :attachments="message.attachments"
               />
-              <!-- <FileList v-if="message.attachments && message.attachments.files && message.attachments.files.length>0"
-              :attachments="message.attachments"
-              :is_temp_messge="message.is_temp_messge"  
-              /> -->
+              <FileList v-if="message.attachments && message.attachments.files && message.attachments.files.length>0"
+              :attachments="message.attachments"  
+              />
             </template>
             <div class="message-text">{{ message.text }}</div>
             <div class="message-timestamp">
@@ -89,11 +91,12 @@
 
   import ImageVideoGalleria from '@/components/File/ImageVideoGalleria.vue';
   import ImageVideoGalleriaUseRefs from '../File/ImageVideoGalleriaUseRefs.vue';
-  // import FileList from '@/components/File/FileList.vue';
+  import FileList from '@/components/File/FileList.vue';
 
   import { getCookie, deleteCookies } from '@/utilities/cookie';
 
   import UploadedFileList from '../File/UploadedFileList.vue';
+import FileListUseRefs from '../File/FileListUseRefs.vue';
   // import { ref, } from 'vue'
   // import { noop } from '@vueuse/core';
   export default {
@@ -104,7 +107,8 @@
       // Textarea,
       ImageVideoGalleria,
       ImageVideoGalleriaUseRefs,
-      // FileList,
+      FileList,
+      FileListUseRefs,
       UploadedFileList,
     },
     props: [

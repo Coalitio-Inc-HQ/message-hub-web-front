@@ -31,6 +31,7 @@ export function generateVideoPreview(width, height, url) {
             };
         };
 
+        videoElement.volume = 0;
         videoElement.load();
         videoElement.play().catch(function() {
             reject();

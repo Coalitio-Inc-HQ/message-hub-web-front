@@ -1,5 +1,11 @@
 .downlad-file-button{
     width: 100%;
+    height: auto;
+}
+
+
+.file-list{
+    gap: 5px;
 }
 
 .file-name{
@@ -10,4 +16,17 @@
     text-wrap: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;  
+}
+
+
+.file-icon{
+    position: relative;
+}
+
+.downlad-file-button-progressbar{
+    position: absolute;
+    top: 100%;
+    left: 100%;
+    transform: translate(-100%, 3px);
+    width: 100%;
 }
