@@ -11,8 +11,10 @@
 
 .miniature-item{
     width: 100%;
+    /* height: auto;
+    min-height: 60px; */
+    aspect-ratio: 16 / 9;
     height: auto;
-    min-height: 60px;
 
     --p-button-primary-border-color: var(--p-content-border-color);
     border: solid;

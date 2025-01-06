@@ -133,6 +133,10 @@ body{
   gap: 6px;
 }
 
+.message:has(.galleria){
+  width: 100%;
+}
+
 .message-self {
   background-color: var(--p-primary-color); 
 
