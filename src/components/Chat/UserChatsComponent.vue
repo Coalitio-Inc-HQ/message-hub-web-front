@@ -4,7 +4,7 @@
       <Button class="chat-group-button" @click="ClicOnButtonInListWaitingChats" >Ожидающие ответа чаты</button>
     </div>
     <div class="chat-group-inner-box overflow-h-hiddne flex-list flex-scale">
-      <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_waiting_chats">
+      <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_waiting_chats" step="20">
         <template v-for="chat in chats">
           <il 
             v-if="chat.is_waiting_answer && (!search_name ||chat.name.toLowerCase().includes(search_name))" 
@@ -28,7 +28,7 @@
       <Button class="chat-group-button" @click="ClicOnButtonInListMyChats" >Ваши чаты</button>
     </div>
     <div class="chat-group-inner-box overflow-h-hiddne flex-list flex-scale">
-      <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_my_chats">
+      <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_my_chats" step="20">
         <template v-for="chat in chats">
           <il 
           v-if="!chat.is_waiting_answer && !chat.is_archive && !chat.is_not_connected && (!search_name ||chat.name.toLowerCase().includes(search_name))"
@@ -52,7 +52,7 @@
       <Button class="chat-group-button" @click="ClicOnButtonInListOtherChats" >Остальные чаты</button>
     </div>
     <div class="chat-group-inner-box overflow-h-hiddne flex-list flex-scale">
-      <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_other_chats">
+      <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_other_chats" step="20">
         <template v-for="chat in chats">
           <il 
           v-if="!chat.is_waiting_answer && !chat.is_archive && chat.is_not_connected && (!search_name ||chat.name.toLowerCase().includes(search_name))"
@@ -77,7 +77,7 @@
       <Button class="chat-group-button" @click="ClicOnButtonInListArchiveChats" >Архивные чаты</button>
     </div>
     <div class="chat-group-inner-box overflow-h-hiddne flex-list flex-scale">
-      <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_archive_chats">
+      <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_archive_chats" step="20">
         <template v-for="chat in chats">
           <il 
           v-if="chat.is_archive && (!search_name ||chat.name.toLowerCase().includes(search_name))"

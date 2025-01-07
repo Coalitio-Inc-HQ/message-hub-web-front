@@ -2,12 +2,13 @@
   <div class="dialog-main flex-list" ref="main_div">
     <div class="dialog-header-container flex-list-w">
       <Button variant="text" size="small" icon="pi pi-arrow-left" @click="this.$emit('set-null-chat')"/>
-
-      <!-- Перенести в меню -->
-      <button class="button_exit" @click="exit_chat">Выйти</button>
-      <Button @click="this.$emit('chat-remove-to-archive')" style="width: auto;">Отправить в архив</Button>
+      <div class="flex-scale"/>
+      <Button ref="b" variant="text" size="small" icon="pi pi-list" style="width: auto;" @click="(e)=>{this.$refs.popower.show(e); }"/>
+      <Popover ref="popower" >
+        <Button @click="this.$emit('chat-remove-to-archive')" style="width: auto;">Отправить чат в архив</Button>
+      </Popover>
     </div>
-    <ScrollPanel class="flex-scale overflow-h-hiddne overflow-w-hiddne" ref="chat_scroll_container">
+    <ScrollPanel class="flex-scale overflow-h-hiddne overflow-w-hiddne" ref="chat_scroll_container" step="20">
       <div class="dialog-messges-base flex-list">
         <template v-if="this.current_chat">
           <div v-for="message in this.current_chat.messages" 
@@ -79,13 +80,14 @@
 </template>
 
 <script>
+  import Popover from 'primevue/popover';
+
   import Button from 'primevue/button';
   import ScrollPanel from 'primevue/scrollpanel';
 
   import { upload_file } from '@/services/S3Service';
   // import Textarea from 'primevue/textarea';
   // console.log(Textarea)
-  import router from "@/router";
   import {format_time_for_display} from '@/services/dateUtils';
   // import FileAvatar from '@/components/File/FileAvatar.vue';
 
@@ -93,7 +95,7 @@
   import ImageVideoGalleriaUseRefs from '../File/ImageVideoGalleriaUseRefs.vue';
   import FileList from '@/components/File/FileList.vue';
 
-  import { getCookie, deleteCookies } from '@/utilities/cookie';
+  import { getCookie} from '@/utilities/cookie';
 
   import UploadedFileList from '../File/UploadedFileList.vue';
 import FileListUseRefs from '../File/FileListUseRefs.vue';
@@ -110,6 +112,7 @@ import FileListUseRefs from '../File/FileListUseRefs.vue';
       FileList,
       FileListUseRefs,
       UploadedFileList,
+      Popover,
     },
     props: [
       "this_user_id",
@@ -268,12 +271,6 @@ import FileListUseRefs from '../File/FileListUseRefs.vue';
             this.autoResize();
           }
         }
-      },
-
-      exit_chat() {
-        alert('Вы вышли из системы');  
-        deleteCookies();
-        router.push('/login');
       },
       
       scroll_down(smooth = false) {

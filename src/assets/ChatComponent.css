@@ -241,7 +241,9 @@ body{
   height: var(--p-scrollpanel-bar-size); 
 }
 
-
+.left-drawer-container{
+  height: 100%;
+}
 
 
 

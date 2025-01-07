@@ -9,6 +9,10 @@
     height: 100vh;
 }
 
+.full-width{
+    width: 100vw;
+}
+
 /* Выравнивение по центру */
 .center-container {
     margin: 0;

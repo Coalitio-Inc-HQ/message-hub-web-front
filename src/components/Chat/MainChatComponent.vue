@@ -5,7 +5,7 @@
         <SplitterPanel v-if="!this.is_min_window  ||  this.is_min_window  &&  !this.current_chat" class="flex items-center justify-center" style="min-width: 15em;" :size="1">
           <div class="left-panel flex-list full-height ">
             <div class="left-panel-header-container flex-list-w">
-              <Button variant="text" size="small" icon="pi pi-bars" />
+              <Button variant="text" size="small" icon="pi pi-bars" @click="leftmenu_visible=true;"/>
               <!-- <InputText type="text" v-model="value" style="flex-grow: 1;"/> -->
               <IconField class="flex-scale search-field-box">
                   <InputIcon class="pi pi-search" />
@@ -36,6 +36,18 @@
       </Splitter>
     </div>
   </div>
+
+  <Drawer v-model:visible="leftmenu_visible" header="Drawer">
+    <template #header>
+        <div>
+            Меню
+        </div>
+    </template>
+    <div class="flex-list left-drawer-container">
+      <div class="flex-scale"/>
+      <Button @click="this.deleteCookies(); this.setPage('/login');">Выйти</Button>
+    </div>
+  </Drawer>
 </template>
 
 <script>
@@ -60,6 +72,10 @@
   import router from "@/router";
 
   import Button from 'primevue/button';
+  
+  import Drawer from 'primevue/drawer';
+
+  import { deleteCookies,  } from '@/utilities/cookie';
 
   const WS_URL = process.env.VUE_APP_WS_URL;
 
@@ -72,7 +88,8 @@
       Splitter,
       SplitterPanel,
       Button,
-      InputText
+      InputText,
+      Drawer,
     },
 
     data() {
@@ -85,6 +102,7 @@
         message_iterator: 0,
         isSidebarVisible: true,
         is_min_window: window.innerWidth <= 768? true : false,
+        leftmenu_visible: false,
       };
     },
 
@@ -106,6 +124,12 @@
     },
 
     methods: {
+      deleteCookies,
+
+      setPage(path){
+        router.push(path);
+      },
+
       chat_remove_to_archive(){
         this.current_chat.is_waiting_answer = false;
         this.current_chat.is_archive = true;
