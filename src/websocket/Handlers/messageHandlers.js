@@ -2,9 +2,9 @@ import {extract_time_from_timestamp_handler} from '@/services/dateUtils';
 import { send_message_to_chat_Request } from '@/services/wsRequests'
 import { ignoreEventId } from '@/services/wsRequests';
 
-import {ref} from 'vue';
+// import {ref} from 'vue';
 import { uuidv4 } from '@/utilities/uuid';
-import {generateVideoPreview} from "@/utilities/VideoMiniature";
+// import {generateVideoPreview} from "@/utilities/VideoMiniature";
 
 //get_user_info
 export function handleGetUserInfo(context, message){
@@ -51,22 +51,23 @@ function messagePrepere(msg){
         }
 
         if ("videos" in msg.attachments){
-            msg.attachments.videos.forEach((item)=>{
-                item.id = uuidv4();
-                let ref_m = ref({
-                    loading: true,
-                    url: null,
-                });
+            msg.attachments.videos.forEach((item)=>{item.id = uuidv4();});
+            // msg.attachments.videos.forEach((item)=>{
+            //     item.id = uuidv4();
+            //     let ref_m = ref({
+            //         loading: true,
+            //         url: null,
+            //     });
 
-                item.miniature = ref_m;
+            //     item.miniature = ref_m;
 
-                generateVideoPreview(320, 240,item.url).then((url)=>{
-                    ref_m.value = {
-                        loading: false,
-                        url: url,
-                    };
-                }).catch((e)=>{console.log(e);});
-            });
+            //     generateVideoPreview(320, 240,item.url).then((url)=>{
+            //         ref_m.value = {
+            //             loading: false,
+            //             url: url,
+            //         };
+            //     }).catch((e)=>{console.log(e);});
+            // });
         }
 
         if ("files" in msg.attachments){

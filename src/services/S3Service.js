@@ -20,13 +20,15 @@ export function upload_file(file, token) {
     id: uuidv4(),
     name: file.name,
     type: type,
-    url:null,
-    temp_url: URL.createObjectURL(file),
+    url:URL.createObjectURL(file),
+    uploaded_url: null,
     progress: 0,
     uploaded: false,
 
     miniature: {
         loading: true,
+        uploaded: false,
+        uploaded_url: null,
         url: null,
     },
 
@@ -34,7 +36,9 @@ export function upload_file(file, token) {
     download_call_back: null,
     err_download_call_back: null,
     delete_call: null,
-    miniature_call_back: null
+    miniature_call_back: null,
+    miniature_download_call_back: null,
+    miniature_err_download_call_back: null,
   })
 
   res.value.on_upload_progress = (progressEvent) => {
@@ -45,7 +49,7 @@ export function upload_file(file, token) {
   res.value.download_call_back = (response)=>{
     res.value.uploaded = true;
     res.value.progress = 1;
-    res.value.url = response.data.url;
+    res.value.uploaded_url = response.data.url;
     if (loging) console.log("new_upload_file download_call_back", response);
   }
 
@@ -53,14 +57,37 @@ export function upload_file(file, token) {
     if (loging) console.log("new_upload_file download_call_back", error);
   }
 
+  res.value.miniature_download_call_back = (response) =>{
+    res.value.miniature.uploaded = true;
+    res.value.miniature.uploaded_url = response.data.url;
+
+    if (loging) console.log("new_upload_file miniature_download_call_back", response);
+  }
+
+  res.value.miniature_err_download_call_back = (error) =>{
+
+    if (loging) console.log("new_upload_file miniature_err_download_call_back", error);
+  }
+
   res.value.miniature_call_back = (m_url)=>{
     res.value.miniature.loading = false;
     res.value.miniature.url = m_url;
+
+    let file_neme = uuidv4()+".png";
+    let m_file = dataURLToFile(m_url, file_neme);
+
+    const m_formData = new FormData();
+    m_formData.append('file', m_file);
+
+    axios.post(FILE_UPLOAD_URL+"?token="+token, m_formData,)
+    .then((e)=>{if (res.value.miniature_download_call_back) res.value.miniature_download_call_back(e);})
+    .catch((e)=>{if (res.value.miniature_err_download_call_back) res.value.miniature_err_download_call_back(e);})
+
     if (loging) console.log("new_upload_file miniature_call_back", m_url);
   }
 
   if (file.type.startsWith('video/')){
-    generateVideoPreview(320, 240, res.value.temp_url).then((e)=>{if (res.value.miniature_call_back) res.value.miniature_call_back(e);});
+    generateVideoPreview(320, 240, res.value.url).then((e)=>{if (res.value.miniature_call_back) res.value.miniature_call_back(e);});
   }
 
   const formData = new FormData();
@@ -74,4 +101,21 @@ export function upload_file(file, token) {
   .catch((e)=>{if (res.value.err_download_call_back) res.value.err_download_call_back(e);})
   
   return res;
+}
+
+function dataURLToFile(dataURL, fileName) {
+  // Разделяем dataURL на тип MIME и Base64-данные
+  const [header, base64] = dataURL.split(',');
+  const mimeMatch = header.match(/:(.*?);/);
+  const mimeType = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
+  const byteString = atob(base64);
+  const arrayBuffer = new Uint8Array(byteString.length);
+
+  // Создаем массив байтов
+  for (let i = 0; i < byteString.length; i++) {
+      arrayBuffer[i] = byteString.charCodeAt(i);
+  }
+
+  // Преобразуем в объект File
+  return new File([arrayBuffer], fileName, { type: mimeType });
 }

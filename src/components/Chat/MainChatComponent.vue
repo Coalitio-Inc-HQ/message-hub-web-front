@@ -155,8 +155,13 @@
               if (!item.value.uploaded) chekUpload = false;
             }
 
+            let f_v = (item)=>{
+              if (!item.value.uploaded) chekUpload = false;
+              if (!item.value.miniature.uploaded) chekUpload = false;
+            }
+
             msg.attachments.images.forEach(f);
-            msg.attachments.videos.forEach(f);
+            msg.attachments.videos.forEach(f_v);
             msg.attachments.files.forEach(f);
 
             if (chekUpload && !msg.sended){
@@ -205,10 +210,25 @@
               element.value.delete_call();
             };
 
+            if (element.value.type == "video"){
+                element.value.miniature_err_download_call_back = (e)=>{
+                alert( `Произошла ошибка загрузки файла ${element.value.name}, он будет удалён.`);
+                console.log("Произошла ошибка загрузки файла.",e);
+                element.value.delete_call();
+              };
+            }
+
             let last_download_call_back =  element.value.download_call_back;
 
             element.value.download_call_back = (response)=>{
               last_download_call_back(response);
+              send_msg();
+            };
+
+            let last_miniature_download_call_back =  element.value.miniature_download_call_back;
+
+            element.value.miniature_download_call_back = (response)=>{
+              last_miniature_download_call_back(response);
               send_msg();
             };
           });

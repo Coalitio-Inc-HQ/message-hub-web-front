@@ -7,7 +7,7 @@
             @click="openMiniature(file.value.id)"
         >
             <template v-if="file.value.type==='image'">
-                <img class="miniature-image" :src="file.value.temp_url" alt="Ошибка загрузки изображения."/>
+                <img class="miniature-image" :src="file.value.url" alt="Ошибка загрузки изображения."/>
 
                 <i class="pi pi-eye miniature-acthion-button"/>
                 <i class="pi pi-times miniature-delete-button" style="font-size: 0.75rem" @click="(e)=>{openMiniature(null); file.value.delete_call(); e.preventDefault();}"/>
@@ -27,7 +27,7 @@
                 <i class="pi pi-download miniature-acthion-button"/>
                 <i class="pi pi-times miniature-delete-button" style="font-size: 0.75rem" @click="(e)=>{openMiniature(null); file.value.delete_call(); e.preventDefault();}"/>
             </template>
-            <ProgressBar v-if="!file.value.uploaded" :value="file.value.progress*100" class="miniature-acthion-progressbar" style="height: 6px; position: absolute;">{{ "" }}</ProgressBar>
+            <ProgressBar v-if="!file.value.uploaded || 'miniature' in file.value && !file.value.miniature.uploaded" :value="file.value.progress*100" class="miniature-acthion-progressbar" style="height: 6px; position: absolute;">{{ "" }}</ProgressBar>
         </Button>
 
         <Drawer v-if="this.openIndex!=null" v-model:visible="drawer_visible"  position="full">
@@ -39,10 +39,10 @@
                 </div>
             </template>
             <div class="drawer-content-container" @mousemove="showSlideButtons">
-                <img v-if="this.files[this.openIndex].value.type==='image'" class="drawer-content-container-image" :src="this.files[this.openIndex].value.temp_url" alt="Ошибка загрузки изображения."/>
-                <video v-else-if="this.files[this.openIndex].value.type==='video'" class="drawer-content-container-video" :src="this.files[this.openIndex].value.temp_url" controls/>
+                <img v-if="this.files[this.openIndex].value.type==='image'" class="drawer-content-container-image" :src="this.files[this.openIndex].value.url" alt="Ошибка загрузки изображения."/>
+                <video v-else-if="this.files[this.openIndex].value.type==='video'" class="drawer-content-container-video" :src="this.files[this.openIndex].value.url" controls/>
                 <template v-else-if="this.files[this.openIndex].value.type==='file'">
-                    <Button class="drawer-content-container-file-container flex-list" @click="this.downloadFile(this.files[this.openIndex].value.temp_url,this.files[this.openIndex].value.name)">
+                    <Button class="drawer-content-container-file-container flex-list" @click="this.downloadFile(this.files[this.openIndex].value.url,this.files[this.openIndex].value.name)">
                         <i class="pi pi-file drawer-content-container-file-container-icon" style="font-size: 1.5rem"/>
                         <div class="drawer-content-container-file-text">{{ this.files[this.openIndex].value.name }}</div>
                     </Button>
