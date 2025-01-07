@@ -19,8 +19,7 @@
                 :key="video.id"
                 @click="openMiniature(video.id,'videos')"
             >
-                <i v-if="video.miniature.loading" class="pi pi-spin pi-spinner"/>
-                <img v-else class="miniature-image" :src="video.miniature.url" alt="Ошибка загрузки изображения."/>
+                <img class="miniature-image" :src="video.miniature.url" alt="Ошибка загрузки изображения."/>
                 <i class="pi pi-caret-right miniature-item-show-icon"/>
             </Button>
         </template>

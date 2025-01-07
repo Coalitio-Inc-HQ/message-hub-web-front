@@ -87,7 +87,7 @@ export function upload_file(file, token) {
   }
 
   if (file.type.startsWith('video/')){
-    generateVideoPreview(320, 240, res.value.url).then((e)=>{if (res.value.miniature_call_back) res.value.miniature_call_back(e);});
+    generateVideoPreview(res.value.url).then((e)=>{if (res.value.miniature_call_back) res.value.miniature_call_back(e);});
   }
 
   const formData = new FormData();

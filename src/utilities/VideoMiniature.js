@@ -1,8 +1,8 @@
-export function generateVideoPreview(width, height, url) {
+export function generateVideoPreview(url) {
     return new Promise(function (resolve, reject) {
         const videoElement = document.createElement('video');
-        videoElement.width = width;
-        videoElement.height = height;
+        // videoElement.width = width;
+        // videoElement.height = height;
         videoElement.style.display = 'none'; 
         videoElement.src = url;
 
@@ -15,6 +15,10 @@ export function generateVideoPreview(width, height, url) {
         videoElement.onloadeddata = function () {
             // Устанавливаем время на 2 секунды, чтобы взять кадр с этого времени
             videoElement.currentTime = 2;
+
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+
             // После того как видео перемотается, рисуем кадр
             videoElement.onseeked = () => {
 

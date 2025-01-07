@@ -74,6 +74,7 @@ function messagePrepere(msg){
             msg.attachments.files.forEach((item)=>{item.id = uuidv4();});
         }
     }
+    return msg;
 }
 
 // get_users_by_chat
