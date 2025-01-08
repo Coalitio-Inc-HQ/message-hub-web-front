@@ -8,19 +8,8 @@
         <Button @click="this.$emit('chat-remove-to-archive')" style="width: auto;">Отправить чат в архив</Button>
       </Popover>
     </div>
-    <ScrollPanel class="flex-scale overflow-h-hiddne overflow-w-hiddne" ref="chat_scroll_container" step="20">
-      <div class="dialog-messges-base flex-list">
-        <template v-if="this.current_chat">
-          <div v-for="message in this.current_chat.messages" 
-          :key="message.sender_id + message.sended_at" 
-          :class="{ 
-            'message': true,
-            'flex-list': true,
-            'message-self': message.sender_id == this.this_user_id, 
-            'message-other': message.sender_id !== this.this_user_id,
-            'max-mode': this.max_mode
-            }"
-          >
+    <VirtualScroll v-if="this.current_chat" ref="chat_scroll_container" step="20" :current_chat="current_chat" :max_mode="max_mode" :this_user_id="this_user_id">
+      <template #message="{ message }">
             <div class="message-sender-name">{{ get_user_name(message.sender_id) }}</div>
             <template v-if="'use_ref' in message.attachments && message.attachments.use_ref">
               <ImageVideoGalleriaUseRefs v-if="message.attachments && (message.attachments.images && message.attachments.images.length>0 || message.attachments.videos && message.attachments.videos.length>0)" 
@@ -45,10 +34,8 @@
               </template>
               <i v-else class="pi pi-spin pi-spinner" style="font-size: 0.5rem"></i>
             </div>
-          </div>
-        </template>
-      </div>
-    </ScrollPanel>
+      </template>
+    </VirtualScroll>
 
     <form class="dialog-submit-form flex-list" >
       <!-- <div v-if="this.selected_files.length!=0" class="flex-list-w dialog-submit-file-scroll overflow-h-hiddne w-scrollbar">
@@ -83,7 +70,7 @@
   import Popover from 'primevue/popover';
 
   import Button from 'primevue/button';
-  import ScrollPanel from 'primevue/scrollpanel';
+  // import ScrollPanel from 'primevue/scrollpanel';
 
   import { upload_file } from '@/services/S3Service';
   // import Textarea from 'primevue/textarea';
@@ -98,13 +85,14 @@
   import { getCookie} from '@/utilities/cookie';
 
   import UploadedFileList from '../File/UploadedFileList.vue';
-import FileListUseRefs from '../File/FileListUseRefs.vue';
+  import FileListUseRefs from '../File/FileListUseRefs.vue';
+  import VirtualScroll from './VirtualScroll.vue';
   // import { ref, } from 'vue'
   // import { noop } from '@vueuse/core';
   export default {
     components:{
       Button,
-      ScrollPanel,
+      // ScrollPanel,
       // FileAvatar,
       // Textarea,
       ImageVideoGalleria,
@@ -113,6 +101,7 @@ import FileListUseRefs from '../File/FileListUseRefs.vue';
       FileListUseRefs,
       UploadedFileList,
       Popover,
+      VirtualScroll,
     },
     props: [
       "this_user_id",
@@ -121,39 +110,39 @@ import FileListUseRefs from '../File/FileListUseRefs.vue';
       "is_min_window",
     ],
 
-    watch: {
-      'current_chat.messages': {
-        handler(newValue, oldValue) {
-          // console.log(oldValue,newValue, oldValue.length ==0);
-          if (oldValue==null || oldValue.length ==0){
-            this.scroll_down(true);
-          } 
-          else{
-            const scrollPanel = this.$refs.chat_scroll_container.$el;
-            const scrollContainer = scrollPanel.querySelector('.p-scrollpanel-content');
+    // watch: {
+    //   'current_chat.messages': {
+    //     handler(newValue, oldValue) {
+    //       // console.log(oldValue,newValue, oldValue.length ==0);
+    //       if (oldValue==null || oldValue.length ==0){
+    //         this.scroll_down(true);
+    //       } 
+    //       else{
+    //         const scrollPanel = this.$refs.chat_scroll_container.$el;
+    //         const scrollContainer = scrollPanel.querySelector('.p-scrollpanel-content');
 
-            const previousScrollHeight = scrollContainer.scrollHeight;
-            const previousScrollTop = scrollContainer.scrollTop;
+    //         const previousScrollHeight = scrollContainer.scrollHeight;
+    //         const previousScrollTop = scrollContainer.scrollTop;
 
-            this.$nextTick(() => {
-              const newScrollHeight = scrollContainer.scrollHeight;
-              const heightDiff = newScrollHeight - previousScrollHeight;
+    //         this.$nextTick(() => {
+    //           const newScrollHeight = scrollContainer.scrollHeight;
+    //           const heightDiff = newScrollHeight - previousScrollHeight;
 
-              scrollContainer.scrollTop = previousScrollTop + heightDiff;
-            });
-          }
-        },
-        deep: true,
-        immediate: true
-      },
-      'current_chat': {
-        handler() {
-          this.scroll_down(false);
-        },
-        deep: false,
-        immediate: true
-      }
-    },
+    //           scrollContainer.scrollTop = previousScrollTop + heightDiff;
+    //         });
+    //       }
+    //     },
+    //     deep: true,
+    //     immediate: true
+    //   },
+    //   'current_chat': {
+    //     handler() {
+    //       this.scroll_down(false);
+    //     },
+    //     deep: false,
+    //     immediate: true
+    //   }
+    // },
 
     data(){
       return{
@@ -203,13 +192,6 @@ import FileListUseRefs from '../File/FileListUseRefs.vue';
         });
 
         input.click();
-      },
-
-      onScroll(){
-        if (this.$refs.chat_scroll_container.$el.querySelector('.p-scrollpanel-content').scrollTop === 0) {
-          console.log("Scrolled to the top!");
-          this.$emit('scrolled-top');
-        }
       },
 
       autoResize(){
@@ -274,32 +256,29 @@ import FileListUseRefs from '../File/FileListUseRefs.vue';
       },
       
       scroll_down(smooth = false) {
-        this.$nextTick(() => {
-          const container = this.$refs.chat_scroll_container.$el.querySelector('.p-scrollpanel-content');
-          if (container) {
-            container.style.scrollBehavior = smooth ? 'smooth' : 'auto';
-            container.scrollTop = container.scrollHeight;
-          }
-          console.log("smooth:", smooth);
-        });
+        // this.$nextTick(() => {
+        //   const container = this.$refs.chat_scroll_container.$el.querySelector('.p-scrollpanel-content');
+        //   if (container) {
+        //     container.style.scrollBehavior = smooth ? 'smooth' : 'auto';
+        //     container.scrollTop = container.scrollHeight;
+        //   }
+        //   console.log("smooth:", smooth);
+        // });
+        console.log("smooth:", smooth);
       },
 
       onResize () {
         this.max_mode = this.$refs.main_div.offsetWidth>750 
-        // console.log(this.$refs.main_div.offsetWidth);
       },
     },
     mounted() {
       this.scroll_down(false);
       this.observer = new ResizeObserver(this.onResize)
       this.observer.observe(this.$refs.main_div)
-
-      this.$refs.chat_scroll_container.$el.querySelector('.p-scrollpanel-content').addEventListener('scroll', this.onScroll);
     },
 
     beforeUnmount () {
       this.observer.unobserve(this.$refs.main_div)
-      this.$refs.chat_scroll_container.$el.querySelector('.p-scrollpanel-content').removeEventListener('scroll', this.onScroll);
     }
   };
 </script>
