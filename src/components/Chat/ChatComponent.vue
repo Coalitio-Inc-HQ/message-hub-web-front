@@ -110,7 +110,7 @@
       "is_min_window",
     ],
 
-    // watch: {
+    // watch: { 
     //   'current_chat.messages': {
     //     handler(newValue, oldValue) {
     //       // console.log(oldValue,newValue, oldValue.length ==0);

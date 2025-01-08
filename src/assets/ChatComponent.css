@@ -232,6 +232,10 @@ body{
   border-radius: var(--p-scrollpanel-bar-border-radius);
 }
 
+.message-scroll::-webkit-scrollbar {
+  display: none; /* скрыть скроллбар в Webkit-браузерах */
+}
+
 .dialog-submit-file-scroll{
   gap: 15px;
 }
