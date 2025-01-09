@@ -14,7 +14,7 @@
             @click="$emit('select-user-chat', chat)"
             >
             <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
-              <img :src="chat.icon_url" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
+              <img :src="chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
             </Avatar>
             <Avatar v-else :label="chat.name[0]" />
             <p class="chat-item-text">{{ chat.name }}</p>
@@ -38,7 +38,7 @@
           @click="$emit('select-user-chat', chat)"
           >
             <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
-              <img :src="chat.icon_url" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
+              <img :src="chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
             </Avatar>
             <Avatar v-else :label="chat.name[0]"/>
             <p class="chat-item-text">{{ chat.name }}</p>
@@ -62,7 +62,7 @@
           @click="$emit('select-user-chat', chat)"
           >
               <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
-                <img :src="chat.icon_url" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
+                <img :src="chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
               </Avatar>
               <Avatar v-else :label="chat.name[0]"/>
             <p class="chat-item-text">{{ chat.name }}</p>
@@ -87,7 +87,7 @@
           @click="$emit('select-user-chat', chat)"
           >
             <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
-              <img :src="chat.icon_url" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
+              <img :src="chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
             </Avatar>
             <Avatar v-else :label="chat.name[0]"/>
           <p class="chat-item-text">{{ chat.name }}</p>

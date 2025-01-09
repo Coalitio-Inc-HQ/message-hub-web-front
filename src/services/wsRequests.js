@@ -55,8 +55,6 @@ export function get_chats_in_which_user_is_not_member_Request(send) {
  * @param {number} [offsetMessageId=-1] - Идентификатор сообщения для смещения (по умолчанию -1).
  */
 export function get_messages_by_chat_Request(send, chat, count = 50, offsetMessageId = -1, include_messege=false, mode="up" ) {
-  if (!chat.await_messages){
-    chat.await_messages = true;
     const request = {
       id: uuidv4(),
       name: 'get_messages_by_chat',
@@ -70,7 +68,6 @@ export function get_messages_by_chat_Request(send, chat, count = 50, offsetMessa
     };
     console.log(`Запрос ${request.name}:`, request);
     send(JSON.stringify(request));
-  }
 }
 
 

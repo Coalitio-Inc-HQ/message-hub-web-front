@@ -138,10 +138,18 @@
       },
 
       scrolled_top(chat){
-        if (chat.users){
+        if (chat.users && !chat.await_messages && !chat.scrolled_to_top){
+          chat.await_messages = true;
           get_messages_by_chat_Request(this.connection.send.bind(this.connection), chat, 50, chat.messages[0].id);
         }
       },
+
+      scrolled_down(chat){
+        if (!chat.scrolled_to_down){
+          get_messages_by_chat_Request(this.connection.send.bind(this.connection), chat, 50, chat.messages[0].id);
+        }
+      },
+
 
       set_null_chat(){
         this.current_chat = null;
@@ -162,7 +170,9 @@
           this.current_chat = chat;
           if (!chat.users){
             get_users_by_chat_Request(this.connection.send.bind(this.connection), this.current_chat.id);
-            get_messages_by_chat_Request(this.connection.send.bind(this.connection), this.current_chat);
+            if (! this.current_chat.await_messages){
+              get_messages_by_chat_Request(this.connection.send.bind(this.connection), this.current_chat);
+            }
           }
         }
       },

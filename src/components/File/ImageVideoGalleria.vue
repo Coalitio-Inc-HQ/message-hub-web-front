@@ -7,7 +7,7 @@
                 :key="image.id"
                 @click="openMiniature(image.id,'images')"
             >
-                <img class="miniature-image" :src="image.url" alt="Ошибка загрузки изображения."/>
+                <img class="miniature-image" loading="lazy" :src="image.url" alt="Ошибка загрузки изображения."/>
                 <i class="pi pi-eye miniature-item-show-icon"/>
             </Button>
         </template>
@@ -19,7 +19,7 @@
                 :key="video.id"
                 @click="openMiniature(video.id,'videos')"
             >
-                <img class="miniature-image" :src="video.miniature.url" alt="Ошибка загрузки изображения."/>
+                <img class="miniature-image" loading="lazy" :src="video.miniature.url" alt="Ошибка загрузки изображения."/>
                 <i class="pi pi-caret-right miniature-item-show-icon"/>
             </Button>
         </template>
@@ -33,7 +33,7 @@
                 </div>
             </template>
             <div class="full-container icon-slide-container" @mousemove="showSlideButtons">
-                <img v-if="this.openType=='images'" class="full-image" :src="this.$props.attachments.images[this.openIndex].url" alt="Ошибка загрузки изображения."/>
+                <img v-if="this.openType=='images'" loading="lazy" class="full-image" :src="this.$props.attachments.images[this.openIndex].url" alt="Ошибка загрузки изображения."/>
                 <video v-else class="full-video" :src="this.$props.attachments.videos[this.openIndex].url" controls/>
             
                 <i v-if="this.visible_slide_buttons && (this.openIndex>0 && this.openType=='images' || this.openType=='videos' && this.openIndex>0 || this.openType=='videos' && 'images' in this.$props.attachments && this.$props.attachments.images.length>0)" class="pi pi-chevron-left icon-slide-left" 

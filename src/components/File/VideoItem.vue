@@ -1,6 +1,6 @@
 <template>
     <Button class="preview-button" @click="() =>{if (is_min_window){this.openFullscreen();} else{visible = true;}}">
-        <img class="image" :src="this.preview"/>
+        <img class="image" loading="lazy" :src="this.preview"/>
         <div class="icon">
             <i class="pi pi-caret-right"></i>
         </div>

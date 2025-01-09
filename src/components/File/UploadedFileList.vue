@@ -7,14 +7,14 @@
             @click="openMiniature(file.value.id)"
         >
             <template v-if="file.value.type==='image'">
-                <img class="miniature-image" :src="file.value.url" alt="Ошибка загрузки изображения."/>
+                <img class="miniature-image" loading="lazy" :src="file.value.url" alt="Ошибка загрузки изображения."/>
 
                 <i class="pi pi-eye miniature-acthion-button"/>
                 <i class="pi pi-times miniature-delete-button" style="font-size: 0.75rem" @click="(e)=>{openMiniature(null); file.value.delete_call(); e.preventDefault();}"/>
             </template>
             <template v-else-if="file.value.type==='video'" >
                 <i v-if="file.value.miniature.loging" class="pi pi-spin pi-spinner"/>
-                <img v-else class="miniature-image" :src="file.value.miniature.url" alt="Ошибка загрузки видео."/>
+                <img v-else class="miniature-image" loading="lazy" :src="file.value.miniature.url" alt="Ошибка загрузки видео."/>
 
                 <i class="pi pi-caret-right miniature-acthion-button"/>
                 <i class="pi pi-times miniature-delete-button" style="font-size: 0.75rem" @click="(e)=>{openMiniature(null); file.value.delete_call(); e.preventDefault();}"/>
@@ -39,7 +39,7 @@
                 </div>
             </template>
             <div class="drawer-content-container" @mousemove="showSlideButtons">
-                <img v-if="this.files[this.openIndex].value.type==='image'" class="drawer-content-container-image" :src="this.files[this.openIndex].value.url" alt="Ошибка загрузки изображения."/>
+                <img v-if="this.files[this.openIndex].value.type==='image'" loading="lazy" class="drawer-content-container-image" :src="this.files[this.openIndex].value.url" alt="Ошибка загрузки изображения."/>
                 <video v-else-if="this.files[this.openIndex].value.type==='video'" class="drawer-content-container-video" :src="this.files[this.openIndex].value.url" controls/>
                 <template v-else-if="this.files[this.openIndex].value.type==='file'">
                     <Button class="drawer-content-container-file-container flex-list" @click="this.downloadFile(this.files[this.openIndex].value.url,this.files[this.openIndex].value.name)">

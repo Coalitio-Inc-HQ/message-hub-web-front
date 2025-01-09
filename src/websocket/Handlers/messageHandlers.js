@@ -40,12 +40,30 @@ export async function handleGetMessagesByChat(context, message) {
                     context.chats[index].messages = messages.concat( (context.chats[index].messages?context.chats[index].messages:[]));
     
                     context.chats[index].await_messages = false;
+                    if (messages.length<50) context.chats[index].scrolled_to_top=true;
                     break;
                 }        
             }
         }
     }
     
+    if (mode == "down"&& !include_messege){
+        if (messages.length>0){
+            for (let index = 0; index < context.chats.length; index++) {
+                if (context.chats[index].id == messages[0].chat_id){
+                    // for (let i = 0; i < messages.length; i++) {
+                    //     messages[i].sended_at = extract_time_from_timestamp_handler(messages[i].sended_at);
+                    // }
+                   
+                    context.chats[index].messages = (context.chats[index].messages?context.chats[index].messages:[]).concat(messages);
+    
+                    context.chats[index].await_down_messages = false;
+                    if (messages.length<50) context.chats[index].scrolled_to_down=true;
+                    break;
+                }        
+            }
+        } 
+    }
 
 }
 
@@ -304,6 +322,8 @@ export async function handleGetChats(context, message) {
         // }
         chats[i].is_not_connected = !chats[i].user_in_chat
         chats[i].messages = [];
+        chats[i].scrolled_to_down = false;
+        chats[i].scrolled_to_top= false;
     }
     context.chats = context.chats.concat(chats);
 }
@@ -360,6 +380,8 @@ export async function handleChatUpdate(context, message) {
         // is_archive == True?
         chat.is_not_connected = true;
         chat.messages = [];
+        chat.scrolled_to_down = false;
+        chat.scrolled_to_top= false;
         context.chats.push(chat);
     }
 }

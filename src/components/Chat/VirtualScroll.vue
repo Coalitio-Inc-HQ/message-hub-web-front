@@ -36,6 +36,8 @@
     const loging = false;
     const buffer_size = 10;
     let global_id = 0;
+    let mouseMoveTimeout = setTimeout(() => {}, 0);
+
 
     export default {
         components:{
@@ -81,6 +83,8 @@
                 let vis = false;
                 let tovis = [];
                 let postvis = [];
+                let fist_vis = null;
+                let last_vis = null;
                 // Проходим по всем элементам и проверяем их видимость
                 for (let i=this.up_index; i<=this.down_index;i++){
                     const temp = this.$refs[`item-${i}`];
@@ -95,6 +99,9 @@
 
                             if (isVisible) {
                                 if (log_chek_visible) console.log(`Элемент ${i} ${this.visible_items[i]} видим`);
+
+                                if (!vis) fist_vis = i;
+                                last_vis = i;
                                 vis = true;
                             } 
                             else {
@@ -154,7 +161,7 @@
                         this.LazyCall (()=>{
                             if (GlobalIndex) this.scrollToElement(GlobalIndex);
                             this.checkVisible(id, GlobalIndex);
-                            this.updateThumb();
+                            this.updateThumb(fist_vis, last_vis);
                         });
                         // this.$nextTick(()=>{
                         //     if (GlobalIndex) this.scrollToElement(GlobalIndex);
@@ -167,7 +174,7 @@
                         this.LazyCall (()=>{
                             if (GlobalIndex) this.scrollToElement(GlobalIndex);
                             this.checkVisible(id, GlobalIndex);
-                            this.updateThumb();
+                            this.updateThumb(fist_vis, last_vis);
                         });
                         // this.$nextTick(()=>{
                         //     if (GlobalIndex) this.scrollToElement(GlobalIndex);
@@ -176,6 +183,7 @@
                         return;
                     } else{
                         // невозможно расширение недостаточная длинна массива
+                        this.updateThumb(fist_vis, last_vis);
                         this.$emit('scrollde-to-top',this.$props.current_chat);
                         this.$emit('scrollde-to-down',this.$props.current_chat);
                         return;
@@ -208,12 +216,13 @@
                         this.up_index -= up_count;
                         this.LazyCall (()=>{
                             this.checkVisible(id);
-                            this.updateThumb();
+                            this.updateThumb(fist_vis, last_vis);
                         });
                         // this.checkVisible();
                         return;
                     } else{
                         // невозможно расширение недостаточная длинна массива
+                        this.updateThumb(fist_vis, last_vis);
                         this.$emit('scrollde-to-top',this.$props.current_chat);
                         return;
                     }
@@ -224,27 +233,35 @@
                         this.down_index += down_count;
                         this.LazyCall (()=>{
                             this.checkVisible(id);
-                            this.updateThumb();
+                            this.updateThumb(fist_vis, last_vis);
                         });
                         // this.checkVisible();
                         return;
                     } else{
                         // невозможно расширение недостаточная длинна массива
+                        this.updateThumb(fist_vis, last_vis);
                         this.$emit('scrollde-to-down',this.$props.current_chat);
                         return;
                     }
                 }
             },
 
-            scrollToElement(index) {
+            scrollToElement(index, animate = false) {
                 let temp = this.$refs[`item-${index}`];
                 if(temp){
                     const element = temp[0];
                     if (element) {
-                        // Прокручиваем его в область видимости
-                        element.scrollIntoView({
-                        block: 'end', // Элемент будет выровнен по верхнему краю контейнера
-                        });
+                        if (animate){
+                            element.scrollIntoView({
+                                behavior: "smooth",
+                                block: 'end', 
+                            });
+                        }
+                        else{
+                            element.scrollIntoView({
+                                block: 'end', 
+                            });
+                        }
                     }
                 }
                 // Получаем элемент по его рефу
@@ -261,7 +278,7 @@
                 // }, 50);
             },
 
-            updateThumb() {
+            updateThumb(up_index, down_index) {
                 // const scrollbarrHeight = this.$refs.scrollbar.offsetHeight;
                 // const thumbHeight = this.$refs.thumb.offsetHeight;
                 // this.thumbTop = ((scrollbarrHeight-thumbHeight)/this.$props.current_chat.messages.length)*(this.down_index+this.up_index)/2;
@@ -272,8 +289,8 @@
                 // this.thumbTop = (scrollbarrHeight-this.thumbHeight)/this.$props.current_chat.messages.length*(this.down_index+this.up_index)/2;
 
                 const scrollbarrHeight = this.$refs.scrollbar.offsetHeight;
-                const visible_items = this.down_index - this.up_index;
-                const relative_start = this.up_index / this.$props.current_chat.messages.length;
+                const visible_items = down_index - up_index+1;
+                const relative_start = up_index / this.$props.current_chat.messages.length;
                 const relative_length = visible_items / this.$props.current_chat.messages.length;
 
                 this.thumbTop = relative_start * scrollbarrHeight;
@@ -315,10 +332,14 @@
                     const index = Math.min(Math.round(clickPosition/(scrollbarrHeight/this.$props.current_chat.messages.length)),this.$props.current_chat.messages.length-1);
                     // console.log(index, clickPosition, scrollbarrHeight,event);
                     if (this.up_index<=index &&index <=this.down_index){
-                        this.scrollToElement(index);
+                        this.scrollToElement(index, true);
                     }
                     else{
-                        this.setLastItem(index);
+                        this.updateThumb(index,index);
+                        clearTimeout(mouseMoveTimeout);
+                        mouseMoveTimeout = setTimeout(() => {
+                            this.setLastItem(index);
+                        }, 500);
                     }
                 }
             },
@@ -331,10 +352,14 @@
                     const index = Math.min(Math.round(clickPosition/(scrollbarrHeight/this.$props.current_chat.messages.length)),this.$props.current_chat.messages.length-1);
                     // console.log(index, clickPosition, scrollbarrHeight,event);
                     if (this.up_index<=index &&index <=this.down_index){
-                        this.scrollToElement(index);
+                        this.scrollToElement(index, true);
                     }
                     else{
-                        this.setLastItem(index);
+                        this.updateThumb(index,index);
+                        clearTimeout(mouseMoveTimeout);
+                        mouseMoveTimeout = setTimeout(() => {
+                            this.setLastItem(index);
+                        }, 500);
                     }
                 }
             },
