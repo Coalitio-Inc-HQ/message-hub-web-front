@@ -250,11 +250,13 @@
                         else{
                             if (newValue.messages.length){
                                 if (this.lastFistMessageId && newValue.messages[0].id!=this.lastFistMessageId){
-                                    let newIndex = newValue.findIndex((item)=>item.id == this.lastFistMessageId);
-                                    this.setLastItem(this.down_index+newIndex-buffer_size);
+                                    let newIndex = newValue.messages.findIndex((item)=>item.id == this.lastFistMessageId);
+                                    this.down_index+=newIndex;
+                                    this.up_index+=newIndex;
+                                    // this.setLastItem(this.down_index+newIndex-buffer_size);
                                 } 
                                 else{
-                                    this.setLastItem(newValue.messages.length-1);
+                                    if (this.up_index == null && this.down_index == null) this.setLastItem(newValue.messages.length-1);
                                 }
                             }
                             else{

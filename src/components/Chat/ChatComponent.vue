@@ -8,7 +8,13 @@
         <Button @click="this.$emit('chat-remove-to-archive')" style="width: auto;">Отправить чат в архив</Button>
       </Popover>
     </div>
-    <VirtualScroll ref="chat_scroll_container" step="20" :current_chat="current_chat" :max_mode="max_mode" :this_user_id="this_user_id">
+    <VirtualScroll 
+      ref="chat_scroll_container" 
+      :current_chat="current_chat" 
+      :max_mode="max_mode" 
+      :this_user_id="this_user_id"
+      @scrollde-to-top="(chat)=>{this.$emit('scrolled-top', chat);}"
+    >
       <template #message="{ message }">
             <div class="message-sender-name">{{ get_user_name(message.sender_id) }}</div>
             <template v-if="'use_ref' in message.attachments && message.attachments.use_ref">
@@ -29,7 +35,7 @@
             </template>
             <div class="message-text">{{ message.text }}</div>
             <div class="message-timestamp">
-              <template v-if="message.id!=-1">
+              <template v-if="message.id>=0">
                 {{ format_time_for_display(message.sended_at) }}
               </template>
               <i v-else class="pi pi-spin pi-spinner" style="font-size: 0.5rem"></i>
@@ -110,7 +116,7 @@
       "is_min_window",
     ],
 
-    // watch: { 
+    watch: { 
     //   'current_chat.messages': {
     //     handler(newValue, oldValue) {
     //       // console.log(oldValue,newValue, oldValue.length ==0);
@@ -135,14 +141,16 @@
     //     deep: true,
     //     immediate: true
     //   },
-    //   'current_chat': {
-    //     handler() {
-    //       this.scroll_down(false);
-    //     },
-    //     deep: false,
-    //     immediate: true
-    //   }
-    // },
+      'current_chat': {
+        handler() {
+          this.message_input = ''; 
+          if(this.$refs.messageInput) this.$refs.messageInput.value = '';
+          this.selected_files = [];
+        },
+        deep: false,
+        immediate: true
+      }
+    },
 
     data(){
       return{
@@ -229,7 +237,8 @@
         this.$emit('send-message', this.message_input, this.selected_files);
         this.message_input = ''; 
         this.$refs.messageInput.value = '';
-        this.scroll_down(true);
+        this.selected_files = [];
+        this.$refs.chat_scroll_container.setLastItem(this.$props.current_chat.messages.length-1);
       },
 
       handle_key_down(event) {
@@ -255,24 +264,25 @@
         }
       },
       
-      scroll_down(smooth = false) {
-        // this.$nextTick(() => {
-        //   const container = this.$refs.chat_scroll_container.$el.querySelector('.p-scrollpanel-content');
-        //   if (container) {
-        //     container.style.scrollBehavior = smooth ? 'smooth' : 'auto';
-        //     container.scrollTop = container.scrollHeight;
-        //   }
-        //   console.log("smooth:", smooth);
-        // });
-        console.log("smooth:", smooth);
-      },
+      // scroll_down(smooth = false) {
+      //   // this.$nextTick(() => {
+      //   //   const container = this.$refs.chat_scroll_container.$el.querySelector('.p-scrollpanel-content');
+      //   //   if (container) {
+      //   //     container.style.scrollBehavior = smooth ? 'smooth' : 'auto';
+      //   //     container.scrollTop = container.scrollHeight;
+      //   //   }
+      //   //   console.log("smooth:", smooth);
+      //   // });
+      //   console.log("smooth:", smooth);
+      // },
 
       onResize () {
         this.max_mode = this.$refs.main_div.offsetWidth>750 
       },
     },
+
     mounted() {
-      this.scroll_down(false);
+      // this.scroll_down(false);
       this.observer = new ResizeObserver(this.onResize)
       this.observer.observe(this.$refs.main_div)
     },

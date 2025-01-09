@@ -23,28 +23,34 @@ export async function handleGetMessagesByChat(context, message) {
     console.log("Handler get_messages_by_chat:", message);
     let body = message.body; 
     let messages = body.messages;
+    let mode = body.mode;
+    let include_messege = body.include_messege;
 
     messages.forEach(messagePrepere);
-
     console.log('messages:', messages);
-    if (messages.length>0){
-        for (let index = 0; index < context.chats.length; index++) {
-            if (context.chats[index].id == messages[0].chat_id){
-                for (let i = 0; i < messages.length; i++) {
-                    messages[i].sended_at = extract_time_from_timestamp_handler(messages[i].sended_at);
-                }
-               
-                context.chats[index].messages = messages.concat( (context.chats[index].messages?context.chats[index].messages:[]));
 
-                context.chats[index].await_messages = false;
-                break;
-            }        
+    if (mode == "up" && !include_messege){
+        if (messages.length>0){
+            for (let index = 0; index < context.chats.length; index++) {
+                if (context.chats[index].id == messages[0].chat_id){
+                    // for (let i = 0; i < messages.length; i++) {
+                    //     messages[i].sended_at = extract_time_from_timestamp_handler(messages[i].sended_at);
+                    // }
+                   
+                    context.chats[index].messages = messages.concat( (context.chats[index].messages?context.chats[index].messages:[]));
+    
+                    context.chats[index].await_messages = false;
+                    break;
+                }        
+            }
         }
     }
+    
 
 }
 
 function messagePrepere(msg){
+    msg.sended_at = extract_time_from_timestamp_handler(msg.sended_at);
     if ("attachments" in msg){
         if ("images" in msg.attachments){
             msg.attachments.images.forEach((item)=>{item.id = uuidv4();});
@@ -181,7 +187,8 @@ export async function handleNewUserInChat(context, message) {
 
     for (let index = 0; index < context.chats.length; index++) {
         if(context.chats[index].id == chat.id){
-            context.chats[index].users.push(user);
+            if (context.chats[index].users) context.chats[index].users.push(user);
+            if (user.id==context.this_user_id) context.chats[index].is_not_connected=false;
             break;
         }
     }

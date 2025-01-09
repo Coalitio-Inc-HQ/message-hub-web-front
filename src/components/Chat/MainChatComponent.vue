@@ -137,9 +137,9 @@
         remove_to_archive_Request(this.connection.send.bind(this.connection), this.current_chat.id);
       },
 
-      scrolled_top(){
-        if (this.current_chat.users){
-          get_messages_by_chat_Request(this.connection.send.bind(this.connection), this.current_chat, 50, this.current_chat.messages[0].id);
+      scrolled_top(chat){
+        if (chat.users){
+          get_messages_by_chat_Request(this.connection.send.bind(this.connection), chat, 50, chat.messages[0].id);
         }
       },
 
@@ -290,7 +290,7 @@
         });
 
         return {
-          id: -1,
+          id: -chat.message_iterator,
           chat_id: chat.id,
           sender_id: this.this_user_id,
           sended_at: new Date().toISOString(),
