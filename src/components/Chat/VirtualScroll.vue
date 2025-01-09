@@ -52,6 +52,7 @@
                 up_index: null,
                 down_index: null,
                 thumbTop: 10,
+                thumbHeight: 10,
             }
         },
   
@@ -261,9 +262,23 @@
             },
 
             updateThumb() {
+                // const scrollbarrHeight = this.$refs.scrollbar.offsetHeight;
+                // const thumbHeight = this.$refs.thumb.offsetHeight;
+                // this.thumbTop = ((scrollbarrHeight-thumbHeight)/this.$props.current_chat.messages.length)*(this.down_index+this.up_index)/2;
+
+                // const scrollbarrHeight = this.$refs.scrollbar.offsetHeight;
+                // const heightPerIndex = scrollbarrHeight/this.$props.current_chat.messages.length;
+                // this.thumbHeight = (this.down_index-this.up_index+1)* heightPerIndex;
+                // this.thumbTop = (scrollbarrHeight-this.thumbHeight)/this.$props.current_chat.messages.length*(this.down_index+this.up_index)/2;
+
                 const scrollbarrHeight = this.$refs.scrollbar.offsetHeight;
-                const thumbHeight = this.$refs.thumb.offsetHeight;
-                this.thumbTop = ((scrollbarrHeight-thumbHeight)/this.$props.current_chat.messages.length)*(this.up_index+(this.down_index-this.up_index)/2);
+                const visible_items = this.down_index - this.up_index;
+                const relative_start = this.up_index / this.$props.current_chat.messages.length;
+                const relative_length = visible_items / this.$props.current_chat.messages.length;
+
+                this.thumbTop = relative_start * scrollbarrHeight;
+                this.thumbHeight = relative_length * scrollbarrHeight;
+
             },
 
             // onScrollbarMouseDown(event) {
@@ -286,6 +301,7 @@
 
             onThumbMouseMove(event) {
                 if (this.isDragging) {
+                    console.log(event);
                     // const deltaY = event.clientY - this.startY;
                     // const container = this.$refs.content;
                     // const contentHeight = container.scrollHeight;
@@ -298,7 +314,12 @@
                     const clickPosition = event.offsetY;
                     const index = Math.min(Math.round(clickPosition/(scrollbarrHeight/this.$props.current_chat.messages.length)),this.$props.current_chat.messages.length-1);
                     // console.log(index, clickPosition, scrollbarrHeight,event);
-                    this.scrollToElement(index);
+                    if (this.up_index<=index &&index <=this.down_index){
+                        this.scrollToElement(index);
+                    }
+                    else{
+                        this.setLastItem(index);
+                    }
                 }
             },
 
@@ -309,7 +330,12 @@
                     const clickPosition = event.targetTouches[0].clientY - rect.top;
                     const index = Math.min(Math.round(clickPosition/(scrollbarrHeight/this.$props.current_chat.messages.length)),this.$props.current_chat.messages.length-1);
                     // console.log(index, clickPosition, scrollbarrHeight,event);
-                    this.scrollToElement(index);
+                    if (this.up_index<=index &&index <=this.down_index){
+                        this.scrollToElement(index);
+                    }
+                    else{
+                        this.setLastItem(index);
+                    }
                 }
             },
         },
@@ -320,11 +346,13 @@
             this.$refs.thumb.addEventListener("mouseup", this.onThumbMouseUp);
             this.$refs.main.addEventListener("mouseleave", this.onThumbMouseUp);
             window.addEventListener("mousemove", this.onThumbMouseMove);
+            this.$refs.thumb.addEventListener("mousemove", this.onThumbMouseMove);
 
             this.$refs.main.addEventListener("touchend", this.onThumbMouseUp);
             this.$refs.scrollbar.addEventListener("touchend", this.onThumbMouseUp);
             this.$refs.thumb.addEventListener("touchend", this.onThumbMouseUp);
             window.addEventListener("touchmove", this.onThumbTouchMove);
+            this.$refs.thumb.addEventListener("touchmove", this.onThumbTouchMove);
 
             this.observer = new ResizeObserver(this.onResize);
             this.observer.observe(this.$refs.container);
@@ -338,11 +366,13 @@
             this.$refs.thumb.removeEventListener("mouseup", this.onThumbMouseUp);
             this.$refs.main.removeEventListener("mouseleave", this.onThumbMouseUp);
             window.removeEventListener("mousemove", this.onThumbMouseMove);
+            this.$refs.thumb.removeEventListener("mousemove", this.onThumbMouseMove);
 
             this.$refs.main.removeEventListener("touchend", this.onThumbMouseUp);
             this.$refs.scrollbar.removeEventListener("touchend", this.onThumbMouseUp);
             this.$refs.thumb.removeEventListener("touchend", this.onThumbMouseUp);
             window.removeEventListener("touchmove", this.onThumbTouchMove);
+            this.$refs.thumb.removeEventListener("touchmove", this.onThumbTouchMove);
 
             this.observer.unobserve(this.$refs.container);
         },
@@ -401,6 +431,7 @@
             thumbStyle() {
                 return {
                     top: `${this.thumbTop}px`,
+                    height: `${this.thumbHeight}px`,
                 };
             },
         },
