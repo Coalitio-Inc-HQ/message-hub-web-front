@@ -8,7 +8,7 @@
         <Button @click="this.$emit('chat-remove-to-archive')" style="width: auto;">Отправить чат в архив</Button>
       </Popover>
     </div>
-    <VirtualScroll v-if="this.current_chat" ref="chat_scroll_container" step="20" :current_chat="current_chat" :max_mode="max_mode" :this_user_id="this_user_id">
+    <VirtualScroll ref="chat_scroll_container" step="20" :current_chat="current_chat" :max_mode="max_mode" :this_user_id="this_user_id">
       <template #message="{ message }">
             <div class="message-sender-name">{{ get_user_name(message.sender_id) }}</div>
             <template v-if="'use_ref' in message.attachments && message.attachments.use_ref">

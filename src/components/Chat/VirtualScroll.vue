@@ -1,20 +1,22 @@
 <template>
     <div class="flex-scale dialog-messges-base flex-list overflow-h-auto message-scroll" ref="container" @scroll="checkVisible">
         <div ref="sizeChek">
-        <template v-for="(message, index) in this.visible_items" 
-        :key="message.sender_id + message.sended_at">
-            <div
-                :class="{ 
-                'message': true,
-                'flex-list': true,
-                'message-self': message.sender_id == this.this_user_id, 
-                'message-other': message.sender_id !== this.this_user_id,
-                'max-mode': this.max_mode
-                }"
-                :ref="`item-${index}`"
-            >
-                <slot name="message" :message="message"></slot>
-            </div>
+        <template v-if="this.down_index != null && this.up_index !=null && this.$props.current_chat && this.$props.current_chat.messages">
+            <template v-for="(index) in this.down_index-this.up_index+1" 
+            :key="current_chat.messages[this.up_index+index-1].id">
+                <div
+                    :class="{ 
+                    'message': true,
+                    'flex-list': true,
+                    'message-self': current_chat.messages[this.up_index+index-1].sender_id == this.this_user_id, 
+                    'message-other': current_chat.messages[this.up_index+index-1].sender_id !== this.this_user_id,
+                    'max-mode': this.max_mode
+                    }"
+                    :ref="`item-${this.up_index+index-1}`"
+                >
+                    <slot name="message" :message="current_chat.messages[this.up_index+index-1]"></slot>
+                </div>
+            </template>
         </template>
         </div>
     </div>
@@ -22,6 +24,7 @@
   
 <script>
     const log_chek_visible = false;
+    const buffer_size = 10;
 
     export default {
         components:{
@@ -35,26 +38,20 @@
   
         data(){
             return{
-                visible_items: [],
                 up_index: null,
                 down_index: null,
             }
         },
   
         methods: {
-            // returnToInit(){
-            //     this.visible_items = [];
-            //     this.up_index = null;
-            //     this.down_index = null;
-            // },
 
             setLastItem(index) {
                 if (this.$props.current_chat.messages[index]){
                     this.up_index = index;
                     this.down_index = index;
-                    this.visible_items = [this.$props.current_chat.messages[index]];
 
-                    this.$nextTick(()=>{this.checkVisible(index);});
+                    // this.$nextTick(()=>{this.checkVisible(index);});
+                    this.LazyCall (()=>{this.checkVisible(index);});
                 }
             },
 
@@ -67,9 +64,10 @@
                 let tovis = [];
                 let postvis = [];
                 // Проходим по всем элементам и проверяем их видимость
-                this.visible_items.forEach((item, index) => {
-                    const temp = this.$refs[`item-${index}`];
+                for (let i=this.up_index; i<=this.down_index;i++){
+                    const temp = this.$refs[`item-${i}`];
                     if (temp){
+                    // try{
                         const element = temp[0]; // Массив рефов
                         if (element){
                             const rect = element.getBoundingClientRect();
@@ -79,37 +77,41 @@
                             const isVisible = (rect.top >= 0 && rect.top <= container.clientHeight) || (rect.bottom >= 0 && rect.bottom <= container.clientHeight) || rect.top <= 0 && rect.bottom >= container.clientHeight;
 
                             if (isVisible) {
-                                if (log_chek_visible) console.log(`Элемент ${index} ${this.visible_items[index]} видим`);
+                                if (log_chek_visible) console.log(`Элемент ${i} ${this.visible_items[i]} видим`);
                                 vis = true;
                             } 
                             else {
                                 if (vis) {
-                                    postvis.push(index);
-                                    console.log(index);
+                                    postvis.push(i);
+                                    // console.log(i);
                                 } 
                                 else {
-                                    tovis.push(index);
-                                    console.log(index, rect);
+                                    tovis.push(i);
+                                    // console.log(i, rect);
                                 }
                             }
                         }
                     }
-                });
-                console.log(tovis,postvis);
-                if (postvis.length>1) {
-                    this.visible_items.splice(postvis[1],postvis.length-1);
-                    this.down_index = this.down_index - postvis.length+1;
-                } 
-                if (tovis.length>1) {
-                    this.visible_items.splice(0, tovis.length-1);
-                    this.up_index = this.up_index + tovis.length-1;
+                    // } catch(e){
+                    //     console.log(e);
+                    // }
                 }
 
-                let up = tovis.length==0;
-                let down = postvis.length==0;
+                console.log(tovis,postvis);
+                if (postvis.length>buffer_size) {
+                    this.down_index = this.down_index - (postvis.length-buffer_size);
+                } 
+                if (tovis.length>buffer_size) {
+                    this.up_index = this.up_index + (tovis.length-buffer_size);
+                }
+
+                let up = tovis.length<buffer_size;
+                let down = postvis.length<buffer_size;
 
                 let can_up = this.up_index>0;
+                let up_count = Math.max(Math.min(buffer_size,buffer_size-tovis.length, this.up_index),0);
                 let can_down = this.down_index<this.$props.current_chat.messages.length-1;
+                let down_count = Math.max(Math.min(buffer_size, buffer_size-postvis.length, this.$props.current_chat.messages.length-1-this.down_index),0);
 
                 if (up&&down){
                     if (can_up){
@@ -125,21 +127,27 @@
                             console.log(previousScrollTop, heightDiff)
                         });
 
-                        this.visible_items.unshift(this.$props.current_chat.messages[this.up_index - 1]);
-                        this.up_index -= 1;
-                        this.$nextTick(()=>{
+                        this.up_index -= up_count;
+                        this.LazyCall (()=>{
                             if (GlobalIndex) this.scrollToElement(GlobalIndex);
                             this.checkVisible(GlobalIndex);
                         });
+                        // this.$nextTick(()=>{
+                        //     if (GlobalIndex) this.scrollToElement(GlobalIndex);
+                        //     this.checkVisible(GlobalIndex);
+                        // });
                         return;
                     } else if (can_down){
                         // расширение в в низ
-                        this.visible_items.push(this.$props.current_chat.messages[this.down_index + 1]);
-                        this.down_index += 1;
-                        this.$nextTick(()=>{
+                        this.down_index += down_count;
+                        this.LazyCall (()=>{
                             if (GlobalIndex) this.scrollToElement(GlobalIndex);
                             this.checkVisible(GlobalIndex);
                         });
+                        // this.$nextTick(()=>{
+                        //     if (GlobalIndex) this.scrollToElement(GlobalIndex);
+                        //     this.checkVisible(GlobalIndex);
+                        // });
                         return;
                     } else{
                         // невозможно расширение недостаточная длинна массива
@@ -161,9 +169,11 @@
                             container.scrollTop = previousScrollTop + heightDiff;
                         });
 
-                        this.visible_items.unshift(this.$props.current_chat.messages[this.up_index - 1]);
-                        this.up_index -= 1;
-                        this.checkVisible();
+                        this.up_index -= up_count;
+                        this.LazyCall (()=>{
+                            this.checkVisible();
+                        });
+                        // this.checkVisible();
                         return;
                     } else{
                         // невозможно расширение недостаточная длинна массива
@@ -174,9 +184,11 @@
                 if (down){
                     if (can_down){
                         // расширение в в низ
-                        this.visible_items.push(this.$props.current_chat.messages[this.down_index + 1]);
-                        this.down_index += 1;
-                        this.checkVisible();
+                        this.down_index += down_count;
+                        this.LazyCall (()=>{
+                            this.checkVisible();
+                        });
+                        // this.checkVisible();
                         return;
                     } else{
                         // невозможно расширение недостаточная длинна массива
@@ -187,8 +199,7 @@
             },
 
             scrollToElement(index) {
-                let local_index = index - this.up_index;
-                let temp = this.$refs[`item-${local_index}`];
+                let temp = this.$refs[`item-${index}`];
                 if(temp){
                     const element = temp[0];
                     if (element) {
@@ -203,12 +214,18 @@
             },
 
             onResize(){
-                this.setLastItem();
+                if (this.$props.current_chat && this.$props.current_chat.messages.length) this.setLastItem();
             },
+
+            LazyCall(func){
+                // setTimeout(() => {
+                    this.$nextTick(func);
+                // }, 50);
+            }
         },
 
         mounted() {
-            if (this.$props.current_chat.messages.length) this.setLastItem(this.$props.current_chat.messages.length-1);
+            if (this.$props.current_chat && this.$props.current_chat.messages.length) this.setLastItem(this.$props.current_chat.messages.length-1);
             this.observer = new ResizeObserver(this.onResize);
             this.observer.observe(this.$refs.container);
         },
@@ -218,30 +235,46 @@
         },
   
         watch:{
-            "current_chat.messages":{
+            "current_chat":{
                 handler(newValue, oldValue){
-                    console.log("sad", newValue, oldValue);
-                    if (newValue.length){
-                        if(oldValue && oldValue.length){
-                            let newIndex = newValue.findIndex((item)=>item.id == oldValue[0].id);
-                            this.setLastItem(this.down_index+newIndex-1);
-                        } else{
-                            this.setLastItem(newValue.length-1);
+                    console.log(newValue, oldValue);
+                    if (newValue){
+                        if (newValue.id != this.lastChatId){
+                            if(newValue.messages.length){
+                                this.setLastItem(newValue.messages.length-1);
+                            } else{
+                                this.up_index = null;
+                                this.down_index = null;
+                            }
+                        } 
+                        else{
+                            if (newValue.messages.length){
+                                if (this.lastFistMessageId && newValue.messages[0].id!=this.lastFistMessageId){
+                                    let newIndex = newValue.findIndex((item)=>item.id == this.lastFistMessageId);
+                                    this.setLastItem(this.down_index+newIndex-buffer_size);
+                                } 
+                                else{
+                                    this.setLastItem(newValue.messages.length-1);
+                                }
+                            }
+                            else{
+                                this.up_index = null;
+                                this.down_index = null;                                
+                            }
                         }
+                        if (newValue.messages.length) this.lastFistMessageId = newValue.messages[0].id;
+                        else this.lastFistMessageId = null;
+                        this.lastChatId = newValue.id;
+                    }
+                    else{
+                        this.lastChatId = null;
+                        this.lastFistMessageId = null;
+                        this.up_index = null;
+                        this.down_index = null;   
                     }
                 },
                 immediate: true,
                 deep: true,
-            },
-            "current_chat":{
-                handler(newValue, oldValue){
-                    console.log("sad", newValue, oldValue);
-                    if (newValue.id != oldValue.id){
-                        if(this.$props.current_chat.messages.length){
-                            this.setLastItem(this.$props.current_chat.messages.length-1);
-                        } 
-                    } 
-                },
             },
         },
     };
