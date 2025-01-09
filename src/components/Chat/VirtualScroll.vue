@@ -1,6 +1,6 @@
 <template>
-    <div class="flex-scale dialog-messges-base flex-list overflow-h-auto message-scroll" ref="container" @scroll="checkVisible">
-        <div ref="sizeChek">
+    <div class="flex-scale dialog-messges-base overflow-h-auto message-scroll" ref="container" @scroll="checkVisible">
+        <div ref="sizeChek" class="flex-list">
         <template v-if="this.down_index != null && this.up_index !=null && this.$props.current_chat && this.$props.current_chat.messages">
             <template v-for="(index) in this.down_index-this.up_index+1" 
             :key="current_chat.messages[this.up_index+index-1].id">
@@ -116,15 +116,24 @@
                 if (up&&down){
                     if (can_up){
                         // расширение в верх
-                        const container = this.$refs.container;
-                        const sizeChek = this.$refs.sizeChek;
-                        const previousScrollHeight = sizeChek.scrollHeight;
-                        const previousScrollTop = container.scrollTop;
-                        requestAnimationFrame (() => {
-                            const newScrollHeight = sizeChek.scrollHeight;
-                            const heightDiff = newScrollHeight - previousScrollHeight;
-                            container.scrollTop = previousScrollTop + heightDiff;
-                            console.log(previousScrollTop, heightDiff)
+                        // const container = this.$refs.container;
+                        // const sizeChek = this.$refs.sizeChek;
+                        // const previousScrollHeight = sizeChek.scrollHeight;
+                        // const previousScrollTop = container.scrollTop;
+                        // this.LazyCall (() => {
+                        //     const newScrollHeight = sizeChek.scrollHeight;
+                        //     const heightDiff = newScrollHeight - previousScrollHeight;
+                        //     container.scrollTop = previousScrollTop + heightDiff;
+                        //     console.log(previousScrollTop, heightDiff)
+                        // });
+                        const item_index = tovis.length? tovis[tovis.length-1]+1: this.up_index;
+                        const item = this.$refs[`item-${item_index}`][0];
+                        const old_recrt = item.getBoundingClientRect();
+                        this.LazyCall (() => {
+                            const new_recrt = item.getBoundingClientRect();
+                            const heightDiff = new_recrt.top - old_recrt.top;
+                            container.scrollTop += heightDiff;
+                            console.log( heightDiff)
                         });
 
                         this.up_index -= up_count;
@@ -159,14 +168,23 @@
                 if (up){
                     if (can_up){
                         // расширение в верх
-                        const container = this.$refs.container;
-                        const sizeChek = this.$refs.sizeChek;
-                        const previousScrollHeight = sizeChek.scrollHeight;
-                        const previousScrollTop = container.scrollTop;
-                        requestAnimationFrame(() => {
-                            const newScrollHeight = sizeChek.scrollHeight;
-                            const heightDiff = newScrollHeight - previousScrollHeight;
-                            container.scrollTop = previousScrollTop + heightDiff;
+                        // const container = this.$refs.container;
+                        // const sizeChek = this.$refs.sizeChek;
+                        // const previousScrollHeight = sizeChek.scrollHeight;
+                        // const previousScrollTop = container.scrollTop;
+                        // this.LazyCall(() => {
+                        //     const newScrollHeight = sizeChek.scrollHeight;
+                        //     const heightDiff = newScrollHeight - previousScrollHeight;
+                        //     container.scrollTop = previousScrollTop + heightDiff;
+                        // });
+                        const item_index = tovis.length? tovis[tovis.length-1]+1: this.up_index;
+                        const item = this.$refs[`item-${item_index}`][0];
+                        const old_recrt = item.getBoundingClientRect();
+                        this.LazyCall (() => {
+                            const new_recrt = item.getBoundingClientRect();
+                            const heightDiff = new_recrt.top - old_recrt.top;
+                            container.scrollTop += heightDiff;
+                            console.log( heightDiff)
                         });
 
                         this.up_index -= up_count;
@@ -254,6 +272,10 @@
                                     this.down_index+=newIndex;
                                     this.up_index+=newIndex;
                                     // this.setLastItem(this.down_index+newIndex-buffer_size);
+                                    
+                                    this.LazyCall (()=>{
+                                        this.checkVisible();
+                                    });
                                 } 
                                 else{
                                     if (this.up_index == null && this.down_index == null) this.setLastItem(newValue.messages.length-1);
@@ -284,6 +306,7 @@
   
   <style scoped>
   @import '@/assets/ChatComponent.css'; 
+  @import '@/assets/VirtualScroll.css'; 
   @import 'primeicons/primeicons.css';
   @import '@/assets/Layout.css';
   </style>
