@@ -1,6 +1,6 @@
 <template>
-    <div class="flex-scale dialog-messges-base overflow-h-auto message-scroll" ref="container" @scroll="checkVisible">
-        <div ref="sizeChek" class="flex-list">
+    <div class="flex-scale flex-list-w  scroll-container overflow-h-hiddne" ref="main">
+        <div class="flex-scale flex-list dialog-messges-base overflow-h-auto message-scroll" ref="container" @scroll="()=>{checkVisible(this.generate_id())}">
         <template v-if="this.down_index != null && this.up_index !=null && this.$props.current_chat && this.$props.current_chat.messages">
             <template v-for="(index) in this.down_index-this.up_index+1" 
             :key="current_chat.messages[this.up_index+index-1].id">
@@ -19,12 +19,23 @@
             </template>
         </template>
         </div>
+        <div class="scroll-container-scrollbar" ref="scrollbar">
+            <div
+                ref="thumb"
+                class="scroll-container-thumb"
+                @mousedown.stop.prevent="onThumbMouseDown"
+                @touchstart.stop.prevent="onThumbMouseDown"
+                :style="thumbStyle"
+            />
+        </div>
     </div>
 </template>
   
 <script>
     const log_chek_visible = false;
+    const loging = false;
     const buffer_size = 10;
+    let global_id = 0;
 
     export default {
         components:{
@@ -40,10 +51,15 @@
             return{
                 up_index: null,
                 down_index: null,
+                thumbTop: 10,
             }
         },
   
         methods: {
+            generate_id(){
+                global_id+=1;
+                return global_id;
+            },
 
             setLastItem(index) {
                 if (this.$props.current_chat.messages[index]){
@@ -51,12 +67,13 @@
                     this.down_index = index;
 
                     // this.$nextTick(()=>{this.checkVisible(index);});
-                    this.LazyCall (()=>{this.checkVisible(index);});
+                    this.LazyCall (()=>{this.checkVisible(this.generate_id(), index);});
                 }
             },
 
-            checkVisible(GlobalIndex = null) {
-                console.log(this.up_index,this.down_index);
+            checkVisible(id, GlobalIndex = null) {
+                if (id != global_id) return;
+                if (loging) console.log(this.up_index,this.down_index);
 
                 const container = this.$refs.container;
 
@@ -67,7 +84,6 @@
                 for (let i=this.up_index; i<=this.down_index;i++){
                     const temp = this.$refs[`item-${i}`];
                     if (temp){
-                    // try{
                         const element = temp[0]; // Массив рефов
                         if (element){
                             const rect = element.getBoundingClientRect();
@@ -83,21 +99,16 @@
                             else {
                                 if (vis) {
                                     postvis.push(i);
-                                    // console.log(i);
                                 } 
                                 else {
                                     tovis.push(i);
-                                    // console.log(i, rect);
                                 }
                             }
                         }
                     }
-                    // } catch(e){
-                    //     console.log(e);
-                    // }
                 }
 
-                console.log(tovis,postvis);
+                if (loging) console.log(tovis,postvis);
                 if (postvis.length>buffer_size) {
                     this.down_index = this.down_index - (postvis.length-buffer_size);
                 } 
@@ -127,19 +138,22 @@
                         //     console.log(previousScrollTop, heightDiff)
                         // });
                         const item_index = tovis.length? tovis[tovis.length-1]+1: this.up_index;
-                        const item = this.$refs[`item-${item_index}`][0];
-                        const old_recrt = item.getBoundingClientRect();
-                        this.LazyCall (() => {
-                            const new_recrt = item.getBoundingClientRect();
-                            const heightDiff = new_recrt.top - old_recrt.top;
-                            container.scrollTop += heightDiff;
-                            console.log( heightDiff)
-                        });
+                        const refs = this.$refs[`item-${item_index}`];
+                        if (refs){
+                            const item = refs[0];
+                            const old_recrt = item.getBoundingClientRect();
+                            this.LazyCall (() => {
+                                const new_recrt = item.getBoundingClientRect();
+                                const heightDiff = new_recrt.top - old_recrt.top;
+                                container.scrollTop += heightDiff;
+                            });
+                        }
 
                         this.up_index -= up_count;
                         this.LazyCall (()=>{
                             if (GlobalIndex) this.scrollToElement(GlobalIndex);
-                            this.checkVisible(GlobalIndex);
+                            this.checkVisible(id, GlobalIndex);
+                            this.updateThumb();
                         });
                         // this.$nextTick(()=>{
                         //     if (GlobalIndex) this.scrollToElement(GlobalIndex);
@@ -151,7 +165,8 @@
                         this.down_index += down_count;
                         this.LazyCall (()=>{
                             if (GlobalIndex) this.scrollToElement(GlobalIndex);
-                            this.checkVisible(GlobalIndex);
+                            this.checkVisible(id, GlobalIndex);
+                            this.updateThumb();
                         });
                         // this.$nextTick(()=>{
                         //     if (GlobalIndex) this.scrollToElement(GlobalIndex);
@@ -178,18 +193,21 @@
                         //     container.scrollTop = previousScrollTop + heightDiff;
                         // });
                         const item_index = tovis.length? tovis[tovis.length-1]+1: this.up_index;
-                        const item = this.$refs[`item-${item_index}`][0];
-                        const old_recrt = item.getBoundingClientRect();
-                        this.LazyCall (() => {
-                            const new_recrt = item.getBoundingClientRect();
-                            const heightDiff = new_recrt.top - old_recrt.top;
-                            container.scrollTop += heightDiff;
-                            console.log( heightDiff)
-                        });
+                        const refs = this.$refs[`item-${item_index}`];
+                        if (refs){
+                            const item = refs[0];
+                            const old_recrt = item.getBoundingClientRect();
+                            this.LazyCall (() => {
+                                const new_recrt = item.getBoundingClientRect();
+                                const heightDiff = new_recrt.top - old_recrt.top;
+                                container.scrollTop += heightDiff;
+                            });
+                        }
 
                         this.up_index -= up_count;
                         this.LazyCall (()=>{
-                            this.checkVisible();
+                            this.checkVisible(id);
+                            this.updateThumb();
                         });
                         // this.checkVisible();
                         return;
@@ -204,7 +222,8 @@
                         // расширение в в низ
                         this.down_index += down_count;
                         this.LazyCall (()=>{
-                            this.checkVisible();
+                            this.checkVisible(id);
+                            this.updateThumb();
                         });
                         // this.checkVisible();
                         return;
@@ -239,16 +258,92 @@
                 // setTimeout(() => {
                     this.$nextTick(func);
                 // }, 50);
-            }
+            },
+
+            updateThumb() {
+                const scrollbarrHeight = this.$refs.scrollbar.offsetHeight;
+                const thumbHeight = this.$refs.thumb.offsetHeight;
+                this.thumbTop = ((scrollbarrHeight-thumbHeight)/this.$props.current_chat.messages.length)*(this.up_index+(this.down_index-this.up_index)/2);
+            },
+
+            // onScrollbarMouseDown(event) {
+            //     const scrollbarrHeight = this.$refs.scrollbar.offsetHeight;
+            //     const clickPosition = event.clientY;
+            //     const index = Math.round(clickPosition/(scrollbarrHeight/this.$props.current_chat.messages.length));
+
+            //     this.scrollToElement(index);
+            // },
+
+            onThumbMouseDown() {
+                this.isDragging = true;
+                // this.startY = event.clientY;
+                // this.startScrollTop = this.$refs.content.scrollTop;
+            },
+
+            onThumbMouseUp() {
+                this.isDragging = false;
+            },
+
+            onThumbMouseMove(event) {
+                if (this.isDragging) {
+                    // const deltaY = event.clientY - this.startY;
+                    // const container = this.$refs.content;
+                    // const contentHeight = container.scrollHeight;
+                    // const containerHeight = container.offsetHeight;
+                    // const scrollRatio = contentHeight / containerHeight;
+                    // container.scrollTop = this.startScrollTop + deltaY * scrollRatio;
+                    // this.updateThumb();
+                    //     const scrollbarrHeight = this.$refs.scrollbar.offsetHeight;
+                    const scrollbarrHeight = this.$refs.scrollbar.offsetHeight;
+                    const clickPosition = event.offsetY;
+                    const index = Math.min(Math.round(clickPosition/(scrollbarrHeight/this.$props.current_chat.messages.length)),this.$props.current_chat.messages.length-1);
+                    // console.log(index, clickPosition, scrollbarrHeight,event);
+                    this.scrollToElement(index);
+                }
+            },
+
+            onThumbTouchMove(event){
+                if (this.isDragging) {
+                    const scrollbarrHeight = this.$refs.scrollbar.offsetHeight;
+                    const rect = this.$refs.scrollbar.getBoundingClientRect();
+                    const clickPosition = event.targetTouches[0].clientY - rect.top;
+                    const index = Math.min(Math.round(clickPosition/(scrollbarrHeight/this.$props.current_chat.messages.length)),this.$props.current_chat.messages.length-1);
+                    // console.log(index, clickPosition, scrollbarrHeight,event);
+                    this.scrollToElement(index);
+                }
+            },
         },
 
         mounted() {
-            if (this.$props.current_chat && this.$props.current_chat.messages.length) this.setLastItem(this.$props.current_chat.messages.length-1);
+            this.$refs.main.addEventListener("mouseup", this.onThumbMouseUp);
+            this.$refs.scrollbar.addEventListener("mouseup", this.onThumbMouseUp);
+            this.$refs.thumb.addEventListener("mouseup", this.onThumbMouseUp);
+            this.$refs.main.addEventListener("mouseleave", this.onThumbMouseUp);
+            window.addEventListener("mousemove", this.onThumbMouseMove);
+
+            this.$refs.main.addEventListener("touchend", this.onThumbMouseUp);
+            this.$refs.scrollbar.addEventListener("touchend", this.onThumbMouseUp);
+            this.$refs.thumb.addEventListener("touchend", this.onThumbMouseUp);
+            window.addEventListener("touchmove", this.onThumbTouchMove);
+
             this.observer = new ResizeObserver(this.onResize);
             this.observer.observe(this.$refs.container);
+
+            if (this.$props.current_chat && this.$props.current_chat.messages.length) this.setLastItem(this.$props.current_chat.messages.length-1);
         },
 
         beforeUnmount () {
+            this.$refs.main.removeEventListener("mouseup", this.onThumbMouseUp);
+            this.$refs.scrollbar.removeEventListener("mouseup", this.onThumbMouseUp);
+            this.$refs.thumb.removeEventListener("mouseup", this.onThumbMouseUp);
+            this.$refs.main.removeEventListener("mouseleave", this.onThumbMouseUp);
+            window.removeEventListener("mousemove", this.onThumbMouseMove);
+
+            this.$refs.main.removeEventListener("touchend", this.onThumbMouseUp);
+            this.$refs.scrollbar.removeEventListener("touchend", this.onThumbMouseUp);
+            this.$refs.thumb.removeEventListener("touchend", this.onThumbMouseUp);
+            window.removeEventListener("touchmove", this.onThumbTouchMove);
+
             this.observer.unobserve(this.$refs.container);
         },
   
@@ -274,7 +369,7 @@
                                     // this.setLastItem(this.down_index+newIndex-buffer_size);
                                     
                                     this.LazyCall (()=>{
-                                        this.checkVisible();
+                                        this.checkVisible(this.generate_id());
                                     });
                                 } 
                                 else{
@@ -299,6 +394,14 @@
                 },
                 immediate: true,
                 deep: true,
+            },
+        },
+
+        computed: {
+            thumbStyle() {
+                return {
+                    top: `${this.thumbTop}px`,
+                };
             },
         },
     };

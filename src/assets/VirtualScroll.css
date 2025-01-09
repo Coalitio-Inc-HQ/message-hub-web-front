@@ -1,3 +1,16 @@
 .scroll-container{
+    background-color: var(--p-background-color);
+}
+
+.scroll-container-scrollbar{
     
+}
+
+.scroll-container-thumb{
+    position: relative;
+    right: 0px;
+    background-color: var(--p-scrollpanel-bar-background); 
+    border-radius: var(--p-scrollpanel-bar-border-radius);
+    width: var(--p-scrollpanel-bar-size); 
+    height: 5rem;
 }
