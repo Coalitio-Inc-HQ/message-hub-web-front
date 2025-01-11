@@ -70,7 +70,7 @@ body{
 }
 
 .chat-item {
-  padding: 0.1rem 0 0.1rem 0.7rem;
+  padding: 0.5rem;
   margin-bottom: 0.3rem;
   background-color: var(--p-button-secondary-background);
   
@@ -88,6 +88,7 @@ body{
 }
 
 .chat-item-text{
+  margin: 0;
   margin-left: 5px;
 }
 
@@ -100,7 +101,7 @@ body{
   transform: translateX(50%) translateY(-50%);
 
   font-size: 0.5rem;
-  margin: 0.1rem;
+  padding: 0 0.2rem 0 0.2rem;
 
   background-color: var(--p-primary-500);
   border: solid 2px;
@@ -140,6 +141,7 @@ body{
   position: relative;
   top: 0px;
   z-index: 1;
+  margin: 2px;
 }
 
 .dialog-date{

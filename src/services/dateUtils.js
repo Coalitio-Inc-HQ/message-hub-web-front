@@ -19,7 +19,7 @@ export function extract_time_from_timestamp_handler(timestamp) {
 }
 
 export function format_time_for_display(date) {
-  return `${date.getHours()}:${date.getMinutes()}`;
+  return `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
 }
 
 export function format_date_for_display(date) {

@@ -2,6 +2,13 @@
   <div class="dialog-main flex-list" ref="main_div">
     <div class="dialog-header-container flex-list-w">
       <Button variant="text" size="small" icon="pi pi-arrow-left" @click="this.$emit('set-null-chat')"/>
+      <div class="flex-list-w" v-if="current_chat">
+        <Avatar v-if="current_chat.icon_url" :image="current_chat.icon_url" shape="square" style="border-radius: 8px;">
+          <img :src="current_chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
+        </Avatar>
+        <Avatar v-else :label="current_chat.name[0]" />
+        <p class="chat-item-text">{{ current_chat.name }}</p>
+      </div>
       <div class="flex-scale"/>
       <Button ref="b" variant="text" size="small" icon="pi pi-list" style="width: auto;" @click="(e)=>{this.$refs.popower.show(e); }"/>
       <Popover ref="popower" >
@@ -75,6 +82,7 @@
 </template>
 
 <script>
+  import Avatar from 'primevue/avatar';
   import Popover from 'primevue/popover';
 
   import Button from 'primevue/button';
@@ -103,6 +111,7 @@
       // ScrollPanel,
       // FileAvatar,
       // Textarea,
+      Avatar,
       ImageVideoGalleria,
       ImageVideoGalleriaUseRefs,
       FileList,
