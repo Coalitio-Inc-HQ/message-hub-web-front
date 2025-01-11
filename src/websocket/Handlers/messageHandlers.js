@@ -1,5 +1,5 @@
-import {extract_time_from_timestamp_handler} from '@/services/dateUtils';
-import { send_message_to_chat_Request } from '@/services/wsRequests'
+// import {extract_time_from_timestamp_handler} from '@/services/dateUtils';
+import { send_message_to_chat_Request, set_last_read_message_id_Request } from '@/services/wsRequests'
 import { ignoreEventId } from '@/services/wsRequests';
 
 // import {ref} from 'vue';
@@ -25,50 +25,85 @@ export async function handleGetMessagesByChat(context, message) {
     let messages = body.messages;
     let mode = body.mode;
     let include_messege = body.include_messege;
+    let offset_message_id = body.offset_message_id;
+    let chat_id = body.chat_id;
 
     messages.forEach(messagePrepere);
     console.log('messages:', messages);
 
-    if (mode == "up" && !include_messege){
-        if (messages.length>0){
-            for (let index = 0; index < context.chats.length; index++) {
-                if (context.chats[index].id == messages[0].chat_id){
-                    // for (let i = 0; i < messages.length; i++) {
-                    //     messages[i].sended_at = extract_time_from_timestamp_handler(messages[i].sended_at);
-                    // }
-                   
-                    context.chats[index].messages = messages.concat( (context.chats[index].messages?context.chats[index].messages:[]));
+    let chat_index = context.chats.findIndex((item)=> {return item.id == chat_id;})
+    if (chat_index>-1){
+        if (offset_message_id==-1){
+
+            if (messages.length>0){
+                context.chats[chat_index].messages = messages.concat( (context.chats[chat_index].messages?context.chats[chat_index].messages:[]));
+            }
+
+            for (let i in context.chats[chat_index].down_await_messages){
+                let find = false;
+                for (let j = context.chats[chat_index].messages.length-1; j>context.chats[chat_index].messages.length-51; j--){
+                    if (context.chats[chat_index].down_await_messages[i].id==context.chats[chat_index].messages[j].id){
+                        find = true;
+                        break;
+                    }
+                }
+                if (!find){
+                    context.chats[chat_index].messages.push(context.chats[chat_index].down_await_messages[i]);
+                }
+            }
+
+            context.chats[chat_index].await_messages = false;
+            if (messages.length<50) context.chats[chat_index].scrolled_to_top=true;
     
-                    context.chats[index].await_messages = false;
-                    if (messages.length<50) context.chats[index].scrolled_to_top=true;
-                    break;
-                }        
+            context.chats[chat_index].await_down_messages = false;
+            context.chats[chat_index].down_await_messages = [];
+            context.chats[chat_index].scrolled_to_down=true;
+        }
+        else if (mode == "up" && !include_messege){     
+            if (messages.length>0){
+                context.chats[chat_index].messages = messages.concat( (context.chats[chat_index].messages?context.chats[chat_index].messages:[]));
+            }
+
+            context.chats[chat_index].await_messages = false;
+            if (messages.length<50) context.chats[chat_index].scrolled_to_top=true;
+        }     
+        else if (mode == "up" && include_messege){
+            if (messages.length>0){
+                context.chats[chat_index].messages = messages.concat( (context.chats[chat_index].messages?context.chats[chat_index].messages:[]));
+            }
+
+            context.chats[chat_index].await_messages = false;
+            if (messages.length<50) context.chats[chat_index].scrolled_to_top=true;
+        } 
+        else if (mode == "down"&& !include_messege){
+            if (messages.length>0){
+                context.chats[chat_index].messages = (context.chats[chat_index].messages?context.chats[chat_index].messages:[]).concat(messages);
+            }
+
+            context.chats[chat_index].await_down_messages = false;
+            if (messages.length<50) {
+                for (let i in context.chats[chat_index].down_await_messages){
+                    let find = false;
+                    for (let j = context.chats[chat_index].messages.length-1; j>context.chats[chat_index].messages.length-51; j--){
+                        if (context.chats[chat_index].down_await_messages[i].id==context.chats[chat_index].messages[j].id){
+                            find = true;
+                            break;
+                        }
+                    }
+                    if (!find){
+                        context.chats[chat_index].messages.push(context.chats[chat_index].down_await_messages[i]);
+                    }
+                }
+
+                context.chats[chat_index].scrolled_to_down=true;
+                context.chats[chat_index].down_await_messages = [];
             }
         }
     }
-    
-    if (mode == "down"&& !include_messege){
-        if (messages.length>0){
-            for (let index = 0; index < context.chats.length; index++) {
-                if (context.chats[index].id == messages[0].chat_id){
-                    // for (let i = 0; i < messages.length; i++) {
-                    //     messages[i].sended_at = extract_time_from_timestamp_handler(messages[i].sended_at);
-                    // }
-                   
-                    context.chats[index].messages = (context.chats[index].messages?context.chats[index].messages:[]).concat(messages);
-    
-                    context.chats[index].await_down_messages = false;
-                    if (messages.length<50) context.chats[index].scrolled_to_down=true;
-                    break;
-                }        
-            }
-        } 
-    }
-
 }
 
 function messagePrepere(msg){
-    msg.sended_at = extract_time_from_timestamp_handler(msg.sended_at);
+    msg.sended_at = new Date(msg.sended_at);
     if ("attachments" in msg){
         if ("images" in msg.attachments){
             msg.attachments.images.forEach((item)=>{item.id = uuidv4();});
@@ -140,6 +175,10 @@ export async function handleSendMessageToChat(context, message) {
                 if(context.chats[index].messages[i].front_message_id !== undefined && 
                    context.chats[index].messages[i].front_message_id === front_message_id){
                     
+                    if (context.chats[index].last_read_message_id == context.chats[index].messages[i].id){
+                        set_last_read_message_id_Request(context.connection.send.bind(context.connection), context.chats[index].id, id);
+                    }
+
                     context.chats[index].messages[i].id = id;
                     break;
                 }
@@ -260,7 +299,16 @@ export async function handleNewMessage(context, message) {
     if (event_index==-1){
         let chat_index = context.chats.findIndex((item)=>{return item.id == msg.chat_id;});
         if (chat_index>-1){
-            context.chats[chat_index].messages.push(msg);
+            if (context.chats[chat_index].await_down_messages){
+                context.chats[chat_index].down_await_messages.push(msg);
+            }
+            if (context.chats[chat_index].scrolled_to_down){
+                context.chats[chat_index].messages.push(msg);
+            }
+
+            if (msg.sender_id!=context.this_user_id){
+                context.chats[chat_index].count_unredeble_messgaes+=1;
+            }
         }
     }
 
@@ -394,10 +442,24 @@ export async function handleRemoveChatToArchive(context, message) {
     console.log("Чат отправлен в архив", chat_id);
 }
 
+export async function handleEventSetLastReadMessageId(context, message) {
+    console.log("handleEventSetLastReadMessageId", message);
+    let body = message.body; 
+    let chat_id = body.chat_id; 
+    let last_read_message_id = body.last_read_message_id;
+    let count = body.count;
+
+    let chat_index = context.chats.findIndex((item)=>item.id == chat_id);
+    if (chat_index>-1){
+        if (context.chats[chat_index].last_read_message_id>-1 && context.chats[chat_index].last_read_message_id<last_read_message_id){
+            context.chats[chat_index].count_unredeble_messgaes = count;
+        }
+    }
+}
+
 export async function handleSetLastReadMessageId(context, message) {
     console.log("handleSetLastReadMessageId", message);
 }
-
 
 const handlers = {
     "get_user_info": handleGetUserInfo,
@@ -413,7 +475,8 @@ const handlers = {
     "get_chats": handleGetChats,
     "chat.update":handleChatUpdate,
     "remove_to_archive":handleRemoveChatToArchive,
-    "chat.set.last_read_message_id": handleSetLastReadMessageId,
+    "chat.set.last_read_message_id": handleEventSetLastReadMessageId,
+    "set_last_read_message_id": handleSetLastReadMessageId,
 };
 
 

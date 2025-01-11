@@ -37,10 +37,13 @@
           :class="{ 'chat-item': true, 'flex-list-w': true, 'align-items-center':true, 'active': current_chat && chat.id == current_chat.id }" 
           @click="$emit('select-user-chat', chat)"
           >
-            <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
-              <img :src="chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
-            </Avatar>
-            <Avatar v-else :label="chat.name[0]"/>
+            <div class="avatar-base">
+              <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
+                <img :src="chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
+              </Avatar>
+              <Avatar v-else :label="chat.name[0]"/>
+              <p v-if="chat.count_unredeble_messgaes" class="avatar-vlaue">{{ chat.count_unredeble_messgaes }}</p>
+            </div>
             <p class="chat-item-text">{{ chat.name }}</p>
           </il>
         </template>
@@ -108,7 +111,7 @@
     components:{
       Avatar,
       Button,
-      ScrollPanel
+      ScrollPanel,
     },
     methods:{
       ClicOnButtonInListWaitingChats() {

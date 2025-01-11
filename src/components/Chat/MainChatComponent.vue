@@ -26,10 +26,12 @@
           :user_name="user_name" 
           :current_chat="current_chat" 
           :is_min_window="is_min_window"
+          @set-last-viseble-message="setLastVisebleMessage"
           ref="сhat_сomponent"
           @send-message="send_message"
           @set-null-chat="set_null_chat"
           @scrolled-top="scrolled_top"
+          @scrolled-down="scrolled_down"
           @chat-remove-to-archive="chat_remove_to_archive"
           />
         </SplitterPanel>
@@ -68,6 +70,7 @@
     add_user_to_chat_Request,
     create_message,
     remove_to_archive_Request,
+    set_last_read_message_id_Request,
   } from '@/services/wsRequests';
   import router from "@/router";
 
@@ -78,6 +81,8 @@
   import { deleteCookies,  } from '@/utilities/cookie';
 
   const WS_URL = process.env.VUE_APP_WS_URL;
+
+  let setLastRedbleMessageTimeout = setTimeout(() => {}, 0);
 
   export default {
     components: {
@@ -126,6 +131,26 @@
     methods: {
       deleteCookies,
 
+      setLastVisebleMessage(chat, index){
+        let lastMessageIndex = chat.messages.findIndex((item)=>{return item.id == chat.last_read_message_id;});
+        if (lastMessageIndex>-1 && lastMessageIndex<index && chat.count_unredeble_messgaes){
+          chat.last_read_message_id = chat.messages[index].id;
+          chat.count_unredeble_messgaes = chat.count_unredeble_messgaes - (index-lastMessageIndex);
+          console.log(chat.count_unredeble_messgaes);
+
+          clearTimeout(setLastRedbleMessageTimeout);
+          if (chat.last_read_message_id >-1){
+            setLastRedbleMessageTimeout = setTimeout(() => {
+              set_last_read_message_id_Request(this.connection.send.bind(this.connection), chat.id, chat.last_read_message_id);
+            }, 500);
+          }
+        } else if(chat.last_read_message_id==null){
+          if (chat.messages[index].id>-1){
+            set_last_read_message_id_Request(this.connection.send.bind(this.connection), chat.id, chat.messages[index].id);
+          }
+        }
+      },
+
       setPage(path){
         router.push(path);
       },
@@ -145,8 +170,10 @@
       },
 
       scrolled_down(chat){
-        if (!chat.scrolled_to_down){
-          get_messages_by_chat_Request(this.connection.send.bind(this.connection), chat, 50, chat.messages[0].id);
+        if (chat.users &&  !chat.scrolled_to_down && !chat.await_down_messages){
+          chat.await_down_messages = true;
+          chat.down_await_messages = [];
+          get_messages_by_chat_Request(this.connection.send.bind(this.connection), chat, 50, chat.messages[chat.messages.length-1].id, false, "down");
         }
       },
 
@@ -170,8 +197,24 @@
           this.current_chat = chat;
           if (!chat.users){
             get_users_by_chat_Request(this.connection.send.bind(this.connection), this.current_chat.id);
-            if (! this.current_chat.await_messages){
-              get_messages_by_chat_Request(this.connection.send.bind(this.connection), this.current_chat);
+            if (chat.last_read_message_id==-1 || chat.last_read_message_id ==null){
+              if (! this.current_chat.await_messages){ // Загружаем с последнего собщения
+                this.current_chat.await_messages = true;
+                this.current_chat.await_down_messages = true;
+                chat.down_await_messages = [];
+                get_messages_by_chat_Request(this.connection.send.bind(this.connection), this.current_chat);
+              }
+            }
+            else{ // Загружаем с last_read_message_id
+              if (! this.current_chat.await_messages){
+                this.current_chat.await_messages = true;
+                get_messages_by_chat_Request(this.connection.send.bind(this.connection), this.current_chat, 50, chat.last_read_message_id, true,"up");
+              }
+              if (!this.current_chat.await_down_messages){
+                chat.await_down_messages = true;
+                chat.down_await_messages = [];
+                get_messages_by_chat_Request(this.connection.send.bind(this.connection), chat, 2147483647, chat.last_read_message_id, false, "down");
+              }
             }
           }
         }
@@ -303,7 +346,7 @@
           id: -chat.message_iterator,
           chat_id: chat.id,
           sender_id: this.this_user_id,
-          sended_at: new Date().toISOString(),
+          sended_at: new Date(),
           text: text,
           front_message_id: chat.message_iterator,
           attachments: attachments,

@@ -53,6 +53,8 @@ export function get_chats_in_which_user_is_not_member_Request(send) {
  * @param {string} chat - чат.
  * @param {number} [count=50] - Количество сообщений для получения (по умолчанию 50).
  * @param {number} [offsetMessageId=-1] - Идентификатор сообщения для смещения (по умолчанию -1).
+ * @param {boolean} [include_messege=false] - Включать ли сообщение с заданным индентификатором (по умолчанию false).
+ * @param {string} [mode="up"] - В какую сторону выбирать сообщения (по умолчанию "up").
  */
 export function get_messages_by_chat_Request(send, chat, count = 50, offsetMessageId = -1, include_messege=false, mode="up" ) {
     const request = {
@@ -133,7 +135,7 @@ export function create_message(msg){
     id: msg.id,
     chat_id: msg.chat_id,
     sender_id: msg.sender_id,
-    sended_at: msg.sended_at,
+    sended_at: msg.sended_at.toISOString(),
     text: msg.text,
     front_message_id: msg.front_message_id,
     attachments: attachments,
@@ -210,6 +212,27 @@ export function remove_to_archive_Request(send,chat_id) {
     body: { 
       chat_id: chat_id,
       event_id: uuidv4(),
+    }
+  };
+  console.log(`Запрос ${request.name}:`, request);
+  send(JSON.stringify(request));
+}
+
+/**
+ * Отправляет запрос на установление последнего прочитанного сообщения в чате.
+ * @param {Function} send - Функция для отправки запроса.
+ * @param {string} chat_id - Идентификатор чата.
+ * @param {string} last_read_message_id - Идентификатор чата.
+ * @return {void} Эта функция ничего не возвращает.
+ */
+export function set_last_read_message_id_Request(send,chat_id, last_read_message_id) {
+  const request = {
+    id: uuidv4(),
+    name: 'set_last_read_message_id',
+    body: { 
+      chat_id: chat_id,
+      last_read_message_id: last_read_message_id,
+      event_id: uuidv4(), 
     }
   };
   console.log(`Запрос ${request.name}:`, request);

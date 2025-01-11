@@ -14,6 +14,8 @@
       :max_mode="max_mode" 
       :this_user_id="this_user_id"
       @scrollde-to-top="(chat)=>{this.$emit('scrolled-top', chat);}"
+      @scrollde-to-down="(chat)=>{this.$emit('scrolled-down', chat);}"
+      @set-last-viseble-message="(chat, message_index)=>{this.$emit('set-last-viseble-message', chat, message_index);}" 
     >
       <template #message="{ message }">
             <div class="message-sender-name">{{ get_user_name(message.sender_id) }}</div>

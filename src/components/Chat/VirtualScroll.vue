@@ -3,18 +3,21 @@
         <div class="flex-scale flex-list dialog-messges-base overflow-h-auto message-scroll" ref="container" @scroll="()=>{checkVisible(this.generate_id())}">
         <template v-if="this.down_index != null && this.up_index !=null && this.$props.current_chat && this.$props.current_chat.messages">
             <template v-for="(index) in this.down_index-this.up_index+1" 
-            :key="current_chat.messages[this.up_index+index-1].id">
+            :key="this.$props.current_chat.messages[this.up_index+index-1].id">
+                <div v-if="index==1 || this.$props.current_chat.messages[this.up_index+index-1].sended_at.getDate()!=this.$props.current_chat.messages[this.up_index+index-2].sended_at.getDate()"  class="dialog-date-container">
+                    <div class="dialog-date" > {{ format_date_for_display(this.$props.current_chat.messages[this.up_index+index-1].sended_at) }} </div>
+                </div>
                 <div
                     :class="{ 
                     'message': true,
                     'flex-list': true,
-                    'message-self': current_chat.messages[this.up_index+index-1].sender_id == this.this_user_id, 
-                    'message-other': current_chat.messages[this.up_index+index-1].sender_id !== this.this_user_id,
+                    'message-self': this.$props.current_chat.messages[this.up_index+index-1].sender_id == this.this_user_id, 
+                    'message-other': this.$props.current_chat.messages[this.up_index+index-1].sender_id !== this.this_user_id,
                     'max-mode': this.max_mode
                     }"
                     :ref="`item-${this.up_index+index-1}`"
                 >
-                    <slot name="message" :message="current_chat.messages[this.up_index+index-1]"></slot>
+                    <slot name="message" :message="this.$props.current_chat.messages[this.up_index+index-1]"></slot>
                 </div>
             </template>
         </template>
@@ -32,12 +35,12 @@
 </template>
   
 <script>
+    import {format_date_for_display} from '@/services/dateUtils';
     const log_chek_visible = false;
     const loging = false;
     const buffer_size = 10;
     let global_id = 0;
     let mouseMoveTimeout = setTimeout(() => {}, 0);
-
 
     export default {
         components:{
@@ -48,7 +51,6 @@
             "this_user_id",
             "max_mode",
         ],
-  
         data(){
             return{
                 up_index: null,
@@ -59,6 +61,8 @@
         },
   
         methods: {
+            format_date_for_display,
+
             generate_id(){
                 global_id+=1;
                 return global_id;
@@ -115,6 +119,7 @@
                         }
                     }
                 }
+                this.$emit("set-last-viseble-message", this.$props.current_chat, last_vis);
 
                 if (loging) console.log(tovis,postvis);
                 if (postvis.length>buffer_size) {
@@ -134,19 +139,8 @@
 
                 if (up&&down){
                     if (can_up){
-                        // расширение в верх
-                        // const container = this.$refs.container;
-                        // const sizeChek = this.$refs.sizeChek;
-                        // const previousScrollHeight = sizeChek.scrollHeight;
-                        // const previousScrollTop = container.scrollTop;
-                        // this.LazyCall (() => {
-                        //     const newScrollHeight = sizeChek.scrollHeight;
-                        //     const heightDiff = newScrollHeight - previousScrollHeight;
-                        //     container.scrollTop = previousScrollTop + heightDiff;
-                        //     console.log(previousScrollTop, heightDiff)
-                        // });
-                        const item_index = tovis.length? tovis[tovis.length-1]+1: this.up_index;
-                        const refs = this.$refs[`item-${item_index}`];
+                        // const item_index = tovis.length? tovis[tovis.length-1]+1: this.up_index;
+                        const refs = this.$refs[`item-${last_vis}`];
                         if (refs){
                             const item = refs[0];
                             const old_recrt = item.getBoundingClientRect();
@@ -176,10 +170,6 @@
                             this.checkVisible(id, GlobalIndex);
                             this.updateThumb(fist_vis, last_vis);
                         });
-                        // this.$nextTick(()=>{
-                        //     if (GlobalIndex) this.scrollToElement(GlobalIndex);
-                        //     this.checkVisible(GlobalIndex);
-                        // });
                         return;
                     } else{
                         // невозможно расширение недостаточная длинна массива
@@ -191,18 +181,8 @@
                 }
                 if (up){
                     if (can_up){
-                        // расширение в верх
-                        // const container = this.$refs.container;
-                        // const sizeChek = this.$refs.sizeChek;
-                        // const previousScrollHeight = sizeChek.scrollHeight;
-                        // const previousScrollTop = container.scrollTop;
-                        // this.LazyCall(() => {
-                        //     const newScrollHeight = sizeChek.scrollHeight;
-                        //     const heightDiff = newScrollHeight - previousScrollHeight;
-                        //     container.scrollTop = previousScrollTop + heightDiff;
-                        // });
-                        const item_index = tovis.length? tovis[tovis.length-1]+1: this.up_index;
-                        const refs = this.$refs[`item-${item_index}`];
+                        // const item_index = tovis.length? tovis[tovis.length-1]+1: this.up_index;
+                        const refs = this.$refs[`item-${last_vis}`];
                         if (refs){
                             const item = refs[0];
                             const old_recrt = item.getBoundingClientRect();
@@ -405,7 +385,9 @@
         watch:{
             "current_chat":{
                 handler(newValue, oldValue){
-                    console.log(newValue, oldValue);
+                    console.log("current_chat",newValue, oldValue);
+                    if (newValue) console.log("current_chat",newValue.messages);
+                    if (newValue && newValue.messages) console.log("current_chat",newValue.messages[0]);
                     if (newValue){
                         if (newValue.id != this.lastChatId){
                             if(newValue.messages.length){
@@ -417,8 +399,8 @@
                         } 
                         else{
                             if (newValue.messages.length){
-                                if (this.lastFistMessageId && newValue.messages[0].id!=this.lastFistMessageId){
-                                    let newIndex = newValue.messages.findIndex((item)=>item.id == this.lastFistMessageId);
+                                if (this.lastFistMessage && newValue.messages[0].id!=this.lastFistMessage.id){
+                                    let newIndex = newValue.messages.findIndex((item)=>item.id == this.lastFistMessage.id);
                                     this.down_index+=newIndex;
                                     this.up_index+=newIndex;
                                     // this.setLastItem(this.down_index+newIndex-buffer_size);
@@ -429,6 +411,11 @@
                                 } 
                                 else{
                                     if (this.up_index == null && this.down_index == null) this.setLastItem(newValue.messages.length-1);
+                                    if (newValue.messages.length!= this.lastMessagesLength){
+                                        this.LazyCall (()=>{
+                                            this.checkVisible(this.generate_id());
+                                        });
+                                    }
                                 }
                             }
                             else{
@@ -436,13 +423,16 @@
                                 this.down_index = null;                                
                             }
                         }
-                        if (newValue.messages.length) this.lastFistMessageId = newValue.messages[0].id;
-                        else this.lastFistMessageId = null;
+                        if (newValue.messages.length) this.lastFistMessage = newValue.messages[0];
+                        else this.lastFistMessage = null;
+                        if (newValue.messages.length) this.lastMessagesLength = newValue.messages.length;
+                        else this.lastMessagesLength = null;
                         this.lastChatId = newValue.id;
                     }
                     else{
                         this.lastChatId = null;
-                        this.lastFistMessageId = null;
+                        this.lastFistMessage = null;
+                        this.lastMessagesLength = null;
                         this.up_index = null;
                         this.down_index = null;   
                     }

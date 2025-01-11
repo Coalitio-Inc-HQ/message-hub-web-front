@@ -18,14 +18,19 @@ export function extract_time_from_timestamp_handler(timestamp) {
   return adjusted_local_timeString;
 }
 
-export function format_time_for_display(timestamp) {
-  const time_zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const local_date = moment.tz(timestamp, time_zone);
-  const local_TimeString = local_date.format('HH:mm');
-
-  return local_TimeString;
+export function format_time_for_display(date) {
+  return `${date.getHours()}:${date.getMinutes()}`;
 }
 
-
-
+export function format_date_for_display(date) {
+  // Список месяцев на русском языке
+  const months = [
+    "Января", "Февраля", "Марта", "Апреля", "Мая", "Июня",
+    "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"
+  ];
+  const day = date.getDate(); // Получить день месяца
+  const month = months[date.getMonth()]; // Получить название месяца
+  
+  return `${day} ${month}`;
+}
 
