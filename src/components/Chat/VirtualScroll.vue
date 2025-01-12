@@ -1,6 +1,6 @@
 <template>
     <div class="flex-scale flex-list-w  scroll-container overflow-h-hiddne" ref="main">
-        <div class="flex-scale flex-list dialog-messges-base overflow-h-auto message-scroll" ref="container" @scroll="()=>{checkVisible(this.generate_id())}">
+        <div class="flex-scale flex-list dialog-messges-base overflow-h-auto  message-scroll" ref="container" @scroll="()=>{checkVisible(this.generate_id())}">
         <template v-if="this.down_index != null && this.up_index !=null && this.$props.current_chat && this.$props.current_chat.messages">
             <template v-for="(index) in this.down_index-this.up_index+1" 
             :key="this.$props.current_chat.messages[this.up_index+index-1].id">
@@ -56,7 +56,7 @@
                 up_index: null,
                 down_index: null,
                 thumbTop: 10,
-                thumbHeight: 10,
+                thumbHeight: 100,
             }
         },
   
@@ -73,7 +73,6 @@
                     this.up_index = index;
                     this.down_index = index;
 
-                    // this.$nextTick(()=>{this.checkVisible(index);});
                     this.LazyCall (()=>{this.checkVisible(this.generate_id(), index);});
                 }
             },
@@ -120,6 +119,7 @@
                     }
                 }
                 this.$emit("set-last-viseble-message", this.$props.current_chat, last_vis);
+                this.updateThumb(fist_vis, last_vis);
 
                 if (loging) console.log(tovis,postvis);
                 if (postvis.length>buffer_size) {
@@ -139,7 +139,6 @@
 
                 if (up&&down){
                     if (can_up){
-                        // const item_index = tovis.length? tovis[tovis.length-1]+1: this.up_index;
                         const refs = this.$refs[`item-${last_vis}`];
                         if (refs){
                             const item = refs[0];
@@ -155,12 +154,7 @@
                         this.LazyCall (()=>{
                             if (GlobalIndex) this.scrollToElement(GlobalIndex);
                             this.checkVisible(id, GlobalIndex);
-                            this.updateThumb(fist_vis, last_vis);
                         });
-                        // this.$nextTick(()=>{
-                        //     if (GlobalIndex) this.scrollToElement(GlobalIndex);
-                        //     this.checkVisible(GlobalIndex);
-                        // });
                         return;
                     } else if (can_down){
                         // расширение в в низ
@@ -168,12 +162,10 @@
                         this.LazyCall (()=>{
                             if (GlobalIndex) this.scrollToElement(GlobalIndex);
                             this.checkVisible(id, GlobalIndex);
-                            this.updateThumb(fist_vis, last_vis);
                         });
                         return;
                     } else{
                         // невозможно расширение недостаточная длинна массива
-                        this.updateThumb(fist_vis, last_vis);
                         this.$emit('scrollde-to-top',this.$props.current_chat);
                         this.$emit('scrollde-to-down',this.$props.current_chat);
                         return;
@@ -181,7 +173,6 @@
                 }
                 if (up){
                     if (can_up){
-                        // const item_index = tovis.length? tovis[tovis.length-1]+1: this.up_index;
                         const refs = this.$refs[`item-${last_vis}`];
                         if (refs){
                             const item = refs[0];
@@ -195,14 +186,11 @@
 
                         this.up_index -= up_count;
                         this.LazyCall (()=>{
-                            this.checkVisible(id);
-                            this.updateThumb(fist_vis, last_vis);
+                            // this.checkVisible(id);
                         });
-                        // this.checkVisible();
                         return;
                     } else{
                         // невозможно расширение недостаточная длинна массива
-                        this.updateThumb(fist_vis, last_vis);
                         this.$emit('scrollde-to-top',this.$props.current_chat);
                         return;
                     }
@@ -212,14 +200,11 @@
                         // расширение в в низ
                         this.down_index += down_count;
                         this.LazyCall (()=>{
-                            this.checkVisible(id);
-                            this.updateThumb(fist_vis, last_vis);
+                            // this.checkVisible(id);
                         });
-                        // this.checkVisible();
                         return;
                     } else{
                         // невозможно расширение недостаточная длинна массива
-                        this.updateThumb(fist_vis, last_vis);
                         this.$emit('scrollde-to-down',this.$props.current_chat);
                         return;
                     }
@@ -233,7 +218,7 @@
                     if (element) {
                         if (animate){
                             element.scrollIntoView({
-                                behavior: "smooth",
+                                // behavior: "smooth",
                                 block: 'end', 
                             });
                         }
@@ -244,8 +229,6 @@
                         }
                     }
                 }
-                // Получаем элемент по его рефу
-                
             },
 
             onResize(){
@@ -268,23 +251,21 @@
                 // this.thumbHeight = (this.down_index-this.up_index+1)* heightPerIndex;
                 // this.thumbTop = (scrollbarrHeight-this.thumbHeight)/this.$props.current_chat.messages.length*(this.down_index+this.up_index)/2;
 
+                // const scrollbarrHeight = this.$refs.scrollbar.offsetHeight;
+                // const visible_items = down_index - up_index+1;
+                // const relative_start = up_index / this.$props.current_chat.messages.length;
+                // const relative_length = visible_items / this.$props.current_chat.messages.length;
+
+                // this.thumbTop = relative_start * scrollbarrHeight;
+                // this.thumbHeight = relative_length * scrollbarrHeight;
+
+                if(loging) console.log(down_index);
+
                 const scrollbarrHeight = this.$refs.scrollbar.offsetHeight;
-                const visible_items = down_index - up_index+1;
-                const relative_start = up_index / this.$props.current_chat.messages.length;
-                const relative_length = visible_items / this.$props.current_chat.messages.length;
 
-                this.thumbTop = relative_start * scrollbarrHeight;
-                this.thumbHeight = relative_length * scrollbarrHeight;
-
+                const scrollbarPositionPercent = up_index / (this.$props.current_chat.messages.length - 1);
+                this.thumbTop = scrollbarPositionPercent * (scrollbarrHeight - this.thumbHeight);
             },
-
-            // onScrollbarMouseDown(event) {
-            //     const scrollbarrHeight = this.$refs.scrollbar.offsetHeight;
-            //     const clickPosition = event.clientY;
-            //     const index = Math.round(clickPosition/(scrollbarrHeight/this.$props.current_chat.messages.length));
-
-            //     this.scrollToElement(index);
-            // },
 
             onThumbMouseDown() {
                 this.isDragging = true;
@@ -298,19 +279,10 @@
 
             onThumbMouseMove(event) {
                 if (this.isDragging) {
-                    console.log(event);
-                    // const deltaY = event.clientY - this.startY;
-                    // const container = this.$refs.content;
-                    // const contentHeight = container.scrollHeight;
-                    // const containerHeight = container.offsetHeight;
-                    // const scrollRatio = contentHeight / containerHeight;
-                    // container.scrollTop = this.startScrollTop + deltaY * scrollRatio;
-                    // this.updateThumb();
-                    //     const scrollbarrHeight = this.$refs.scrollbar.offsetHeight;
                     const scrollbarrHeight = this.$refs.scrollbar.offsetHeight;
                     const clickPosition = event.offsetY;
                     const index = Math.min(Math.round(clickPosition/(scrollbarrHeight/this.$props.current_chat.messages.length)),this.$props.current_chat.messages.length-1);
-                    // console.log(index, clickPosition, scrollbarrHeight,event);
+                    console.log(index, clickPosition, scrollbarrHeight,event);
                     if (this.up_index<=index &&index <=this.down_index){
                         this.scrollToElement(index, true);
                     }
@@ -330,7 +302,7 @@
                     const rect = this.$refs.scrollbar.getBoundingClientRect();
                     const clickPosition = event.targetTouches[0].clientY - rect.top;
                     const index = Math.min(Math.round(clickPosition/(scrollbarrHeight/this.$props.current_chat.messages.length)),this.$props.current_chat.messages.length-1);
-                    // console.log(index, clickPosition, scrollbarrHeight,event);
+                    console.log(index, clickPosition, scrollbarrHeight,event);
                     if (this.up_index<=index &&index <=this.down_index){
                         this.scrollToElement(index, true);
                     }
@@ -385,9 +357,7 @@
         watch:{
             "current_chat":{
                 handler(newValue, oldValue){
-                    console.log("current_chat",newValue, oldValue);
-                    if (newValue) console.log("current_chat",newValue.messages);
-                    if (newValue && newValue.messages) console.log("current_chat",newValue.messages[0]);
+                    if (loging) console.log("current_chat",newValue, oldValue);
                     if (newValue){
                         if (newValue.id != this.lastChatId){
                             if(newValue.messages.length){
