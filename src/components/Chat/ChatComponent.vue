@@ -249,7 +249,7 @@
         this.message_input = ''; 
         this.$refs.messageInput.value = '';
         this.selected_files = [];
-        this.$refs.chat_scroll_container.setLastItem(this.$props.current_chat.messages.length-1);
+        this.$refs.chat_scroll_container.scrollToElement(this.$props.current_chat.messages.length-1);
       },
 
       handle_key_down(event) {
