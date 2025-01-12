@@ -134,9 +134,10 @@
       setLastVisebleMessage(chat, index){
         if(index){
           let lastMessageIndex = chat.messages.findIndex((item)=>{return item.id == chat.last_read_message_id;});
-          if (lastMessageIndex>-1 && lastMessageIndex<index && chat.count_unredeble_messgaes){
+          if (lastMessageIndex>-1 && lastMessageIndex<index && chat.count_unredeble_messgaes!= null){
             chat.last_read_message_id = chat.messages[index].id;
-            chat.count_unredeble_messgaes = chat.count_unredeble_messgaes - (index-lastMessageIndex);
+            let newcount = chat.count_unredeble_messgaes - (index-lastMessageIndex);
+            chat.count_unredeble_messgaes = newcount>-1?newcount:0;
             console.log(chat.count_unredeble_messgaes);
 
             clearTimeout(setLastRedbleMessageTimeout);
@@ -324,7 +325,7 @@
         if(chat.message_iterator){
           chat.message_iterator=chat.message_iterator+=1;
         }else{
-          chat.message_iterator=1;
+          chat.message_iterator=10;
         }
 
         let attachments = {
