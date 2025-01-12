@@ -132,21 +132,23 @@
       deleteCookies,
 
       setLastVisebleMessage(chat, index){
-        let lastMessageIndex = chat.messages.findIndex((item)=>{return item.id == chat.last_read_message_id;});
-        if (lastMessageIndex>-1 && lastMessageIndex<index && chat.count_unredeble_messgaes){
-          chat.last_read_message_id = chat.messages[index].id;
-          chat.count_unredeble_messgaes = chat.count_unredeble_messgaes - (index-lastMessageIndex);
-          console.log(chat.count_unredeble_messgaes);
+        if(index){
+          let lastMessageIndex = chat.messages.findIndex((item)=>{return item.id == chat.last_read_message_id;});
+          if (lastMessageIndex>-1 && lastMessageIndex<index && chat.count_unredeble_messgaes){
+            chat.last_read_message_id = chat.messages[index].id;
+            chat.count_unredeble_messgaes = chat.count_unredeble_messgaes - (index-lastMessageIndex);
+            console.log(chat.count_unredeble_messgaes);
 
-          clearTimeout(setLastRedbleMessageTimeout);
-          if (chat.last_read_message_id >-1){
-            setLastRedbleMessageTimeout = setTimeout(() => {
-              set_last_read_message_id_Request(this.connection.send.bind(this.connection), chat.id, chat.last_read_message_id);
-            }, 500);
-          }
-        } else if(chat.last_read_message_id==null){
-          if (chat.messages[index].id>-1){
-            set_last_read_message_id_Request(this.connection.send.bind(this.connection), chat.id, chat.messages[index].id);
+            clearTimeout(setLastRedbleMessageTimeout);
+            if (chat.last_read_message_id >-1){
+              setLastRedbleMessageTimeout = setTimeout(() => {
+                set_last_read_message_id_Request(this.connection.send.bind(this.connection), chat.id, chat.last_read_message_id);
+              }, 500);
+            }
+          } else if(chat.last_read_message_id==null){
+            if (chat.messages[index].id>-1){
+              set_last_read_message_id_Request(this.connection.send.bind(this.connection), chat.id, chat.messages[index].id);
+            }
           }
         }
       },
@@ -163,14 +165,14 @@
       },
 
       scrolled_top(chat){
-        if (chat.users && !chat.await_messages && !chat.scrolled_to_top){
+        if (chat && chat.users && !chat.await_messages && !chat.scrolled_to_top){
           chat.await_messages = true;
           get_messages_by_chat_Request(this.connection.send.bind(this.connection), chat, 50, chat.messages[0].id);
         }
       },
 
       scrolled_down(chat){
-        if (chat.users &&  !chat.scrolled_to_down && !chat.await_down_messages){
+        if (chat && chat.users &&  !chat.scrolled_to_down && !chat.await_down_messages){
           chat.await_down_messages = true;
           chat.down_await_messages = [];
           get_messages_by_chat_Request(this.connection.send.bind(this.connection), chat, 50, chat.messages[chat.messages.length-1].id, false, "down");
