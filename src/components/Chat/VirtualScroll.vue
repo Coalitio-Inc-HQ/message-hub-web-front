@@ -49,40 +49,42 @@
             format_date_for_display,
 
             checkVisible() {
-                const container = this.$refs.container;
+                if (this.$props.current_chat){
+                    const container = this.$refs.container;
 
-                let vis = false;
-                last_vis = null;
+                    let vis = false;
+                    last_vis = null;
 
-                for (let i=this.up_index; i<=this.down_index;i++){
-                    const temp = this.$refs[`item-${i}`];
-                    if (temp){
-                        const element = temp[0];
-                        if (element){
-                            const rect = element.getBoundingClientRect();
+                    for (let i=0; i<this.$props.current_chat.messages.length; i++){
+                        const temp = this.$refs[`item-${this.$props.current_chat.messages[i].id}`];
+                        if (temp){
+                            const element = temp[0];
+                            if (element){
+                                const rect = element.getBoundingClientRect();
 
-                            const isVisible = (rect.top >= 0 && rect.top <= container.clientHeight) || (rect.bottom >= 0 && rect.bottom <= container.clientHeight) || rect.top <= 0 && rect.bottom >= container.clientHeight;
+                                const isVisible = (rect.top >= 0 && rect.top <= container.clientHeight) || (rect.bottom >= 0 && rect.bottom <= container.clientHeight) || rect.top <= 0 && rect.bottom >= container.clientHeight;
 
-                            if (isVisible) {
-                                last_vis = i;
-                                vis = true;
-                            } 
-                            else {
-                                if (vis) {
-                                    break;
+                                if (isVisible) {
+                                    last_vis = i;
+                                    vis = true;
                                 } 
+                                else {
+                                    if (vis) {
+                                        break;
+                                    } 
+                                }
                             }
                         }
                     }
-                }
-                this.$emit("set-last-viseble-message", this.$props.current_chat, last_vis);
+                    this.$emit("set-last-viseble-message", this.$props.current_chat, last_vis);
 
-                if(container.scrollTop==0){
-                    this.$emit('scrollde-to-top',this.$props.current_chat);
-                }
+                    if(container.scrollTop==0){
+                        this.$emit('scrollde-to-top',this.$props.current_chat);
+                    }
 
-                if (container.scrollTop + container.clientHeight >= container.scrollHeight){
-                    this.$emit('scrollde-to-down',this.$props.current_chat);
+                    if (container.scrollTop + container.clientHeight >= container.scrollHeight){
+                        this.$emit('scrollde-to-down',this.$props.current_chat);
+                    }
                 }
             },
 
