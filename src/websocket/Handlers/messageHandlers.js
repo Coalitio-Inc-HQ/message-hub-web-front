@@ -1,9 +1,9 @@
 // import {extract_time_from_timestamp_handler} from '@/services/dateUtils';
 import { send_message_to_chat_Request, set_last_read_message_id_Request } from '@/services/wsRequests'
 import { ignoreEventId } from '@/services/wsRequests';
-
 // import {ref} from 'vue';
 import { uuidv4 } from '@/utilities/uuid';
+import { removeAction } from '../retry';
 // import {generateVideoPreview} from "@/utilities/VideoMiniature";
 
 //get_user_info
@@ -15,6 +15,8 @@ export function handleGetUserInfo(context, message){
     //console.log('User ID:', body.user_info.id);
     context.this_user_id = body.user_info.id;
     context.user_name = body.user_info.name;
+
+    removeAction(message.id);
 }
 
 
@@ -100,6 +102,8 @@ export async function handleGetMessagesByChat(context, message) {
             }
         }
     }
+
+    removeAction(message.id);
 }
 
 function messagePrepere(msg){
@@ -152,6 +156,8 @@ export async function handleGetUsersByChat(context, message) {
             break;
         }        
     }
+
+    removeAction(message.id);
 }
 
 // send_message_to_chat
@@ -176,7 +182,7 @@ export async function handleSendMessageToChat(context, message) {
                    context.chats[index].messages[i].front_message_id === front_message_id){
                     
                     if (context.chats[index].last_read_message_id == context.chats[index].messages[i].id){
-                        set_last_read_message_id_Request(context.connection.send.bind(context.connection), context.chats[index].id, id);
+                        set_last_read_message_id_Request(context, context.chats[index].id, id);
                     }
 
                     context.chats[index].messages[i].id = id;
@@ -187,6 +193,8 @@ export async function handleSendMessageToChat(context, message) {
             break;
         }
     }
+
+    removeAction(message.id);
 }
   
 
@@ -203,7 +211,7 @@ export async function handleAddUserToChat(context, message) {
             context.chats[index].is_waiting_answer = false;
             console.log("is_not_connected: ", context.chats[index].is_not_connected)
             context.chats[index].waiting_messages.forEach(message => {
-                send_message_to_chat_Request(context.connection.send.bind(context.connection), message);
+                send_message_to_chat_Request(context, message);
             }); 
             context.chats[index].waiting_messages=[];
             break;
@@ -211,6 +219,7 @@ export async function handleAddUserToChat(context, message) {
     }
     context.current_chat_is_waiting = false;
 
+    removeAction(message.id);
 }
 
 
@@ -374,6 +383,8 @@ export async function handleGetChats(context, message) {
         chats[i].scrolled_to_top= false;
     }
     context.chats = context.chats.concat(chats);
+
+    removeAction(message.id);
 }
 
 //chat.update
@@ -440,6 +451,7 @@ export async function handleRemoveChatToArchive(context, message) {
     let body = message.body; 
     let chat_id = body.chat_id; 
     console.log("Чат отправлен в архив", chat_id);
+    removeAction(message.id);
 }
 
 export async function handleEventSetLastReadMessageId(context, message) {
@@ -459,6 +471,7 @@ export async function handleEventSetLastReadMessageId(context, message) {
 
 export async function handleSetLastReadMessageId(context, message) {
     console.log("handleSetLastReadMessageId", message);
+    removeAction(message.id);
 }
 
 const handlers = {

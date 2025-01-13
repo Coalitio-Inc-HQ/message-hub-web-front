@@ -114,8 +114,14 @@
     async created() {
       let token = this.get_cookie("token");
       if (token) {
+
+        let onClose = null;
+        onClose=()=>{
+          this.connection = new WebSocket(WS_URL + "?token=" + token);
+          setupMessageObserver(this, this.connection, onClose, true);
+        };
         this.connection = new WebSocket(WS_URL + "?token=" + token);
-        setupMessageObserver(this, this.connection);
+        setupMessageObserver(this, this.connection, onClose, false);
       } else {
         router.push('/login');
       }
@@ -143,12 +149,12 @@
             clearTimeout(setLastRedbleMessageTimeout);
             if (chat.last_read_message_id >-1){
               setLastRedbleMessageTimeout = setTimeout(() => {
-                set_last_read_message_id_Request(this.connection.send.bind(this.connection), chat.id, chat.last_read_message_id);
+                set_last_read_message_id_Request(this, chat.id, chat.last_read_message_id);
               }, 500);
             }
           } else if(chat.last_read_message_id==null){
             if (chat.messages[index].id>-1){
-              set_last_read_message_id_Request(this.connection.send.bind(this.connection), chat.id, chat.messages[index].id);
+              set_last_read_message_id_Request(this, chat.id, chat.messages[index].id);
             }
           }
         }
@@ -162,13 +168,13 @@
         this.current_chat.is_waiting_answer = false;
         this.current_chat.is_archive = true;
         this.current_chat.is_not_connected = true;
-        remove_to_archive_Request(this.connection.send.bind(this.connection), this.current_chat.id);
+        remove_to_archive_Request(this, this.current_chat.id);
       },
 
       scrolled_top(chat){
         if (chat && chat.users && !chat.await_messages && !chat.scrolled_to_top){
           chat.await_messages = true;
-          get_messages_by_chat_Request(this.connection.send.bind(this.connection), chat, 50, chat.messages[0].id);
+          get_messages_by_chat_Request(this, chat, 50, chat.messages[0].id);
         }
       },
 
@@ -176,7 +182,7 @@
         if (chat && chat.users &&  !chat.scrolled_to_down && !chat.await_down_messages){
           chat.await_down_messages = true;
           chat.down_await_messages = [];
-          get_messages_by_chat_Request(this.connection.send.bind(this.connection), chat, 50, chat.messages[chat.messages.length-1].id, false, "down");
+          get_messages_by_chat_Request(this, chat, 50, chat.messages[chat.messages.length-1].id, false, "down");
         }
       },
 
@@ -199,24 +205,24 @@
 
           this.current_chat = chat;
           if (!chat.users){
-            get_users_by_chat_Request(this.connection.send.bind(this.connection), this.current_chat.id);
+            get_users_by_chat_Request(this, this.current_chat.id);
             if (chat.last_read_message_id==-1 || chat.last_read_message_id ==null){
               if (! this.current_chat.await_messages){ // Загружаем с последнего собщения
                 this.current_chat.await_messages = true;
                 this.current_chat.await_down_messages = true;
                 chat.down_await_messages = [];
-                get_messages_by_chat_Request(this.connection.send.bind(this.connection), this.current_chat);
+                get_messages_by_chat_Request(this, this.current_chat);
               }
             }
             else{ // Загружаем с last_read_message_id
               if (! this.current_chat.await_messages){
                 this.current_chat.await_messages = true;
-                get_messages_by_chat_Request(this.connection.send.bind(this.connection), this.current_chat, 50, chat.last_read_message_id, true,"up");
+                get_messages_by_chat_Request(this, this.current_chat, 50, chat.last_read_message_id, true,"up");
               }
               if (!this.current_chat.await_down_messages){
                 chat.await_down_messages = true;
                 chat.down_await_messages = [];
-                get_messages_by_chat_Request(this.connection.send.bind(this.connection), chat, 2147483647, chat.last_read_message_id, false, "down");
+                get_messages_by_chat_Request(this, chat, 2147483647, chat.last_read_message_id, false, "down");
               }
             }
           }
@@ -251,12 +257,12 @@
               console.log('sending message:', message);
 
               if (!local_current_chat.is_not_connected) {
-                send_message_to_chat_Request(this.connection.send.bind(this.connection), message);
+                send_message_to_chat_Request(this, message);
               } else {
                 if (!local_current_chat.waiting_connaction) {
                   local_current_chat.waiting_messages = [];
                   local_current_chat.waiting_connaction = true;
-                  add_user_to_chat_Request(this.connection.send.bind(this.connection), local_current_chat.id, this.this_user_id);
+                  add_user_to_chat_Request(this, local_current_chat.id, this.this_user_id);
                 }
                 local_current_chat.waiting_messages.push(message);
               }

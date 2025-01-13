@@ -6,8 +6,8 @@ import {
   get_user_info,
   get_chats_Request
 } from "@/services/wsRequests";
-
-export function setupMessageObserver(context, ws) {
+import { resendActions } from "../retry";
+export function setupMessageObserver(context, ws, on_close, resend = false) {
   console.log(ws);
 
   // Обработчик события закрытия соединения
@@ -15,16 +15,23 @@ export function setupMessageObserver(context, ws) {
     if (event.code === 1008) {
       router.push('/login');
     }
+    else if (event.code === 1006 && on_close){
+      on_close();
+    }
     console.log("WebSocket connection closed:", event);
   };
 
   // Отправка начальных запросов при подключении
   ws.onopen = () => {
     console.log("WebSocket connection opened");
-    get_user_info(ws.send.bind(ws));
-    // get_chats_by_user_Request(ws.send.bind(ws));
-    // get_chats_in_which_user_is_not_member_Request(ws.send.bind(ws));
-    get_chats_Request(ws.send.bind(ws));
+    if (resend){
+      resendActions(context);
+    } else{
+      get_user_info(context);
+      // get_chats_by_user_Request(ws.send.bind(ws));
+      // get_chats_in_which_user_is_not_member_Request(ws.send.bind(ws));
+      get_chats_Request(context);
+    }
   };
 
   ws.onmessage = async (event) => {
