@@ -185,10 +185,10 @@ export async function handleSendMessageToChat(context, message) {
                     
                     if (context.chats[index].last_read_message_id == context.chats[index].messages[i].id){
                         set_last_read_message_id_Request(context, context.chats[index].id, id);
+                        context.chats[index].last_read_message_id = id;
                     }
 
                     context.chats[index].messages[i].id = id;
-                    context.chats[index].last_read_message_id = id;
                     break;
                 }
                 
