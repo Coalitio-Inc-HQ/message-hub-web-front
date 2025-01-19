@@ -463,7 +463,8 @@ export async function handleEventSetLastReadMessageId(context, message) {
 
     let chat_index = context.chats.findIndex((item)=>item.id == chat_id);
     if (chat_index>-1){
-        if (context.chats[chat_index].last_read_message_id>-1 && context.chats[chat_index].last_read_message_id<last_read_message_id){
+        if (context.chats[chat_index].last_read_message_id == null || context.chats[chat_index].last_read_message_id>-1 && context.chats[chat_index].last_read_message_id<last_read_message_id){
+            context.chats[chat_index].last_read_message_id = last_read_message_id;
             context.chats[chat_index].count_unredeble_messgaes = count;
         }
     }
