@@ -108,6 +108,9 @@ export async function handleGetMessagesByChat(context, message) {
 
 function messagePrepere(msg){
     msg.sended_at = new Date(msg.sended_at);
+    const timeZoneOffset = msg.sended_at.getTimezoneOffset() / 60; 
+    msg.sended_at = new Date(msg.sended_at.getTime() - timeZoneOffset * 60 * 60 * 1000);
+
     if ("attachments" in msg){
         if ("images" in msg.attachments){
             msg.attachments.images.forEach((item)=>{item.id = uuidv4();});
@@ -178,14 +181,14 @@ export async function handleSendMessageToChat(context, message) {
             for (let i = 0; i < context.chats[index].messages.length; i++) {
                 
                 
-                if(context.chats[index].messages[i].front_message_id !== undefined && 
-                   context.chats[index].messages[i].front_message_id === front_message_id){
+                if(context.chats[index].messages[i].front_message_id === front_message_id){
                     
                     if (context.chats[index].last_read_message_id == context.chats[index].messages[i].id){
                         set_last_read_message_id_Request(context, context.chats[index].id, id);
                     }
 
                     context.chats[index].messages[i].id = id;
+                    context.chats[index].last_read_message_id = id;
                     break;
                 }
                 
