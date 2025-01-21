@@ -251,20 +251,28 @@
             msg.attachments.files.forEach(f);
 
             if (chekUpload && !msg.sended){
-              msg.sended = true;
+              if (msg.text || msg.attachments.images.length || msg.attachments.videos.length || msg.attachments.files.length){
+                msg.sended = true;
 
-              let message = create_message(msg);
-              console.log('sending message:', message);
+                let message = create_message(msg);
+                console.log('sending message:', message);
 
-              if (!local_current_chat.is_not_connected) {
-                send_message_to_chat_Request(this, message);
-              } else {
-                if (!local_current_chat.waiting_connaction) {
-                  local_current_chat.waiting_messages = [];
-                  local_current_chat.waiting_connaction = true;
-                  add_user_to_chat_Request(this, local_current_chat.id, this.this_user_id);
+                if (!local_current_chat.is_not_connected) {
+                  send_message_to_chat_Request(this, message);
+                } else {
+                  if (!local_current_chat.waiting_connaction) {
+                    local_current_chat.waiting_messages = [];
+                    local_current_chat.waiting_connaction = true;
+                    add_user_to_chat_Request(this, local_current_chat.id, this.this_user_id);
+                  }
+                  local_current_chat.waiting_messages.push(message);
                 }
-                local_current_chat.waiting_messages.push(message);
+              } else{
+                // Удаление сообщения
+                let message_index = local_current_chat.messages.findIndex((item)=>{return item.front_message_id == msg.front_message_id});
+                if (message_index>-1){
+                  local_current_chat.messages.splice(message_index,1);
+                }
               }
             }
           }
