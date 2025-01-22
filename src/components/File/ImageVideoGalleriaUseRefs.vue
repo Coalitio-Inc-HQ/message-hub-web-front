@@ -7,7 +7,7 @@
                 :key="image.value.id"
                 @click="openMiniature(image.value.id,'images')"
             >
-                <img class="miniature-image" loading="lazy" :src="image.value.url" alt="Ошибка загрузки изображения."/>
+                <ImageComponent class="miniature-image" container_class="miniature-image-container" :src="image.value.url" alt=" "/>
                 <i class="pi pi-eye miniature-item-show-icon"/>
                 <i v-if="!image.value.uploaded" class="pi pi-times miniature-item-delete-button" style="font-size: 0.75rem" @click="(e)=>{openMiniature(null, null); image.value.delete_call(); e.preventDefault();}"/>
                 <ProgressBar v-if="!image.value.uploaded" :value="image.value.progress*100" class="miniature-item-progressbar" style="height: 6px; position: absolute;">{{ "" }}</ProgressBar>
@@ -22,7 +22,7 @@
                 @click="openMiniature(video.value.id,'videos')"
             >
                 <i v-if="video.value.miniature.loading" class="pi pi-spin pi-spinner"/>
-                <img v-else class="miniature-image" loading="lazy" :src="video.value.miniature.url" alt="Ошибка загрузки изображения."/>
+                <ImageComponent v-else class="miniature-image" container_class="miniature-image-container" use_background_image="True" :src="video.value.miniature.url" alt=" "/>
                 <i class="pi pi-caret-right miniature-item-show-icon"/>
                 <i v-if="!video.value.uploaded || !video.value.miniature.uploaded" class="pi pi-times miniature-item-delete-button" style="font-size: 0.75rem" @click="(e)=>{openMiniature(null, null); video.value.delete_call(); e.preventDefault();}"/>
                 <ProgressBar v-if="!video.value.uploaded || !video.value.miniature.uploaded" :value="video.value.progress*100" class="miniature-item-progressbar" style="height: 6px; position: absolute;">{{ "" }}</ProgressBar>
@@ -39,7 +39,7 @@
                 </div>
             </template>
             <div class="full-container icon-slide-container" @mousemove="showSlideButtons">
-                <img v-if="this.openType=='images'" loading="lazy" class="full-image" :src="this.$props.attachments.images[this.openIndex].value.url" alt="Ошибка загрузки изображения."/>
+                <ImageComponent v-if="this.openType=='images'" class="full-image" container_class="full-image-container" use_background_image="True" :src="this.$props.attachments.images[this.openIndex].value.url" alt=" "/>
                 <video v-else class="full-video" :src="this.$props.attachments.videos[this.openIndex].value.url" controls/>
             
                 <i v-if="this.visible_slide_buttons && (this.openIndex>0 && this.openType=='images' || this.openType=='videos' && this.openIndex>0 || this.openType=='videos' && 'images' in this.$props.attachments && this.$props.attachments.images.length>0)" class="pi pi-chevron-left icon-slide-left" 
@@ -55,11 +55,13 @@
     import Drawer from 'primevue/drawer';
     import Button from 'primevue/button';
     import ProgressBar from 'primevue/progressbar';
+    import ImageComponent from '../ImageComponent.vue';
 
     export default {
         props: ["attachments"],
 
         components:{
+            ImageComponent,
             Drawer,
             Button,
             ProgressBar,

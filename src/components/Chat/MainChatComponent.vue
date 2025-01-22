@@ -41,9 +41,10 @@
 
   <Drawer v-model:visible="leftmenu_visible" header="Drawer">
     <template #header>
-        <div>
-            Меню
-        </div>
+      <div class="flex-list-w" style="align-items:  center;">
+        <Avatar :label="this.user_name[0]" />
+        <p class="chat-item-text">{{ this.user_name }}</p>
+      </div>
     </template>
     <div class="flex-list left-drawer-container">
       <div class="flex-scale"/>
@@ -80,6 +81,8 @@
 
   import { deleteCookies,  } from '@/utilities/cookie';
 
+  import Avatar from 'primevue/avatar';
+
   const WS_URL = process.env.VUE_APP_WS_URL;
 
   let setLastRedbleMessageTimeout = setTimeout(() => {}, 0);
@@ -95,6 +98,7 @@
       Button,
       InputText,
       Drawer,
+      Avatar,
     },
 
     data() {

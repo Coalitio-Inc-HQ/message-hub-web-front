@@ -2,7 +2,7 @@
   <div class="dialog-main flex-list" ref="main_div">
     <div class="dialog-header-container flex-list-w">
       <Button variant="text" size="small" icon="pi pi-arrow-left" @click="this.$emit('set-null-chat')"/>
-      <div class="flex-list-w" v-if="current_chat">
+      <div class="flex-list-w" v-if="current_chat" style="align-items:  center;">
         <Avatar v-if="current_chat.icon_url" :image="current_chat.icon_url" shape="square" style="border-radius: 8px;">
           <img :src="current_chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
         </Avatar>
@@ -12,7 +12,7 @@
       <div class="flex-scale"/>
       <Button ref="b" variant="text" size="small" icon="pi pi-list" style="width: auto;" @click="(e)=>{this.$refs.popower.show(e); }"/>
       <Popover ref="popower" >
-        <Button @click="this.$emit('chat-remove-to-archive')" style="width: auto;">Отправить чат в архив</Button>
+        <Button @click="if(this.$props.current_chat){this.$emit('chat-remove-to-archive'); this.$refs.popower.hide();}" style="width: auto;">Отправить чат в архив</Button>
       </Popover>
     </div>
     <VirtualScroll 
