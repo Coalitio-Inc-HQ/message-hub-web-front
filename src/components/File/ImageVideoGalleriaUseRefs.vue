@@ -7,7 +7,7 @@
                 :key="image.value.id"
                 @click="openMiniature(image.value.id,'images')"
             >
-                <ImageComponent class="miniature-image" container_class="miniature-image-container" :src="image.value.url" alt=" "/>
+                <ImageComponent class="miniature-image" container_class="miniature-image-container" use_background_image="True" :src="image.value.url" alt=" "/>
                 <i class="pi pi-eye miniature-item-show-icon"/>
                 <i v-if="!image.value.uploaded" class="pi pi-times miniature-item-delete-button" style="font-size: 0.75rem" @click="(e)=>{openMiniature(null, null); image.value.delete_call(); e.preventDefault();}"/>
                 <ProgressBar v-if="!image.value.uploaded" :value="image.value.progress*100" class="miniature-item-progressbar" style="height: 6px; position: absolute;">{{ "" }}</ProgressBar>
