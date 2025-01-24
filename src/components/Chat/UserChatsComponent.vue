@@ -13,10 +13,34 @@
             :class="{ 'chat-item': true,  'flex-list-w': true, 'align-items-center':true, 'active': current_chat && chat.id == current_chat.id }" 
             @click="$emit('select-user-chat', chat)"
             >
-            <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
-              <img :src="chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
-            </Avatar>
-            <Avatar v-else :label="chat.name[0]" />
+            <div class="avatar-base">
+              <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
+                <img :src="chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
+              </Avatar>
+              <Avatar v-else :label="chat.name[0]" />
+              <template v-if="chat.platform_id in platforms">
+                <i v-if="platforms[chat.platform_id].platform_name==='telegram'" class="pi pi-telegram avatar-platform-icon" style="font-size: 0.75rem;"/>
+                <svg
+                  v-else-if="platforms[chat.platform_id].platform_name==='vk'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="0.75rem"
+                  height="0.75rem"
+                  viewBox="0 0 200 200"
+                  class="avatar-platform-icon"
+                >
+                  <mask id="text-mask">
+                    <!-- Белый квадрат (видимая область) -->
+                    <rect x="0" y="0" width="200" height="200" fill="white"/>
+                    <!-- Чёрный текст (вырезается из квадрата) -->
+                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Arial, sans-serif" font-size="80" font-weight="bold">
+                      VK
+                    </text>
+                  </mask>
+                  <!-- Квадрат с применённой маской -->
+                  <rect x="0" y="0" width="200" height="200" rx="30" style="fill: var(--p-splitter-color);" mask="url(#text-mask)"/>
+                </svg>
+              </template>
+            </div>
             <p class="chat-item-text">{{ chat.name }}</p>
           </il>
         </template>
@@ -43,6 +67,28 @@
               </Avatar>
               <Avatar v-else :label="chat.name[0]"/>
               <p v-if="chat.count_unredeble_messgaes" class="avatar-vlaue">{{ chat.count_unredeble_messgaes }}</p>
+              <template v-if="chat.platform_id in platforms">
+                <i v-if="platforms[chat.platform_id].platform_name==='telegram'" class="pi pi-telegram avatar-platform-icon" style="font-size: 0.75rem;"/>
+                <svg
+                  v-else-if="platforms[chat.platform_id].platform_name==='vk'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="0.75rem"
+                  height="0.75rem"
+                  viewBox="0 0 200 200"
+                  class="avatar-platform-icon"
+                >
+                  <mask id="text-mask">
+                    <!-- Белый квадрат (видимая область) -->
+                    <rect x="0" y="0" width="200" height="200" fill="white"/>
+                    <!-- Чёрный текст (вырезается из квадрата) -->
+                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Arial, sans-serif" font-size="80" font-weight="bold">
+                      VK
+                    </text>
+                  </mask>
+                  <!-- Квадрат с применённой маской -->
+                  <rect x="0" y="0" width="200" height="200" rx="30" style="fill: var(--p-splitter-color);" mask="url(#text-mask)"/>
+                </svg>
+              </template>
             </div>
             <p class="chat-item-text">{{ chat.name }}</p>
           </il>
@@ -64,10 +110,34 @@
           :class="{ 'chat-item': true, 'flex-list-w': true,'align-items-center':true, 'active': current_chat && chat.id == current_chat.id }" 
           @click="$emit('select-user-chat', chat)"
           >
+            <div class="avatar-base">
               <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
                 <img :src="chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
               </Avatar>
               <Avatar v-else :label="chat.name[0]"/>
+              <template v-if="chat.platform_id in platforms">
+                <i v-if="platforms[chat.platform_id].platform_name==='telegram'" class="pi pi-telegram avatar-platform-icon" style="font-size: 0.75rem;"/>
+                <svg
+                  v-else-if="platforms[chat.platform_id].platform_name==='vk'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="0.75rem"
+                  height="0.75rem"
+                  viewBox="0 0 200 200"
+                  class="avatar-platform-icon"
+                >
+                  <mask id="text-mask">
+                    <!-- Белый квадрат (видимая область) -->
+                    <rect x="0" y="0" width="200" height="200" fill="white"/>
+                    <!-- Чёрный текст (вырезается из квадрата) -->
+                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Arial, sans-serif" font-size="80" font-weight="bold">
+                      VK
+                    </text>
+                  </mask>
+                  <!-- Квадрат с применённой маской -->
+                  <rect x="0" y="0" width="200" height="200" rx="30" style="fill: var(--p-splitter-color);" mask="url(#text-mask)"/>
+                </svg>
+              </template>
+            </div>
             <p class="chat-item-text">{{ chat.name }}</p>
           </il>
         </template>
@@ -89,10 +159,34 @@
           :class="{ 'chat-item': true, 'flex-list-w': true, 'align-items-center':true, 'active': current_chat && chat.id == current_chat.id }" 
           @click="$emit('select-user-chat', chat)"
           >
-            <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
-              <img :src="chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
-            </Avatar>
-            <Avatar v-else :label="chat.name[0]"/>
+            <div class="avatar-base">
+              <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
+                <img :src="chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
+              </Avatar>
+              <Avatar v-else :label="chat.name[0]"/>
+              <template v-if="chat.platform_id in platforms">
+                <i v-if="platforms[chat.platform_id].platform_name==='telegram'" class="pi pi-telegram avatar-platform-icon" style="font-size: 0.75rem;"/>
+                <svg
+                  v-else-if="platforms[chat.platform_id].platform_name==='vk'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="0.75rem"
+                  height="0.75rem"
+                  viewBox="0 0 200 200"
+                  class="avatar-platform-icon"
+                >
+                  <mask id="text-mask">
+                    <!-- Белый квадрат (видимая область) -->
+                    <rect x="0" y="0" width="200" height="200" fill="white"/>
+                    <!-- Чёрный текст (вырезается из квадрата) -->
+                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Arial, sans-serif" font-size="80" font-weight="bold">
+                      VK
+                    </text>
+                  </mask>
+                  <!-- Квадрат с применённой маской -->
+                  <rect x="0" y="0" width="200" height="200" rx="30" style="fill: var(--p-splitter-color);" mask="url(#text-mask)"/>
+                </svg>
+              </template>
+            </div>
           <p class="chat-item-text">{{ chat.name }}</p>
         </il>
         </template>
@@ -107,7 +201,7 @@
   import ScrollPanel from 'primevue/scrollpanel';
 
   export default {
-    props: ["chats","current_chat","search_name"],
+    props: ["chats","current_chat","search_name", "platforms"],
     components:{
       Avatar,
       Button,

@@ -17,6 +17,7 @@
               :chats="chats" 
               :current_chat="current_chat" 
               :search_name="search_name"
+              :platforms="platforms"
               @select-user-chat="select_chat"/>
           </div>
         </SplitterPanel>

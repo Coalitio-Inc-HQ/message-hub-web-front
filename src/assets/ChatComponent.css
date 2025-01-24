@@ -113,6 +113,13 @@ body{
   position: relative;
 }
 
+.avatar-platform-icon{
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  transform: translateX(25%) translateY(25%);
+}
+
 .dialog-main{
   height: 100%;
 
