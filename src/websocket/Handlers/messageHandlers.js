@@ -526,6 +526,19 @@ export async function handleSetLastReadMessageId(context, message) {
     removeAction(message.id);
 }
 
+export async function handleGetPlatforms(context, message) {
+    console.log("handleGetPlatforms", message);
+    removeAction(message.id);
+    let body = message.body; 
+    let platforms = body.platforms; 
+
+    let pl = {};
+    platforms.forEach((item)=>{
+        pl[item.id] = item
+    })
+    context.platforms = pl;
+}
+
 const handlers = {
     "get_user_info": handleGetUserInfo,
     "get_users_by_chat": handleGetUsersByChat,
@@ -542,6 +555,7 @@ const handlers = {
     "remove_to_archive":handleRemoveChatToArchive,
     "chat.set.last_read_message_id": handleEventSetLastReadMessageId,
     "set_last_read_message_id": handleSetLastReadMessageId,
+    "get_platforms": handleGetPlatforms,
 };
 
 

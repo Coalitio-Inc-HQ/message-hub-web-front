@@ -112,6 +112,7 @@
         isSidebarVisible: true,
         is_min_window: window.innerWidth <= 768? true : false,
         leftmenu_visible: false,
+        platforms: {},
       };
     },
 

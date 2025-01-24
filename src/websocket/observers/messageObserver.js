@@ -4,7 +4,8 @@ import {
 //   get_chats_by_user_Request, 
 //   get_chats_in_which_user_is_not_member_Request,
   get_user_info,
-  get_chats_Request
+  get_chats_Request,
+  get_platforms,
 } from "@/services/wsRequests";
 import { resendActions } from "../retry";
 export function setupMessageObserver(context, ws, on_close, resend = false) {
@@ -30,6 +31,7 @@ export function setupMessageObserver(context, ws, on_close, resend = false) {
       get_user_info(context);
       // get_chats_by_user_Request(ws.send.bind(ws));
       // get_chats_in_which_user_is_not_member_Request(ws.send.bind(ws));
+      get_platforms(context);
       get_chats_Request(context);
     }
   };

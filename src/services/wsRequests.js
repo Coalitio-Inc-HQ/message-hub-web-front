@@ -294,3 +294,23 @@ export function set_last_read_message_id_Request(context,chat_id, last_read_mess
     console.log(e);
   }
 }
+
+/**
+ * Отправляет запрос на получение списка платформ.
+ */
+export function get_platforms(context) {
+  const request = {
+    id: uuidv4(),
+    name: 'get_platforms',
+    body: { 
+    }
+  };
+  console.log(`Запрос ${request.name}:`, request);
+  addAction(request);
+  try{
+    context.connection.send(JSON.stringify(request));
+  }
+  catch (e){
+    console.log(e);
+  }
+}
