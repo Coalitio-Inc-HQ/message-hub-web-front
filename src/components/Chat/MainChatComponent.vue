@@ -334,6 +334,19 @@
           send_msg();
 
           this.current_chat.messages.push(msg);
+          if (this.current_chat.last_message_send_at<msg.sended_at){
+            this.current_chat.last_message_send_at = msg.sended_at;
+
+            this.chats.sort((a,b)=>{ 
+              if (a.last_message_send_at === null) {
+                if (b.last_message_send_at === null) return 0;
+                else return 1;
+              } else{
+                if (b.last_message_send_at === null) return -1;
+                return b.last_message_send_at-a.last_message_send_at;
+              }
+            });
+          }
           this.$refs.сhat_сomponent.message_input = ''; 
           this.$refs.сhat_сomponent.selected_files = [];
         }

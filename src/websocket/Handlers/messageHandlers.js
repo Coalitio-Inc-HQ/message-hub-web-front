@@ -107,9 +107,14 @@ export async function handleGetMessagesByChat(context, message) {
 }
 
 function messagePrepere(msg){
-    msg.sended_at = new Date(msg.sended_at);
-    const timeZoneOffset = msg.sended_at.getTimezoneOffset() / 60; 
-    msg.sended_at = new Date(msg.sended_at.getTime() - timeZoneOffset * 60 * 60 * 1000);
+    if (msg.sended_at[msg.sended_at.length-1]=="Z"){
+        msg.sended_at = new Date(msg.sended_at);
+    }
+    else{
+        msg.sended_at = new Date(msg.sended_at);
+        const timeZoneOffset = msg.sended_at.getTimezoneOffset() / 60; 
+        msg.sended_at = new Date(msg.sended_at.getTime() - timeZoneOffset * 60 * 60 * 1000);
+    }
 
     if ("attachments" in msg){
         if ("images" in msg.attachments){
@@ -311,6 +316,20 @@ export async function handleNewMessage(context, message) {
     if (event_index==-1){
         let chat_index = context.chats.findIndex((item)=>{return item.id == msg.chat_id;});
         if (chat_index>-1){
+            if (context.chats[chat_index].last_message_send_at<msg.sended_at){
+                context.chats[chat_index].last_message_send_at = msg.sended_at;
+
+                context.chats.sort((a,b)=>{ 
+                    if (a.last_message_send_at === null) {
+                        if (b.last_message_send_at === null) return 0;
+                        else return 1;
+                    } else{
+                        if (b.last_message_send_at === null) return -1;
+                        return b.last_message_send_at-a.last_message_send_at;
+                    }
+                });
+            }
+
             if (context.chats[chat_index].await_down_messages){
                 context.chats[chat_index].down_await_messages.push(msg);
             }
@@ -384,8 +403,22 @@ export async function handleGetChats(context, message) {
         chats[i].messages = [];
         chats[i].scrolled_to_down = false;
         chats[i].scrolled_to_top= false;
+
+        chats[i].last_message_send_at = new Date(chats[i].last_message_send_at);
+        const timeZoneOffset = chats[i].last_message_send_at.getTimezoneOffset() / 60; 
+        chats[i].last_message_send_at = new Date(chats[i].last_message_send_at.getTime() - timeZoneOffset * 60 * 60 * 1000);
     }
     context.chats = context.chats.concat(chats);
+
+    context.chats.sort((a,b)=>{ 
+        if (a.last_message_send_at === null) {
+            if (b.last_message_send_at === null) return 0;
+            else return 1;
+        } else{
+            if (b.last_message_send_at === null) return -1;
+            return b.last_message_send_at-a.last_message_send_at;
+        }
+    });
 
     removeAction(message.id);
 }
@@ -444,7 +477,22 @@ export async function handleChatUpdate(context, message) {
         chat.messages = [];
         chat.scrolled_to_down = false;
         chat.scrolled_to_top= false;
+
+        chat.last_message_send_at = new Date(chat.last_message_send_at);
+        const timeZoneOffset = chat.last_message_send_at.getTimezoneOffset() / 60; 
+        chat.last_message_send_at = new Date(chat.last_message_send_at.getTime() - timeZoneOffset * 60 * 60 * 1000);
+
         context.chats.push(chat);
+
+        context.chats.sort((a,b)=>{ 
+            if (a.last_message_send_at === null) {
+                if (b.last_message_send_at === null) return 0;
+                else return 1;
+            } else{
+                if (b.last_message_send_at === null) return -1;
+                return b.last_message_send_at-a.last_message_send_at;
+            }
+        });
     }
 }
 
