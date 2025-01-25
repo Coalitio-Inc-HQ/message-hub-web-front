@@ -2,7 +2,7 @@
   <div class="chat-component full-height">
     <div class="wrapper">
       <Splitter style="min-height: 100%; min-width: 100%;" class="mb-8">
-        <SplitterPanel v-if="!this.is_min_window  ||  this.is_min_window  &&  !this.current_chat" class="flex items-center justify-center" style="min-width: 15em;" :size="1">
+        <SplitterPanel v-if="!this.is_min_window  ||  this.is_min_window  &&  !this.chats.curentChat" class="flex items-center justify-center" style="min-width: 15em;" :size="1">
           <div class="left-panel flex-list full-height ">
             <div class="left-panel-header-container flex-list-w">
               <Button variant="text" size="small" icon="pi pi-bars" @click="leftmenu_visible=true;"/>
@@ -15,17 +15,15 @@
             </div>
             <UserChatsComponent
               :chats="chats" 
-              :current_chat="current_chat" 
               :search_name="search_name"
               :platforms="platforms"
               @select-user-chat="select_chat"/>
           </div>
         </SplitterPanel>
-        <SplitterPanel v-if="!this.is_min_window  ||  this.is_min_window  &&  this.current_chat" class="flex items-center justify-center" size="99">
+        <SplitterPanel v-if="!this.is_min_window  ||  this.is_min_window  &&  this.chats.curentChat" class="flex items-center justify-center" size="99">
           <ChatComponent 
-          :this_user_id="this_user_id" 
-          :user_name="user_name" 
-          :current_chat="current_chat" 
+          :user="user"
+          :current_chat="chats.curentChat" 
           :is_min_window="is_min_window"
           @set-last-viseble-message="setLastVisebleMessage"
           ref="сhat_сomponent"
@@ -43,8 +41,8 @@
   <Drawer v-model:visible="leftmenu_visible" header="Drawer">
     <template #header>
       <div class="flex-list-w" style="align-items:  center;">
-        <Avatar :label="this.user_name[0]" />
-        <p class="chat-item-text">{{ this.user_name }}</p>
+        <Avatar :label="this.user.name[0]" />
+        <p class="chat-item-text">{{ this.user.name }}</p>
       </div>
     </template>
     <div class="flex-list left-drawer-container">
@@ -62,18 +60,8 @@
 
   import Splitter from 'primevue/splitter';
   import SplitterPanel from 'primevue/splitterpanel';
-  import { setupMessageObserver } from '@/websocket/observers/messageObserver';
   import UserChatsComponent from './UserChatsComponent.vue';
   import ChatComponent from './ChatComponent.vue';
-  import {
-    get_messages_by_chat_Request,
-    get_users_by_chat_Request,
-    send_message_to_chat_Request,
-    add_user_to_chat_Request,
-    create_message,
-    remove_to_archive_Request,
-    set_last_read_message_id_Request,
-  } from '@/services/wsRequests';
   import router from "@/router";
 
   import Button from 'primevue/button';
@@ -87,6 +75,13 @@
   const WS_URL = process.env.VUE_APP_WS_URL;
 
   let setLastRedbleMessageTimeout = setTimeout(() => {}, 0);
+
+  import { MessageHubService } from '@/services/messageHubService/messageHubService';
+  import { refreshUser } from '@/services/messageHubService/userMessageHubService';
+  import { refreshPlatforms } from '@/services/messageHubService/platformMessageHubService';
+  import { refreshChats, create_message, getUsersByChatRequest, addUserToChatRequest, sendMessageToChat, getMessagesByChat ,handleNewUserInChat, removeChatToArchive, setLastReadMessageIdInChat, handleNewMessage, handleChatUpdate, handleEventSetLastReadMessageId,} from '@/services/messageHubService/chatMessageHubService';
+  
+  const MHS = new MessageHubService();
 
   export default {
     components: {
@@ -104,30 +99,48 @@
 
     data() {
       return {
+        user:{
+          loaded: false,
+          name: null,
+          id: null,
+        },
+
+        platforms:{
+          loaded: false,
+          platforms:{},
+        },
+
+        chats: {
+          loaded: false,
+          chatsWhenLoaded: [],
+          chats:[],
+          curentChat:null,
+        },
+
         search_name: '',
-        user_name: '',
-        this_user_id: null,
-        chats: [],
-        current_chat: null,
         message_iterator: 0,
         isSidebarVisible: true,
         is_min_window: window.innerWidth <= 768? true : false,
         leftmenu_visible: false,
-        platforms: {},
       };
     },
 
     async created() {
       let token = this.get_cookie("token");
       if (token) {
+        MHS.fatalCloseEventHandlers.push(()=>{
+          router.push('/login');
+        });
 
-        let onClose = null;
-        onClose=()=>{
-          this.connection = new WebSocket(WS_URL + "?token=" + token);
-          setupMessageObserver(this, this.connection, onClose, true);
-        };
-        this.connection = new WebSocket(WS_URL + "?token=" + token);
-        setupMessageObserver(this, this.connection, onClose, false);
+        MHS.actionEventHandlers["chat.add.user"] = handleNewUserInChat.bind(this);
+        MHS.actionEventHandlers["chat.new_message"] = handleNewMessage.bind(this);
+        MHS.actionEventHandlers["chat.update"] = handleChatUpdate.bind(this);
+        MHS.actionEventHandlers["chat.set.last_read_message_id"] = handleEventSetLastReadMessageId.bind(this);
+
+        MHS.connect(WS_URL + "?token=" + token);
+        refreshUser(this, MHS);
+        refreshPlatforms(this, MHS);
+        refreshChats(this, MHS);
       } else {
         router.push('/login');
       }
@@ -155,12 +168,12 @@
             clearTimeout(setLastRedbleMessageTimeout);
             if (chat.last_read_message_id >-1){
               setLastRedbleMessageTimeout = setTimeout(() => {
-                set_last_read_message_id_Request(this, chat.id, chat.last_read_message_id);
+                setLastReadMessageIdInChat(this, MHS, chat.id, chat.last_read_message_id);
               }, 500);
             }
           } else if(chat.last_read_message_id==null){
             if (chat.messages[index].id>-1){
-              set_last_read_message_id_Request(this, chat.id, chat.messages[index].id);
+              setLastReadMessageIdInChat(this, MHS, chat.id, chat.messages[index].id);
             }
           }
         }
@@ -171,16 +184,16 @@
       },
 
       chat_remove_to_archive(){
-        this.current_chat.is_waiting_answer = false;
-        this.current_chat.is_archive = true;
-        this.current_chat.is_not_connected = true;
-        remove_to_archive_Request(this, this.current_chat.id);
+        this.chats.curentChat.is_waiting_answer = false;
+        this.chats.curentChat.is_archive = true;
+        this.chats.curentChat.is_not_connected = true;
+        removeChatToArchive(this, MHS, this.chats.curentChat.id);
       },
 
       scrolled_top(chat){
         if (chat && chat.users && !chat.await_messages && !chat.scrolled_to_top){
           chat.await_messages = true;
-          get_messages_by_chat_Request(this, chat, 50, chat.messages[0].id);
+          getMessagesByChat(this, MHS, chat, 50, chat.messages[0].id);
         }
       },
 
@@ -188,13 +201,13 @@
         if (chat && chat.users &&  !chat.scrolled_to_down && !chat.await_down_messages){
           chat.await_down_messages = true;
           chat.down_await_messages = [];
-          get_messages_by_chat_Request(this, chat, 50, chat.messages[chat.messages.length-1].id, false, "down");
+          getMessagesByChat(this, MHS, chat, 50, chat.messages[chat.messages.length-1].id, false, "down");
         }
       },
 
 
       set_null_chat(){
-        this.current_chat = null;
+        this.chats.curentChat = null;
       },
 
       resize_window(){
@@ -203,32 +216,32 @@
       select_chat(chat) {
         console.log('Мы находимся в select_chat с chatId:', chat.id);
 
-        if (this.current_chat && this.current_chat.id === chat.id) {
+        if (this.chats.curentChat && this.chats.curentChat.id === chat.id) {
           console.log("Вы уже находитесь в этом чате"); 
         } else {
           console.log(`Сообщения для чата ${chat.id} отсутствуют, отправка запроса...`);
           // this.current_chat = []; 
 
-          this.current_chat = chat;
+          this.chats.curentChat = chat;
           if (!chat.users){
-            get_users_by_chat_Request(this, this.current_chat.id);
+            getUsersByChatRequest(this, MHS, this.chats.curentChat.id);
             if (chat.last_read_message_id==-1 || chat.last_read_message_id ==null){
-              if (! this.current_chat.await_messages){ // Загружаем с последнего собщения
-                this.current_chat.await_messages = true;
-                this.current_chat.await_down_messages = true;
+              if (! this.chats.curentChat.await_messages){ // Загружаем с последнего собщения
+                this.chats.curentChat.await_messages = true;
+                this.chats.curentChat.await_down_messages = true;
                 chat.down_await_messages = [];
-                get_messages_by_chat_Request(this, this.current_chat);
+                getMessagesByChat(this, MHS, this.chats.curentChat);
               }
             }
             else{ // Загружаем с last_read_message_id
-              if (! this.current_chat.await_messages){
-                this.current_chat.await_messages = true;
-                get_messages_by_chat_Request(this, this.current_chat, 50, chat.last_read_message_id, true,"up");
+              if (! this.chats.curentChat.await_messages){
+                this.chats.curentChat.await_messages = true;
+                getMessagesByChat(this, MHS, this.chats.curentChat, 50, chat.last_read_message_id, true,"up");
               }
-              if (!this.current_chat.await_down_messages){
+              if (!this.chats.curentChat.await_down_messages){
                 chat.await_down_messages = true;
                 chat.down_await_messages = [];
-                get_messages_by_chat_Request(this, chat, 2147483647, chat.last_read_message_id, false, "down");
+                getMessagesByChat(this, MHS, chat, 2147483647, chat.last_read_message_id, false, "down");
               }
             }
           }
@@ -237,7 +250,7 @@
 
       send_message(text, files) {
         if (files.length>0 || text){
-          let local_current_chat = this.current_chat;
+          let local_current_chat = this.chats.curentChat;
 
           let msg = this.convertFilesTextToUIMessage(local_current_chat, text, files);
 
@@ -264,12 +277,12 @@
                 console.log('sending message:', message);
 
                 if (!local_current_chat.is_not_connected) {
-                  send_message_to_chat_Request(this, message);
+                  sendMessageToChat(this, MHS, message);
                 } else {
                   if (!local_current_chat.waiting_connaction) {
                     local_current_chat.waiting_messages = [];
                     local_current_chat.waiting_connaction = true;
-                    add_user_to_chat_Request(this, local_current_chat.id, this.this_user_id);
+                    addUserToChatRequest(this, MHS, local_current_chat.id, this.user.id);
                   }
                   local_current_chat.waiting_messages.push(message);
                 }
@@ -335,11 +348,11 @@
 
           send_msg();
 
-          this.current_chat.messages.push(msg);
-          if (this.current_chat.last_message_send_at<msg.sended_at){
-            this.current_chat.last_message_send_at = msg.sended_at;
+          this.chats.curentChat.messages.push(msg);
+          if (this.chats.curentChat.last_message_send_at<msg.sended_at){
+            this.chats.curentChat.last_message_send_at = msg.sended_at;
 
-            this.chats.sort((a,b)=>{ 
+            this.chats.chats.sort((a,b)=>{ 
               if (a.last_message_send_at === null) {
                 if (b.last_message_send_at === null) return 0;
                 else return 1;
@@ -381,7 +394,7 @@
         return {
           id: -chat.message_iterator,
           chat_id: chat.id,
-          sender_id: this.this_user_id,
+          sender_id: this.user.id,
           sended_at: new Date(),
           text: text,
           front_message_id: chat.message_iterator,

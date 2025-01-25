@@ -19,7 +19,7 @@
       ref="chat_scroll_container" 
       :current_chat="current_chat" 
       :max_mode="max_mode" 
-      :this_user_id="this_user_id"
+      :this_user_id="user.id"
       @scrollde-to-top="(chat)=>{this.$emit('scrolled-top', chat);}"
       @scrollde-to-down="(chat)=>{this.$emit('scrolled-down', chat);}"
       @set-last-viseble-message="(chat, message_index)=>{this.$emit('set-last-viseble-message', chat, message_index);}" 
@@ -121,8 +121,7 @@
       VirtualScroll,
     },
     props: [
-      "this_user_id",
-      "user_name",
+      "user",
       "current_chat",
       "is_min_window",
     ],
@@ -236,8 +235,8 @@
       format_time_for_display,
 
       get_user_name(user_id) {
-        if (this.this_user_id === user_id) {
-          return this.user_name;
+        if (this.$props.user.id === user_id) {
+          return this.$props.user.name;
         }
 
         const user = this.current_chat.users.find(user => user.id === user_id);

@@ -5,12 +5,12 @@
     </div>
     <div class="chat-group-inner-box overflow-h-hiddne flex-list flex-scale">
       <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_waiting_chats" step="20">
-        <template v-for="chat in chats">
+        <template v-for="chat in chats.chats">
           <il 
             v-if="chat.is_waiting_answer && (!search_name ||chat.name.toLowerCase().includes(search_name))" 
             :key="chat.id" 
             :data-chat-id="chat.id" 
-            :class="{ 'chat-item': true,  'flex-list-w': true, 'align-items-center':true, 'active': current_chat && chat.id == current_chat.id }" 
+            :class="{ 'chat-item': true,  'flex-list-w': true, 'align-items-center':true, 'active': chats.curentChat && chat.id == chats.curentChat.id }" 
             @click="$emit('select-user-chat', chat)"
             >
             <div class="avatar-base">
@@ -18,10 +18,10 @@
                 <img :src="chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
               </Avatar>
               <Avatar v-else :label="chat.name[0]" />
-              <template v-if="chat.platform_id in platforms">
-                <i v-if="platforms[chat.platform_id].platform_name==='telegram'" class="pi pi-telegram avatar-platform-icon" style="font-size: 0.75rem;"/>
+              <template v-if="chat.platform_id in platforms.platforms">
+                <i v-if="platforms.platforms[chat.platform_id].platform_name==='telegram'" class="pi pi-telegram avatar-platform-icon" style="font-size: 0.75rem;"/>
                 <svg
-                  v-else-if="platforms[chat.platform_id].platform_name==='vk'"
+                  v-else-if="platforms.platforms[chat.platform_id].platform_name==='vk'"
                   xmlns="http://www.w3.org/2000/svg"
                   width="0.75rem"
                   height="0.75rem"
@@ -53,12 +53,12 @@
     </div>
     <div class="chat-group-inner-box overflow-h-hiddne flex-list flex-scale">
       <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_my_chats" step="20">
-        <template v-for="chat in chats">
+        <template v-for="chat in chats.chats">
           <il 
           v-if="!chat.is_waiting_answer && !chat.is_archive && !chat.is_not_connected && (!search_name ||chat.name.toLowerCase().includes(search_name))"
           :key="chat.id" 
           :data-chat-id="chat.id" 
-          :class="{ 'chat-item': true, 'flex-list-w': true, 'align-items-center':true, 'active': current_chat && chat.id == current_chat.id }" 
+          :class="{ 'chat-item': true, 'flex-list-w': true, 'align-items-center':true, 'active': chats.curentChat && chat.id == chats.curentChat.id }" 
           @click="$emit('select-user-chat', chat)"
           >
             <div class="avatar-base">
@@ -67,10 +67,10 @@
               </Avatar>
               <Avatar v-else :label="chat.name[0]"/>
               <p v-if="chat.count_unredeble_messgaes" class="avatar-vlaue">{{ chat.count_unredeble_messgaes }}</p>
-              <template v-if="chat.platform_id in platforms">
-                <i v-if="platforms[chat.platform_id].platform_name==='telegram'" class="pi pi-telegram avatar-platform-icon" style="font-size: 0.75rem;"/>
+              <template v-if="chat.platform_id in platforms.platforms">
+                <i v-if="platforms.platforms[chat.platform_id].platform_name==='telegram'" class="pi pi-telegram avatar-platform-icon" style="font-size: 0.75rem;"/>
                 <svg
-                  v-else-if="platforms[chat.platform_id].platform_name==='vk'"
+                  v-else-if="platforms.platforms[chat.platform_id].platform_name==='vk'"
                   xmlns="http://www.w3.org/2000/svg"
                   width="0.75rem"
                   height="0.75rem"
@@ -102,12 +102,12 @@
     </div>
     <div class="chat-group-inner-box overflow-h-hiddne flex-list flex-scale">
       <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_other_chats" step="20">
-        <template v-for="chat in chats">
+        <template v-for="chat in chats.chats">
           <il 
           v-if="!chat.is_waiting_answer && !chat.is_archive && chat.is_not_connected && (!search_name ||chat.name.toLowerCase().includes(search_name))"
           :key="chat.id" 
           :data-chat-id="chat.id" 
-          :class="{ 'chat-item': true, 'flex-list-w': true,'align-items-center':true, 'active': current_chat && chat.id == current_chat.id }" 
+          :class="{ 'chat-item': true, 'flex-list-w': true,'align-items-center':true, 'active': chats.curentChat && chat.id == chats.curentChat.id }" 
           @click="$emit('select-user-chat', chat)"
           >
             <div class="avatar-base">
@@ -115,10 +115,10 @@
                 <img :src="chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
               </Avatar>
               <Avatar v-else :label="chat.name[0]"/>
-              <template v-if="chat.platform_id in platforms">
-                <i v-if="platforms[chat.platform_id].platform_name==='telegram'" class="pi pi-telegram avatar-platform-icon" style="font-size: 0.75rem;"/>
+              <template v-if="chat.platform_id in platforms.platforms">
+                <i v-if="platforms.platforms[chat.platform_id].platform_name==='telegram'" class="pi pi-telegram avatar-platform-icon" style="font-size: 0.75rem;"/>
                 <svg
-                  v-else-if="platforms[chat.platform_id].platform_name==='vk'"
+                  v-else-if="platforms.platforms[chat.platform_id].platform_name==='vk'"
                   xmlns="http://www.w3.org/2000/svg"
                   width="0.75rem"
                   height="0.75rem"
@@ -151,12 +151,12 @@
     </div>
     <div class="chat-group-inner-box overflow-h-hiddne flex-list flex-scale">
       <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_archive_chats" step="20">
-        <template v-for="chat in chats">
+        <template v-for="chat in chats.chats">
           <il 
           v-if="chat.is_archive && (!search_name ||chat.name.toLowerCase().includes(search_name))"
           :key="chat.id" 
           :data-chat-id="chat.id" 
-          :class="{ 'chat-item': true, 'flex-list-w': true, 'align-items-center':true, 'active': current_chat && chat.id == current_chat.id }" 
+          :class="{ 'chat-item': true, 'flex-list-w': true, 'align-items-center':true, 'active': chats.curentChat && chat.id == chats.curentChat.id }" 
           @click="$emit('select-user-chat', chat)"
           >
             <div class="avatar-base">
@@ -164,10 +164,10 @@
                 <img :src="chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
               </Avatar>
               <Avatar v-else :label="chat.name[0]"/>
-              <template v-if="chat.platform_id in platforms">
-                <i v-if="platforms[chat.platform_id].platform_name==='telegram'" class="pi pi-telegram avatar-platform-icon" style="font-size: 0.75rem;"/>
+              <template v-if="chat.platform_id in platforms.platforms">
+                <i v-if="platforms.platforms[chat.platform_id].platform_name==='telegram'" class="pi pi-telegram avatar-platform-icon" style="font-size: 0.75rem;"/>
                 <svg
-                  v-else-if="platforms[chat.platform_id].platform_name==='vk'"
+                  v-else-if="platforms.platforms[chat.platform_id].platform_name==='vk'"
                   xmlns="http://www.w3.org/2000/svg"
                   width="0.75rem"
                   height="0.75rem"
@@ -201,7 +201,7 @@
   import ScrollPanel from 'primevue/scrollpanel';
 
   export default {
-    props: ["chats","current_chat","search_name", "platforms"],
+    props: ["chats","search_name", "platforms"],
     components:{
       Avatar,
       Button,
