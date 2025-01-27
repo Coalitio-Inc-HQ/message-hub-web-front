@@ -1,0 +1,20 @@
+services:
+  mh_web_front:
+    build: .
+    container_name: mh_web_front
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
+    labels:
+      - traefik.enable=true
+      - traefik.http.middlewares.mh_web_front_https.redirectscheme.scheme=https
+      - traefik.http.routers.mh_web_front.entrypoints=web
+      - traefik.http.routers.mh_web_front.middlewares=mh_web_front_https@docker
+      - traefik.http.routers.mh_web_front.rule=Host(`mh-web-front.server_name.youdomain`)
+      - traefik.http.routers.mh_web_front_https.entrypoints=websecure
+      - traefik.http.routers.mh_web_front_https.rule=Host(`mh-web-front.server_name.youdomain`)
+      - traefik.http.routers.mh_web_front_https.tls=true
+      - traefik.http.routers.mh_web_front_https.tls.certresolver=le
