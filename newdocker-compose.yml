@@ -18,3 +18,7 @@ services:
       - traefik.http.routers.mh_web_front_https.rule=Host(`mh-web-front.server_name.youdomain`)
       - traefik.http.routers.mh_web_front_https.tls=true
       - traefik.http.routers.mh_web_front_https.tls.certresolver=le
+networks:
+  default:
+    external:
+      name: traefik_default
