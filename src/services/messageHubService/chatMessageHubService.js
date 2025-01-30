@@ -413,6 +413,17 @@ export async function handleNewMessage(action_res) {
     if (event_index==-1){
         let chat_index = this.chats.chats.findIndex((item)=>{return item.id == msg.chat_id;});
         if (chat_index>-1){
+            if (this.chats.chats[chat_index].await_down_messages){
+                this.chats.chats[chat_index].down_await_messages.push(msg);
+            }
+            if (this.chats.chats[chat_index].scrolled_to_down){
+                this.chats.chats[chat_index].messages.push(msg);
+            }
+
+            if (msg.sender_id!=this.user.id){
+                this.chats.chats[chat_index].count_unredeble_messgaes+=1;
+            }
+
             if (this.chats.chats[chat_index].last_message_send_at<msg.sended_at){
                 this.chats.chats[chat_index].last_message_send_at = msg.sended_at;
 
@@ -425,17 +436,6 @@ export async function handleNewMessage(action_res) {
                         return b.last_message_send_at-a.last_message_send_at;
                     }
                 });
-            }
-
-            if (this.chats.chats[chat_index].await_down_messages){
-                this.chats.chats[chat_index].down_await_messages.push(msg);
-            }
-            if (this.chats.chats[chat_index].scrolled_to_down){
-                this.chats.chats[chat_index].messages.push(msg);
-            }
-
-            if (msg.sender_id!=this.user.id){
-                this.chats.chats[chat_index].count_unredeble_messgaes+=1;
             }
         }
     }
