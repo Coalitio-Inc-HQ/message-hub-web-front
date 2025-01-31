@@ -153,14 +153,14 @@ body{
 
 .dialog-date-container{
   /* position: sticky; */
-  position: relative;
+  /* position: relative;
   top: 0px;
   z-index: 1;
-  margin: 2px;
+  margin: 2px; */
 }
 
 .dialog-date{
-  position: absolute;
+  position: relative;
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);

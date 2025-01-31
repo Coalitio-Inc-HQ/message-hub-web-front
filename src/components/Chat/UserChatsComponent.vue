@@ -47,6 +47,7 @@
                 :chat="chat"
                 :is_iselected="chats.curentChat && chat.id == chats.curentChat.id"
                 :platforms="platforms"
+                :count_unredeble_messgaes="chat.count_unredeble_messgaes"
                 @select-chat="(chat)=>{this.$emit('select-user-chat', chat)}"
               />
             </template>

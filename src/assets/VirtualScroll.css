@@ -14,3 +14,9 @@
     width: var(--p-scrollpanel-bar-size); 
     height: 5rem;
 }
+
+.dialog-loading-spiner-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

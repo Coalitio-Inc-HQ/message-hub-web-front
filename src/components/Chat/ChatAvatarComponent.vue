@@ -8,7 +8,7 @@
         <img :src="chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
       </Avatar>
       <Avatar v-else :label="chat.name[0]"/>
-
+      <p v-if="count_unredeble_messgaes" class="avatar-vlaue">{{count_unredeble_messgaes }}</p>
       <template v-if="chat.platform_id in platforms.platforms">
         <i v-if="platforms.platforms[chat.platform_id].platform_name==='telegram'" class="pi pi-telegram avatar-platform-icon" style="font-size: 0.75rem;"/>
 
@@ -38,7 +38,7 @@
     import Avatar from 'primevue/avatar';
   
     export default {
-      props: ["chat","is_iselected", "platforms"],
+      props: ["chat","is_iselected", "platforms", "count_unredeble_messgaes"],
       components:{
         Avatar,
       },

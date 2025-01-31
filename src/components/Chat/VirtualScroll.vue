@@ -2,23 +2,52 @@
     <!-- <div class="flex-scale flex-list-w  scroll-container overflow-h-hiddne" ref="main"> -->
         <div class="flex-scale flex-list dialog-messges-base overflow-h-auto" ref="container" @scroll="checkVisible">
             <template v-if="this.$props.current_chat">
-                <template v-for="(message, index) in this.$props.current_chat.messages" 
-                :key="message.id">
-                    <div v-if="index==0 || message.sended_at.getDate()!=this.$props.current_chat.messages[index-1].sended_at.getDate()"  class="dialog-date-container">
-                        <div class="dialog-date" > {{ format_date_for_display(message.sended_at) }} </div>
-                    </div>
+                <template v-if="this.$props.current_chat.await_messages && !this.$props.current_chat.messages.length">
                     <div
+                        v-for="i in 20"
+                        :key="i"
                         :class="{ 
                         'message': true,
                         'flex-list': true,
-                        'message-self': message.sender_id == this.this_user_id, 
-                        'message-other': message.sender_id !== this.this_user_id,
+                        'message-self': false, 
+                        'message-other': true,
                         'max-mode': this.max_mode
                         }"
-                        :ref="`item-${message.id}`"
-                    >
-                        <slot name="message" :message="message"></slot>
+                    >   
+                        <Skeleton width="2rem" class="mb-2"></Skeleton>
+                        <Skeleton width="10rem" height="4rem"></Skeleton>
+                        <Skeleton width="2rem" class="mb-2 message-timestamp"></Skeleton>
                     </div>
+                </template>
+                <template v-else>
+                    <template v-if="this.$props.current_chat.await_messages">
+                        <div class="dialog-loading-spiner-container">
+                            <i class="pi pi-spin pi-spinner" style="font-size: 2rem;"/>
+                        </div>
+                    </template>
+                    <template v-for="(message, index) in this.$props.current_chat.messages" 
+                    :key="message.id">
+                        <div v-if="index==0 || message.sended_at.getDate()!=this.$props.current_chat.messages[index-1].sended_at.getDate()"  class="dialog-date-container">
+                            <div class="dialog-date" > {{ format_date_for_display(message.sended_at) }} </div>
+                        </div>
+                        <div
+                            :class="{ 
+                            'message': true,
+                            'flex-list': true,
+                            'message-self': message.sender_id == this.this_user_id, 
+                            'message-other': message.sender_id !== this.this_user_id,
+                            'max-mode': this.max_mode
+                            }"
+                            :ref="`item-${message.id}`"
+                        >
+                            <slot name="message" :message="message"></slot>
+                        </div>
+                    </template>
+                    <template v-if="this.$props.current_chat.await_down_messages">
+                        <div class="dialog-loading-spiner-container">
+                            <i class="pi pi-spin pi-spinner" style="font-size: 2rem;"/>
+                        </div>
+                    </template>
                 </template>
             </template>
         </div>
@@ -27,12 +56,13 @@
   
 <script>
     import {format_date_for_display} from '@/services/dateUtils';
+    import Skeleton from 'primevue/skeleton';
 
     let last_vis = null;
 
     export default {
         components:{
-
+            Skeleton,
         },
         props: [
             "current_chat",
