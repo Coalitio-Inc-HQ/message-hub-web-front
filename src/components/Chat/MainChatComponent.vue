@@ -41,8 +41,14 @@
   <Drawer v-model:visible="leftmenu_visible" header="Drawer">
     <template #header>
       <div class="flex-list-w" style="align-items:  center;">
-        <Avatar :label="this.user.name[0]" />
-        <p class="chat-item-text">{{ this.user.name }}</p>
+        <template v-if="user.loaded">
+          <Avatar :label="this.user.name[0]" />
+          <p class="chat-item-text">{{ this.user.name }}</p>
+        </template>
+        <template v-else>
+          <Skeleton size="2rem" width="2rem" class="mr-2"/>
+          <Skeleton class="mb-2 chat-item-text" width="5rem"/>
+        </template>
       </div>
     </template>
     <div class="flex-list left-drawer-container">
@@ -81,6 +87,8 @@
   import { refreshPlatforms } from '@/services/messageHubService/platformMessageHubService';
   import { refreshChats, create_message, getUsersByChatRequest, addUserToChatRequest, sendMessageToChat, getMessagesByChat ,handleNewUserInChat, removeChatToArchive, setLastReadMessageIdInChat, handleNewMessage, handleChatUpdate, handleEventSetLastReadMessageId,} from '@/services/messageHubService/chatMessageHubService';
   
+  import Skeleton from 'primevue/skeleton';
+
   const MHS = new MessageHubService();
 
   export default {
@@ -95,6 +103,7 @@
       InputText,
       Drawer,
       Avatar,
+      Skeleton,
     },
 
     data() {
