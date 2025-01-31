@@ -5,44 +5,28 @@
     </div>
     <div class="chat-group-inner-box overflow-h-hiddne flex-list flex-scale">
       <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_waiting_chats" step="20">
-        <template v-for="chat in chats.chats">
-          <il 
-            v-if="chat.is_waiting_answer && (!search_name ||chat.name.toLowerCase().includes(search_name))" 
-            :key="chat.id" 
-            :data-chat-id="chat.id" 
-            :class="{ 'chat-item': true,  'flex-list-w': true, 'align-items-center':true, 'active': chats.curentChat && chat.id == chats.curentChat.id }" 
-            @click="$emit('select-user-chat', chat)"
+        <template v-if="chats.loaded">
+          <template v-if="waitingAnswerChats.length">
+            <template 
+              v-for="chat in waitingAnswerChats"
+              :key="chat.id" 
             >
-            <div class="avatar-base">
-              <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
-                <img :src="chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
-              </Avatar>
-              <Avatar v-else :label="chat.name[0]" />
-              <template v-if="chat.platform_id in platforms.platforms">
-                <i v-if="platforms.platforms[chat.platform_id].platform_name==='telegram'" class="pi pi-telegram avatar-platform-icon" style="font-size: 0.75rem;"/>
-                <svg
-                  v-else-if="platforms.platforms[chat.platform_id].platform_name==='vk'"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="0.75rem"
-                  height="0.75rem"
-                  viewBox="0 0 200 200"
-                  class="avatar-platform-icon"
-                >
-                  <mask id="text-mask">
-                    <!-- Белый квадрат (видимая область) -->
-                    <rect x="0" y="0" width="200" height="200" fill="white"/>
-                    <!-- Чёрный текст (вырезается из квадрата) -->
-                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Arial, sans-serif" font-size="80" font-weight="bold">
-                      VK
-                    </text>
-                  </mask>
-                  <!-- Квадрат с применённой маской -->
-                  <rect x="0" y="0" width="200" height="200" rx="30" style="fill: var(--p-splitter-color);" mask="url(#text-mask)"/>
-                </svg>
-              </template>
-            </div>
-            <p class="chat-item-text">{{ chat.name }}</p>
-          </il>
+              <ChatAvatarComponent
+                :chat="chat"
+                :is_iselected="chats.curentChat && chat.id == chats.curentChat.id"
+                :platforms="platforms"
+                @select-chat="(chat)=>{this.$emit('select-user-chat', chat)}"
+              />
+            </template>
+          </template>
+          <template v-else>
+            <il class="chat-item flex-list-w align-items-center">
+              <p class="chat-list-empty-text" >Ожидающие ответа чаты отсутствуют</p>
+            </il>
+          </template>
+        </template>
+        <template v-else>
+          <ChatAvatarSceletonComponent v-for="i in 20" :key="i"/>
         </template>
       </ScrollPanel>
     </div>
@@ -53,45 +37,28 @@
     </div>
     <div class="chat-group-inner-box overflow-h-hiddne flex-list flex-scale">
       <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_my_chats" step="20">
-        <template v-for="chat in chats.chats">
-          <il 
-          v-if="!chat.is_waiting_answer && !chat.is_archive && !chat.is_not_connected && (!search_name ||chat.name.toLowerCase().includes(search_name))"
-          :key="chat.id" 
-          :data-chat-id="chat.id" 
-          :class="{ 'chat-item': true, 'flex-list-w': true, 'align-items-center':true, 'active': chats.curentChat && chat.id == chats.curentChat.id }" 
-          @click="$emit('select-user-chat', chat)"
-          >
-            <div class="avatar-base">
-              <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
-                <img :src="chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
-              </Avatar>
-              <Avatar v-else :label="chat.name[0]"/>
-              <p v-if="chat.count_unredeble_messgaes" class="avatar-vlaue">{{ chat.count_unredeble_messgaes }}</p>
-              <template v-if="chat.platform_id in platforms.platforms">
-                <i v-if="platforms.platforms[chat.platform_id].platform_name==='telegram'" class="pi pi-telegram avatar-platform-icon" style="font-size: 0.75rem;"/>
-                <svg
-                  v-else-if="platforms.platforms[chat.platform_id].platform_name==='vk'"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="0.75rem"
-                  height="0.75rem"
-                  viewBox="0 0 200 200"
-                  class="avatar-platform-icon"
-                >
-                  <mask id="text-mask">
-                    <!-- Белый квадрат (видимая область) -->
-                    <rect x="0" y="0" width="200" height="200" fill="white"/>
-                    <!-- Чёрный текст (вырезается из квадрата) -->
-                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Arial, sans-serif" font-size="80" font-weight="bold">
-                      VK
-                    </text>
-                  </mask>
-                  <!-- Квадрат с применённой маской -->
-                  <rect x="0" y="0" width="200" height="200" rx="30" style="fill: var(--p-splitter-color);" mask="url(#text-mask)"/>
-                </svg>
-              </template>
-            </div>
-            <p class="chat-item-text">{{ chat.name }}</p>
-          </il>
+        <template v-if="chats.loaded">
+          <template v-if="myChats.length">
+            <template 
+              v-for="chat in myChats"
+              :key="chat.id" 
+            >
+              <ChatAvatarComponent
+                :chat="chat"
+                :is_iselected="chats.curentChat && chat.id == chats.curentChat.id"
+                :platforms="platforms"
+                @select-chat="(chat)=>{this.$emit('select-user-chat', chat)}"
+              />
+            </template>
+          </template>
+          <template v-else>
+            <il class="chat-item flex-list-w align-items-center">
+              <p class="chat-list-empty-text" >Ваши чаты отсутствуют</p>
+            </il>
+          </template>
+        </template>
+        <template v-else>
+          <ChatAvatarSceletonComponent v-for="i in 20" :key="i"/>
         </template>
       </ScrollPanel>
     </div>
@@ -102,44 +69,28 @@
     </div>
     <div class="chat-group-inner-box overflow-h-hiddne flex-list flex-scale">
       <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_other_chats" step="20">
-        <template v-for="chat in chats.chats">
-          <il 
-          v-if="!chat.is_waiting_answer && !chat.is_archive && chat.is_not_connected && (!search_name ||chat.name.toLowerCase().includes(search_name))"
-          :key="chat.id" 
-          :data-chat-id="chat.id" 
-          :class="{ 'chat-item': true, 'flex-list-w': true,'align-items-center':true, 'active': chats.curentChat && chat.id == chats.curentChat.id }" 
-          @click="$emit('select-user-chat', chat)"
-          >
-            <div class="avatar-base">
-              <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
-                <img :src="chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
-              </Avatar>
-              <Avatar v-else :label="chat.name[0]"/>
-              <template v-if="chat.platform_id in platforms.platforms">
-                <i v-if="platforms.platforms[chat.platform_id].platform_name==='telegram'" class="pi pi-telegram avatar-platform-icon" style="font-size: 0.75rem;"/>
-                <svg
-                  v-else-if="platforms.platforms[chat.platform_id].platform_name==='vk'"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="0.75rem"
-                  height="0.75rem"
-                  viewBox="0 0 200 200"
-                  class="avatar-platform-icon"
-                >
-                  <mask id="text-mask">
-                    <!-- Белый квадрат (видимая область) -->
-                    <rect x="0" y="0" width="200" height="200" fill="white"/>
-                    <!-- Чёрный текст (вырезается из квадрата) -->
-                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Arial, sans-serif" font-size="80" font-weight="bold">
-                      VK
-                    </text>
-                  </mask>
-                  <!-- Квадрат с применённой маской -->
-                  <rect x="0" y="0" width="200" height="200" rx="30" style="fill: var(--p-splitter-color);" mask="url(#text-mask)"/>
-                </svg>
-              </template>
-            </div>
-            <p class="chat-item-text">{{ chat.name }}</p>
-          </il>
+        <template v-if="chats.loaded">
+          <template v-if="otherChats.length">
+            <template 
+              v-for="chat in otherChats"
+              :key="chat.id" 
+            >
+              <ChatAvatarComponent
+                :chat="chat"
+                :is_iselected="chats.curentChat && chat.id == chats.curentChat.id"
+                :platforms="platforms"
+                @select-chat="(chat)=>{this.$emit('select-user-chat', chat)}"
+              />
+            </template>
+          </template>
+          <template v-else>
+            <il class="chat-item flex-list-w align-items-center">
+              <p class="chat-list-empty-text" >Остальные чаты отсутствуют</p>
+            </il>
+          </template>
+        </template>
+        <template v-else>
+          <ChatAvatarSceletonComponent v-for="i in 20" :key="i"/>
         </template>
       </ScrollPanel>
     </div>
@@ -151,44 +102,28 @@
     </div>
     <div class="chat-group-inner-box overflow-h-hiddne flex-list flex-scale">
       <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_archive_chats" step="20">
-        <template v-for="chat in chats.chats">
-          <il 
-          v-if="chat.is_archive && (!search_name ||chat.name.toLowerCase().includes(search_name))"
-          :key="chat.id" 
-          :data-chat-id="chat.id" 
-          :class="{ 'chat-item': true, 'flex-list-w': true, 'align-items-center':true, 'active': chats.curentChat && chat.id == chats.curentChat.id }" 
-          @click="$emit('select-user-chat', chat)"
-          >
-            <div class="avatar-base">
-              <Avatar v-if="chat.icon_url" :image="chat.icon_url" shape="square" style="border-radius: 8px;">
-                <img :src="chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
-              </Avatar>
-              <Avatar v-else :label="chat.name[0]"/>
-              <template v-if="chat.platform_id in platforms.platforms">
-                <i v-if="platforms.platforms[chat.platform_id].platform_name==='telegram'" class="pi pi-telegram avatar-platform-icon" style="font-size: 0.75rem;"/>
-                <svg
-                  v-else-if="platforms.platforms[chat.platform_id].platform_name==='vk'"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="0.75rem"
-                  height="0.75rem"
-                  viewBox="0 0 200 200"
-                  class="avatar-platform-icon"
-                >
-                  <mask id="text-mask">
-                    <!-- Белый квадрат (видимая область) -->
-                    <rect x="0" y="0" width="200" height="200" fill="white"/>
-                    <!-- Чёрный текст (вырезается из квадрата) -->
-                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Arial, sans-serif" font-size="80" font-weight="bold">
-                      VK
-                    </text>
-                  </mask>
-                  <!-- Квадрат с применённой маской -->
-                  <rect x="0" y="0" width="200" height="200" rx="30" style="fill: var(--p-splitter-color);" mask="url(#text-mask)"/>
-                </svg>
-              </template>
-            </div>
-          <p class="chat-item-text">{{ chat.name }}</p>
-        </il>
+        <template v-if="chats.loaded">
+          <template v-if="archiveChats.length">
+            <template 
+              v-for="chat in archiveChats"
+              :key="chat.id" 
+            >
+              <ChatAvatarComponent
+                :chat="chat"
+                :is_iselected="chats.curentChat && chat.id == chats.curentChat.id"
+                :platforms="platforms"
+                @select-chat="(chat)=>{this.$emit('select-user-chat', chat)}"
+              />
+            </template>
+          </template>
+          <template v-else>
+            <il class="chat-item flex-list-w align-items-center">
+              <p class="chat-list-empty-text" >Архивные чаты отсутствуют</p>
+            </il>
+          </template>
+        </template>
+        <template v-else>
+          <ChatAvatarSceletonComponent v-for="i in 20" :key="i"/>
         </template>
       </ScrollPanel>
     </div>
@@ -196,16 +131,17 @@
 </template>
 
 <script>
-  import Avatar from 'primevue/avatar';
   import Button from 'primevue/button';
   import ScrollPanel from 'primevue/scrollpanel';
-
+  import ChatAvatarComponent from './ChatAvatarComponent.vue';
+  import ChatAvatarSceletonComponent from './ChatAvatarSceletonComponent.vue';
   export default {
     props: ["chats","search_name", "platforms"],
     components:{
-      Avatar,
       Button,
       ScrollPanel,
+      ChatAvatarComponent,
+      ChatAvatarSceletonComponent,
     },
     methods:{
       ClicOnButtonInListWaitingChats() {
@@ -241,5 +177,47 @@
         button_archive_chats: false,
       };
     },
+
+    computed: {
+      waitingAnswerChats() {
+        let arr = [];
+        this.$props.chats.chats.forEach(element => {
+          if (element.is_waiting_answer && (!this.search_name ||element.name.toLowerCase().includes(this.search_name))){
+            arr.push(element);
+          }
+        });
+        return arr;
+      },
+
+      myChats() {
+        let arr = [];
+        this.$props.chats.chats.forEach(element => {
+          if (!element.is_waiting_answer && !element.is_archive && !element.is_not_connected && (!this.search_name ||element.name.toLowerCase().includes(this.search_name))){
+            arr.push(element);
+          }
+        });
+        return arr;
+      },
+
+      otherChats(){
+        let arr = [];
+        this.$props.chats.chats.forEach(element => {
+          if (!element.is_waiting_answer && !element.is_archive && element.is_not_connected && (!this.search_name ||element.name.toLowerCase().includes(this.search_name))){
+            arr.push(element);
+          }
+        });
+        return arr;
+      },
+
+      archiveChats(){
+        let arr = [];
+        this.$props.chats.chats.forEach(element => {
+          if (element.is_archive && (!this.search_name ||element.name.toLowerCase().includes(this.search_name))){
+            arr.push(element);
+          }
+        });
+        return arr;
+      },
+    }
   };
 </script>
