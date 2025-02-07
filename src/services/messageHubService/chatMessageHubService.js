@@ -380,7 +380,25 @@ export function setLastReadMessageIdInChat(context, MessageHubService, chat_id, 
     })
 }
   
-
+/**
+ * Отправляет запрос на удаление сообщения в чате
+ */
+export function deleteMessageInChat(context, MessageHubService, message_id){
+    let event_id = uuidv4();
+    ignoreEventId.push(event_id);
+    MessageHubService.actionRequest(
+        {
+            id: uuidv4(),
+            name: 'delete_message',
+            body: { 
+              message_id: message_id,
+              event_id: event_id, 
+            }
+        }
+    ).then((action_res)=>{
+        if (loging) console.log("deleteMessageInChat", action_res);
+    })
+}
 
 
 // events
@@ -503,6 +521,27 @@ export async function handleEventSetLastReadMessageId(action_res) {
         if (this.chats.chats[chat_index].last_read_message_id == null || this.chats.chats[chat_index].last_read_message_id>-1 && this.chats.chats[chat_index].last_read_message_id<last_read_message_id){
             this.chats.chats[chat_index].last_read_message_id = last_read_message_id;
             this.chats.chats[chat_index].count_unredeble_messgaes = count;
+        }
+    }
+}
+
+export async function handleEventDeleteMessage(action_res) {
+    console.log("handleEventDeleteMessage", action_res);
+    let body = action_res.body; 
+    let msg = body.message; 
+    let event_id = body.event_id;
+
+    let event_index = ignoreEventId.findIndex((item)=>{return item == event_id;});
+    if (event_index==-1){
+        let chat_index = this.chats.chats.findIndex((item)=>item.id == msg.chat_id);
+        if (chat_index>-1){
+            if (this.chats.chats[chat_index].last_read_message_id &&  msg.id>this.chats.chats[chat_index].last_read_message_id){
+                this.chats.chats[chat_index].count_unredeble_messgaes -=1;
+            }
+            let message_index = this.chats.chats[chat_index].messages.findIndex((item)=>item.id == msg.id);
+            if (message_index>-1){
+                this.chats.chats[chat_index].messages[message_index].is_hide == true;
+            }
         }
     }
 }

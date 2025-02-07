@@ -12,7 +12,10 @@
       <div class="flex-scale"/>
       <Button ref="b" variant="text" size="small" icon="pi pi-list" style="width: auto;" @click="(e)=>{this.$refs.popower.show(e); }"/>
       <Popover ref="popower" >
-        <Button @click="if(this.$props.current_chat){this.$emit('chat-remove-to-archive'); this.$refs.popower.hide();}" style="width: auto;">Отправить чат в архив</Button>
+        <div class="flex-list gap">
+          <Button @click="if(this.$props.current_chat){this.$emit('chat-remove-to-archive'); this.$refs.popower.hide();}" style="width: auto;">Отправить чат в архив</Button>
+          <Button @click="this.show_deleted_messages = !this.show_deleted_messages" style="width: auto;">{{this.show_deleted_messages?"Скрыть удалённые сообщения":"Показать удалённые сообщения" }}</Button>
+        </div>
       </Popover>
     </div>
     <VirtualScroll 
@@ -20,9 +23,11 @@
       :current_chat="current_chat" 
       :max_mode="max_mode" 
       :this_user_id="user.id"
+      :show_deleted_messages="show_deleted_messages"
       @scrollde-to-top="(chat)=>{this.$emit('scrolled-top', chat);}"
       @scrollde-to-down="(chat)=>{this.$emit('scrolled-down', chat);}"
       @set-last-viseble-message="(chat, message_index)=>{this.$emit('set-last-viseble-message', chat, message_index);}" 
+      @contextmenu-on-message="onMessageContextmenu"
     >
       <template #message="{ message }">
             <div class="message-sender-name">{{ get_user_name(message.sender_id) }}</div>
@@ -45,7 +50,7 @@
             <div class="message-text">{{ message.text }}</div>
             <div class="message-timestamp">
               <template v-if="message.id>=0">
-                {{ format_time_for_display(message.sended_at) }}
+                {{ (message.is_hide?"удалено/":"") + format_time_for_display(message.sended_at) }}
               </template>
               <i v-else class="pi pi-spin pi-spinner" style="font-size: 0.5rem"></i>
             </div>
@@ -79,12 +84,14 @@
       </div>
     </form>
   </div>
+
+  <ContextMenu ref="message_context_menu" :model="context_menu_items" @hide="this.selected_message=null" />
 </template>
 
 <script>
+  import ContextMenu from 'primevue/contextmenu';
   import Avatar from 'primevue/avatar';
   import Popover from 'primevue/popover';
-
   import Button from 'primevue/button';
   // import ScrollPanel from 'primevue/scrollpanel';
 
@@ -119,6 +126,7 @@
       UploadedFileList,
       Popover,
       VirtualScroll,
+      ContextMenu,
     },
     props: [
       "user",
@@ -166,11 +174,27 @@
       return{
         observer: null,
         max_mode: false,
-        selected_files: []
+        selected_files: [],
+        context_menu_items:[
+          { label: 'Удалить', icon: 'pi pi-trash' },
+        ],
+        show_deleted_messages: false,
+        selected_message: null,
       }
     },
 
     methods: {
+      onMessageContextmenu(e, message){
+        if (message.sender_id == this.$props.user.id){
+          this.selected_message = message;
+          this.$refs.message_context_menu.show(e);
+        }
+      },
+
+      deleteMessage(){
+        this.$emit("delete-message", this.selected_message);
+      },
+
       choise_files(){
         const input = document.createElement('input');
         input.type = 'file'; // Устанавливаем тип файла
@@ -296,8 +320,10 @@
 
     mounted() {
       // this.scroll_down(false);
-      this.observer = new ResizeObserver(this.onResize)
-      this.observer.observe(this.$refs.main_div)
+      this.context_menu_items[0].command = this.deleteMessage;
+
+      this.observer = new ResizeObserver(this.onResize);
+      this.observer.observe(this.$refs.main_div);
     },
 
     beforeUnmount () {

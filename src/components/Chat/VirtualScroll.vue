@@ -27,21 +27,25 @@
                     </template>
                     <template v-for="(message, index) in this.$props.current_chat.messages" 
                     :key="message.id">
-                        <div v-if="index==0 || message.sended_at.getDate()!=this.$props.current_chat.messages[index-1].sended_at.getDate()"  class="dialog-date-container">
+                        <div v-if="(index==0 || message.sended_at.getDate()!=this.$props.current_chat.messages[index-1].sended_at.getDate())&&(findVisibleMessageInthisDate(index)>-1 || show_deleted_messages)"  class="dialog-date-container">
                             <div class="dialog-date" > {{ format_date_for_display(message.sended_at) }} </div>
                         </div>
-                        <div
-                            :class="{ 
-                            'message': true,
-                            'flex-list': true,
-                            'message-self': message.sender_id == this.this_user_id, 
-                            'message-other': message.sender_id !== this.this_user_id,
-                            'max-mode': this.max_mode
-                            }"
-                            :ref="`item-${message.id}`"
-                        >
-                            <slot name="message" :message="message"></slot>
-                        </div>
+                        <template v-if="!message.is_hide || show_deleted_messages">
+                            <div
+                                :class="{ 
+                                'message': true,
+                                'flex-list': true,
+                                'message-self': message.sender_id == this.this_user_id, 
+                                'message-other': message.sender_id !== this.this_user_id,
+                                'max-mode': this.max_mode
+                                }"
+                                :ref="`item-${message.id}`"
+                                @contextmenu="(e)=> this.$emit('contextmenu-on-message', e, message)"
+                                aria-haspopup="true"
+                            >
+                                <slot name="message" :message="message"></slot>
+                            </div>
+                        </template>
                     </template>
                     <template v-if="this.$props.current_chat.await_down_messages">
                         <div class="dialog-loading-spiner-container">
@@ -68,6 +72,7 @@
             "current_chat",
             "this_user_id",
             "max_mode",
+            "show_deleted_messages",
         ],
         data(){
             return{
@@ -77,6 +82,23 @@
   
         methods: {
             format_date_for_display,
+
+            findVisibleMessageInthisDate(start_index){
+                let find = -1;
+                let start_date = this.$props.current_chat.messages[start_index].sended_at.getDate();
+                for (let i = start_index; i<this.$props.current_chat.messages.length; i++){
+                    if (this.$props.current_chat.messages[i].sended_at.getDate()==start_date){
+                        if (!this.$props.current_chat.messages[i].is_hide){
+                            find = i;
+                            break;
+                        }
+                    }else{
+                        break;
+                    }
+                }
+
+                return find;
+            },
 
             checkVisible() {
                 if (this.$props.current_chat){
@@ -218,6 +240,23 @@
                 deep: true,
             },
         },
+        // "show_deleted_messages":{
+        //     handler(){
+        //         const container = this.$refs.container;
+        //         const refs = this.$refs[`item-${this.lastFistMessage.id}`];
+        //         if (refs){
+        //             const item = refs[0];
+        //             const old_recrt = item.getBoundingClientRect();
+        //             this.$nextTick (() => {
+        //                 const new_recrt = item.getBoundingClientRect();
+        //                 const heightDiff = new_recrt.top - old_recrt.top;
+        //                 container.scrollTop += heightDiff;
+        //             });
+        //         }
+        //     },
+        //     immediate: true,
+        //     deep: true,
+        // }
     };
   </script>
   

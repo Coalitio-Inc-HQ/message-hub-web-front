@@ -32,6 +32,7 @@
           @scrolled-top="scrolled_top"
           @scrolled-down="scrolled_down"
           @chat-remove-to-archive="chat_remove_to_archive"
+          @delete-message="deleteMessage"
           />
         </SplitterPanel>
       </Splitter>
@@ -85,7 +86,7 @@
   import { MessageHubService } from '@/services/messageHubService/messageHubService';
   import { refreshUser } from '@/services/messageHubService/userMessageHubService';
   import { refreshPlatforms } from '@/services/messageHubService/platformMessageHubService';
-  import { refreshChats, create_message, getUsersByChatRequest, addUserToChatRequest, sendMessageToChat, getMessagesByChat ,handleNewUserInChat, removeChatToArchive, setLastReadMessageIdInChat, handleNewMessage, handleChatUpdate, handleEventSetLastReadMessageId,} from '@/services/messageHubService/chatMessageHubService';
+  import { refreshChats, create_message, getUsersByChatRequest, addUserToChatRequest, sendMessageToChat, getMessagesByChat ,handleNewUserInChat, removeChatToArchive, setLastReadMessageIdInChat, handleNewMessage, handleChatUpdate, handleEventSetLastReadMessageId, deleteMessageInChat, handleEventDeleteMessage,} from '@/services/messageHubService/chatMessageHubService';
   
   import Skeleton from 'primevue/skeleton';
 
@@ -145,6 +146,7 @@
         MHS.actionEventHandlers["chat.new_message"] = handleNewMessage.bind(this);
         MHS.actionEventHandlers["chat.update"] = handleChatUpdate.bind(this);
         MHS.actionEventHandlers["chat.set.last_read_message_id"] = handleEventSetLastReadMessageId.bind(this);
+        MHS.actionEventHandlers["chat.delete_message"] = handleEventDeleteMessage.bind(this);
 
         MHS.connect(WS_URL + "?token=" + token);
         refreshUser(this, MHS);
@@ -165,12 +167,33 @@
     methods: {
       deleteCookies,
 
+      deleteMessage(msg){
+        let chatIndex = this.chats.chats.findIndex((item)=>{return item.id == msg.chat_id;});
+        if (chatIndex>-1){
+          let lastMessageIndex = this.chats.chats[chatIndex].messages.findIndex((item)=>{return item.id == msg.id;});
+          if (lastMessageIndex>-1){
+            if (msg.id>0){
+              this.chats.chats[chatIndex].messages[lastMessageIndex].is_hide = true;
+              deleteMessageInChat(this,MHS, msg.id);
+            }
+          }
+        }
+      },
+
       setLastVisebleMessage(chat, index){
         if(index){
           let lastMessageIndex = chat.messages.findIndex((item)=>{return item.id == chat.last_read_message_id;});
           if (lastMessageIndex>-1 && lastMessageIndex<index && chat.count_unredeble_messgaes!= null){
             chat.last_read_message_id = chat.messages[index].id;
-            let newcount = chat.count_unredeble_messgaes - (index-lastMessageIndex);
+
+            let dif_count_unredeble_messgaes = 0;
+            for (let i = lastMessageIndex; i<=index;i++ ){
+              if (!chat.messages[i].is_hide) dif_count_unredeble_messgaes+=1;
+            }
+
+            console.log(dif_count_unredeble_messgaes);
+
+            let newcount = chat.count_unredeble_messgaes - dif_count_unredeble_messgaes;
             chat.count_unredeble_messgaes = newcount>-1?newcount:0;
             console.log(chat.count_unredeble_messgaes);
 
