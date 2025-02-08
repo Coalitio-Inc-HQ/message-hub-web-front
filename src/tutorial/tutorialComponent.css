@@ -1,0 +1,21 @@
+.tutorial-container-dialog{
+    padding: 10px;
+}
+
+.tutorial-container-popover{
+    padding: 0;
+}
+
+
+.close-button{
+    width: auto;
+}
+
+.tutorial-heder{
+    margin: 0;
+    text-wrap: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;  
+
+    font-size: 1.25rem;
+}

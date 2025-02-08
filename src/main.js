@@ -7,10 +7,12 @@ import Aura from '@primevue/themes/aura';
 import { definePreset } from '@primevue/themes';
 // import { presets } from 'babel.config';
 
+import { tutorialPlugin } from './tutorial/tutorialPlugin';
+
 const app = createApp(App);
 
 app.use(router);
-
+app.use(tutorialPlugin);
 
 const MyPreset = definePreset(Aura, {
     semantic: {

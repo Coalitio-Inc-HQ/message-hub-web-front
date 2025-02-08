@@ -5,7 +5,7 @@
         <SplitterPanel v-if="!this.is_min_window  ||  this.is_min_window  &&  !this.chats.curentChat" class="flex items-center justify-center" style="min-width: 15em;" :size="1">
           <div class="left-panel flex-list full-height ">
             <div class="left-panel-header-container flex-list-w">
-              <Button variant="text" size="small" icon="pi pi-bars" @click="leftmenu_visible=true;"/>
+              <Button variant="text" size="small" icon="pi pi-bars" @click="leftmenu_visible=true;" ref="open_menu_button"/>
               <!-- <InputText type="text" v-model="value" style="flex-grow: 1;"/> -->
               <IconField class="flex-scale search-field-box">
                   <InputIcon class="pi pi-search" />
@@ -88,6 +88,61 @@
   import { refreshPlatforms } from '@/services/messageHubService/platformMessageHubService';
   import { refreshChats, create_message, getUsersByChatRequest, addUserToChatRequest, sendMessageToChat, getMessagesByChat ,handleNewUserInChat, removeChatToArchive, setLastReadMessageIdInChat, handleNewMessage, handleChatUpdate, handleEventSetLastReadMessageId, deleteMessageInChat, handleEventDeleteMessage,} from '@/services/messageHubService/chatMessageHubService';
   
+  import { addTutorialStep, setTutorialStep, updateTutorialStepTarget } from '@/tutorial/tutorialPlugin';
+  import tutorialWelcomeComponent from '../tutorial/tutorialWelcomeComponent.vue';
+  import tutorialTextComponent from '../tutorial/tutorialTextComponent.vue';
+  import {useTemplateRef} from 'vue';
+
+  addTutorialStep("start",
+    {
+      type: "dialog",
+
+      slot: tutorialWelcomeComponent,
+      props:{
+      },
+
+      next_step: "close-tutorial-info",
+      next_step_events: new Set(["next-button"]),
+
+      back_step: null,
+      back_step_events: new Set([]),
+    }
+  );
+  addTutorialStep("close-tutorial-info",
+    {
+      type: "dialog",
+
+      slot: tutorialTextComponent,
+      props:{
+        text: "Данное руководство пользователя можно пропустить в любой моент нажав кнопку X в правлм верхнем углу руководства пользователя."
+      },
+
+      next_step: "left-menu-info",
+      next_step_events: new Set(["next-button"]),
+
+      back_step: null,
+      back_step_events: new Set([]),
+    }
+  );
+
+  addTutorialStep("left-menu-info",
+    {
+      type: "popover",
+      target: null,
+
+      slot: tutorialTextComponent,
+      props:{
+        text: "Данная кнопка открывает основное приложения меню."
+      },
+
+      next_step: null,
+      next_step_events: new Set(["next-button"]),
+
+      back_step: null,
+      back_step_events: new Set([]),
+    }
+  );
+
   import Skeleton from 'primevue/skeleton';
 
   const MHS = new MessageHubService();
@@ -105,6 +160,10 @@
       Drawer,
       Avatar,
       Skeleton,
+    },
+    setup(){
+      const open_menu_button = useTemplateRef('open_menu_button')
+      updateTutorialStepTarget("left-menu-info", open_menu_button);
     },
 
     data() {
@@ -158,6 +217,7 @@
     },
 
     mounted(){
+      setTutorialStep("start");
       window.addEventListener("resize", this.resize_window);
     },
     unmounted() {
@@ -455,7 +515,7 @@
 </script>
 
 <style scoped>
-@import '@/assets/ChatComponent.css'; 
-@import 'primeicons/primeicons.css';
-@import '@/assets/Layout.css';
+  @import '@/assets/ChatComponent.css'; 
+  @import 'primeicons/primeicons.css';
+  @import '@/assets/Layout.css';
 </style>
