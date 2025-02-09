@@ -54,7 +54,7 @@
     </template>
     <div class="flex-list left-drawer-container">
       <div class="flex-scale"/>
-      <Button @click="this.deleteCookies(); this.setPage('/login');">Выйти</Button>
+      <Button ref="logout_button" @click="this.deleteCookies(); this.setPage('/login');">Выйти</Button>
     </div>
   </Drawer>
 </template>
@@ -84,11 +84,11 @@
   let setLastRedbleMessageTimeout = setTimeout(() => {}, 0);
 
   import { MessageHubService } from '@/services/messageHubService/messageHubService';
-  import { refreshUser } from '@/services/messageHubService/userMessageHubService';
+  import { refreshUser, setIsCompletedTutorialUser } from '@/services/messageHubService/userMessageHubService';
   import { refreshPlatforms } from '@/services/messageHubService/platformMessageHubService';
   import { refreshChats, create_message, getUsersByChatRequest, addUserToChatRequest, sendMessageToChat, getMessagesByChat ,handleNewUserInChat, removeChatToArchive, setLastReadMessageIdInChat, handleNewMessage, handleChatUpdate, handleEventSetLastReadMessageId, deleteMessageInChat, handleEventDeleteMessage,} from '@/services/messageHubService/chatMessageHubService';
   
-  import { addTutorialStep, setTutorialStep, updateTutorialStepTarget } from '@/tutorial/tutorialPlugin';
+  import { addTutorialStep, setTutorialStep, updateTutorialStepTargetFunc, addCloseTuturialEventHandlers, addEndTuturialEventHandlers } from '@/tutorial/tutorialPlugin';
   import tutorialWelcomeComponent from '../tutorial/tutorialWelcomeComponent.vue';
   import tutorialTextComponent from '../tutorial/tutorialTextComponent.vue';
   import {useTemplateRef} from 'vue';
@@ -114,10 +114,11 @@
 
       slot: tutorialTextComponent,
       props:{
-        text: "Данное руководство пользователя можно пропустить в любой моент нажав кнопку X в правлм верхнем углу руководства пользователя."
+        text: "\tДанное руководство пользователя можно пропустить в любой моент нажав кнопку X в правлм верхнем углу руководства пользователя.",
+        button: true,
       },
 
-      next_step: "left-menu-info",
+      next_step: "awaiting-chats-info",
       next_step_events: new Set(["next-button"]),
 
       back_step: null,
@@ -128,17 +129,58 @@
   addTutorialStep("left-menu-info",
     {
       type: "popover",
-      target: null,
+      watch_ms_to_call_get_target_func:0,
+      get_target_func: null,
 
       slot: tutorialTextComponent,
       props:{
-        text: "Данная кнопка открывает основное приложения меню."
+        text: "\tДанная кнопка открывает основное приложения меню.",
+        button: false,
+      },
+
+      reload_events: new Set(["select-chat", "unselect-chat"]),
+
+      next_step: "logout-button",
+      next_step_events: new Set(["open-left-menu"]),
+
+      back_step: null,
+      back_step_events: new Set([]),
+    }
+  );
+  addTutorialStep("logout-button",
+    {
+      type: "popover",
+      watch_ms_to_call_get_target_func:500,
+      get_target_func: null,
+
+      slot: tutorialTextComponent,
+      props:{
+        text: "\tДанная кнопка позволяет выйти из аккаунта.",
+        button: true,
+      },
+
+      next_step: "end-tutorial",
+      next_step_events: new Set(["next-button"]),
+
+      back_step: "left-menu-info",
+      back_step_events: new Set(["close-left-menu"]),
+    }
+  );
+
+  addTutorialStep("end-tutorial",
+    {
+      type: "dialog",
+
+      slot: tutorialTextComponent,
+      props:{
+        text: "\tРуководство пользователя завершено.",
+        button: true,
       },
 
       next_step: null,
       next_step_events: new Set(["next-button"]),
 
-      back_step: null,
+      back_step:null,
       back_step_events: new Set([]),
     }
   );
@@ -146,6 +188,13 @@
   import Skeleton from 'primevue/skeleton';
 
   const MHS = new MessageHubService();
+
+  const set_is_complite_tutorial = ()=>{
+    setIsCompletedTutorialUser(null, MHS);
+  }
+
+  addCloseTuturialEventHandlers(set_is_complite_tutorial);
+  addEndTuturialEventHandlers(set_is_complite_tutorial);
 
   export default {
     components: {
@@ -162,8 +211,15 @@
       Skeleton,
     },
     setup(){
-      const open_menu_button = useTemplateRef('open_menu_button')
-      updateTutorialStepTarget("left-menu-info", open_menu_button);
+      const open_menu_button = useTemplateRef('open_menu_button');
+      updateTutorialStepTargetFunc("left-menu-info", ()=>{
+        return open_menu_button;
+      });
+
+      const logout_button = useTemplateRef('logout_button');
+      updateTutorialStepTargetFunc("logout-button", ()=>{
+        return logout_button;
+      });
     },
 
     data() {
@@ -172,6 +228,7 @@
           loaded: false,
           name: null,
           id: null,
+          is_completed_tutorial: null,
         },
 
         platforms:{
@@ -216,8 +273,31 @@
       }
     },
 
+    watch:{
+      'leftmenu_visible':{
+        handler(newValue) {
+            if (newValue){
+              this.$tutorial.emit_event("open-left-menu");
+            }
+            else{
+              this.$tutorial.emit_event("close-left-menu");
+            }
+          },
+          deep: false,
+          immediate: true
+      },
+      'user':{
+        handler(newValue) {
+            if (newValue && newValue.loaded && !newValue.is_completed_tutorial){
+              setTutorialStep("start");
+            }
+          },
+          deep: true,
+          immediate: true
+      }
+    },
+
     mounted(){
-      setTutorialStep("start");
       window.addEventListener("resize", this.resize_window);
     },
     unmounted() {
@@ -300,6 +380,7 @@
 
       set_null_chat(){
         this.chats.curentChat = null;
+        this.$tutorial.emit_event("unselect-chat");
       },
 
       resize_window(){
@@ -307,6 +388,7 @@
       },
       select_chat(chat) {
         console.log('Мы находимся в select_chat с chatId:', chat.id);
+        this.$tutorial.emit_event("select-chat");
 
         if (this.chats.curentChat && this.chats.curentChat.id === chat.id) {
           console.log("Вы уже находитесь в этом чате"); 

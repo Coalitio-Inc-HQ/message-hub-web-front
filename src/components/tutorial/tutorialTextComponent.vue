@@ -1,7 +1,7 @@
 <template>
-    <dib class="flex-list tutorial-welcome-component-container">
-        <p class="tutorial-welcome-component-text">{{ text }}</p>
-        <Button label="Продолжить" @click="this.$tutorial.emit_event('next-button');" />
+    <dib class="flex-list tutorial-text-component-container">
+        <p class="tutorial-text-component-text">{{ text }}</p>
+        <Button v-if="button" label="Продолжить" @click="this.$tutorial.emit_event('next-button');" />
     </dib>
 </template>
 
@@ -9,7 +9,7 @@
     import Button from 'primevue/button';
 
     export default {
-      props: ["text"],
+      props: ["text", "button"],
       components:{
         Button
       },
@@ -25,14 +25,11 @@
     @import '@/assets/Layout.css';
     @import 'primeicons/primeicons.css';
 
-    .tutorial-welcome-component-text-center{
-        margin: 1.25rem;
-        text-align: center;
-    }
-    .tutorial-welcome-component-text{
+    .tutorial-text-component-text{
         text-align: justify;
+        white-space: pre-wrap;
     }
-    .tutorial-welcome-component-container{
+    .tutorial-text-component-container{
         max-width: 20rem;
     }
 </style>

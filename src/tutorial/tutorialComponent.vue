@@ -65,14 +65,27 @@
           handler(newValue, oldValue) {
             if (newValue != oldValue && newValue){
               if (this.this_step.type==="popover"){
-                setTimeout(() => {
-                  this.$refs.tutorialpopover.show({ "currentTarget": null }, this.this_step.target.$el);
-                }, 0);
+                this.reloadPopover();
               }
             }
           },
           deep: false,
           immediate: true
+        }
+      },
+
+      methods:{
+        reloadPopover(){
+          if (this.$refs.tutorialpopover){
+            this.$refs.tutorialpopover.hide();
+          }
+
+          setTimeout(() => {
+            if (this.this_step.get_target_func){
+              const target = this.this_step.get_target_func();
+              if (target && target.value) this.$refs.tutorialpopover.show({ "currentTarget": null }, target.value.$el);
+            }
+          }, this.this_step.watch_ms_to_call_get_target_func);
         }
       },
 

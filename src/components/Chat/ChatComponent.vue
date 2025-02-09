@@ -1,7 +1,7 @@
 <template>
   <div class="dialog-main flex-list" ref="main_div">
     <div class="dialog-header-container flex-list-w">
-      <Button variant="text" size="small" icon="pi pi-arrow-left" @click="this.$emit('set-null-chat')"/>
+      <Button ref="chat_out_button" variant="text" size="small" icon="pi pi-arrow-left" @click="this.$emit('set-null-chat')"/>
       <div class="flex-list-w" v-if="current_chat" style="align-items:  center;">
         <Avatar v-if="current_chat.icon_url" :image="current_chat.icon_url" shape="square" style="border-radius: 8px;">
           <img :src="current_chat.icon_url" loading="lazy" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
@@ -65,7 +65,7 @@
         :is_min_window="is_min_window"
         />
       </div> -->
-      <UploadedFileList :files="this.selected_files"/>
+      <UploadedFileList ref="dialog_submit_form" :files="this.selected_files"/>
       <div class="flex-list-w dialog-submit-div">
         <textarea 
           ref="messageInput" 
@@ -112,6 +112,76 @@
   import VirtualScroll from './VirtualScroll.vue';
   // import { ref, } from 'vue'
   // import { noop } from '@vueuse/core';
+
+  import { addTutorialStep, updateTutorialStepTargetFunc } from '@/tutorial/tutorialPlugin';
+  import tutorialTextComponent from '../tutorial/tutorialTextComponent.vue';
+  import {useTemplateRef} from 'vue';
+
+  addTutorialStep("dialog-submit-form-info",
+    {
+      type: "popover",
+      watch_ms_to_call_get_target_func:0,
+      get_target_func: null,
+
+      slot: tutorialTextComponent,
+      props:{
+        text: "\tДанная часть интерфеса отвечает за редактирование сообщения. Здась можно ввести текст сообщения, прикрепить к сообщению файлы и отправить сообщение.",
+        button: true,
+      },
+
+      reload_events: new Set(["select-chat", "unselect-chat"]),
+
+      next_step: "chat-menu-info",
+      next_step_events: new Set(["next-button"]),
+
+      back_step: null,
+      back_step_events: new Set([]),
+    }
+  );
+  addTutorialStep("chat-menu-info",
+    {
+      type: "popover",
+      watch_ms_to_call_get_target_func:0,
+      get_target_func: null,
+
+      slot: tutorialTextComponent,
+      props:{
+        text: "\tДанная кнопка отвечает за открытие меню в котором можно отправить чат в архив или просмотреть удалённые сообщения.",
+        button: true,
+      },
+
+      reload_events: new Set(["select-chat", "unselect-chat"]),
+
+      next_step: "chat-out-button-info",
+      next_step_events: new Set(["next-button"]),
+
+      back_step: null,
+      back_step_events: new Set([]),
+    }
+  );
+  addTutorialStep("chat-out-button-info",
+    {
+      type: "popover",
+      watch_ms_to_call_get_target_func:0,
+      get_target_func: null,
+
+      slot: tutorialTextComponent,
+      props:{
+        text: "\tЭта кнопка отвечает за закрытие чата, в мобильной вресии её необходимо нажать чтобы вернутся к списку чатов.",
+        button: true,
+      },
+
+      reload_events: new Set(["select-chat", "unselect-chat"]),
+
+      next_step: "left-menu-info",
+      next_step_events: new Set(["next-button"]),
+
+      back_step: null,
+      back_step_events: new Set([]),
+    }
+  );
+
+
   export default {
     components:{
       Button,
@@ -181,6 +251,23 @@
         show_deleted_messages: false,
         selected_message: null,
       }
+    },
+
+    setup(){
+      const dialog_submit_form = useTemplateRef('dialog_submit_form');
+      updateTutorialStepTargetFunc("dialog-submit-form-info", ()=>{
+        return dialog_submit_form;
+      });
+
+      const b = useTemplateRef('b');
+      updateTutorialStepTargetFunc("chat-menu-info", ()=>{
+        return b;
+      });
+
+      const chat_out_button = useTemplateRef('chat_out_button');
+      updateTutorialStepTargetFunc("chat-out-button-info", ()=>{
+        return chat_out_button;
+      });
     },
 
     methods: {

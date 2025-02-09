@@ -15,10 +15,13 @@ const data = reactive({
   steps: {
     // start:{
     //   type: "popover" | "dialog", // тип диалог с боку или по середине экрана
-    //   target: ref, // цель, если диолог относительно элемента
+    //   watch_ms_to_call_get_target_func: 0
+    //   get_target_func: ref, // цель, если диолог относительно элемента
 
     //   slot
     //   props
+
+    //   reload_events:Set([""]), // В случае popover иногда нужно менть положение
 
     //   next_step:"", // Название следующего шага
     //   next_step_events: Set([""]), // События перехода на следующий шаг
@@ -32,12 +35,13 @@ const data = reactive({
 
 let close_tuturial_event_handlers = []
 let end_tuturial_event_handlers = []
+let tutorial_component = null;
 
 export const tutorialPlugin = {
   install(app) {
     const appInstance = createApp(tutorialComponent, {"data":data});
     appInstance.use(PrimeVue);
-    appInstance.mount(document.createElement('div'));
+    tutorial_component = appInstance.mount(document.createElement('div'));
     document.body.appendChild(appInstance._container);
 
     let global_prop = {
@@ -59,7 +63,12 @@ export const tutorialPlugin = {
               data.this_step=data.steps[data.this_step].next_step;
 
             } else{
-              if (data.steps[data.this_step].back_step_events.has(name)){
+              if (data.steps[data.this_step].reload_events && data.steps[data.this_step].reload_events.has(name)){
+                if (tutorial_component){
+                  tutorial_component.reloadPopover();
+                }
+              }
+              else if (data.steps[data.this_step].back_step_events.has(name)){
                 data.this_step=data.steps[data.this_step].back_step;
               }
             }
@@ -88,11 +97,11 @@ export function addTutorialStep(name, step){
   data.steps[name] = step;
 }
 
-export function updateTutorialStepTarget(name, target){
+export function updateTutorialStepTargetFunc(name, get_target_func){
   if (!(name in data.steps)){
     throw `Этап ${name} не существует.`;
   }
-  data.steps[name].target = target;
+  data.steps[name].get_target_func = get_target_func;
 }
 
 export function setTutorialStep(name){
@@ -101,4 +110,13 @@ export function setTutorialStep(name){
   }
 
   data.this_step = name;
+}
+
+
+export function addCloseTuturialEventHandlers(fun){
+  close_tuturial_event_handlers.push(fun)
+}
+
+export function addEndTuturialEventHandlers(fun){
+  end_tuturial_event_handlers.push(fun)
 }
