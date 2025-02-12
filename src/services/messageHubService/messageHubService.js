@@ -5,7 +5,7 @@ function sleep(ms) {
 }
 
 export class MessageHubService{
-    constructor(reconnection_delay=30){
+    constructor(reconnection_delay=1){
         this.reconnection_delay = reconnection_delay;
 
         this.websocket = null;
