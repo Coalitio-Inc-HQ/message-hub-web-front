@@ -62,15 +62,14 @@ export class MessageHubService{
                 if ("body" in action_res && "events" in action_res.body && action_res.body.events.length){
                     
                     action_res.body.events.forEach(item => {
-                       
-                        if ("id" in item) this.ignoreMessageIds.add(item.id);
-    
+                        if ("id" in item && this.ignoreMessageIds.has(item.id)) return;
+
                         if (item.name in this.actionEventHandlers){
                             this.actionEventHandlers[item.name](item);
                         } else{
                             console.log("Not resolve actionEventHandler", item);
                         }
-    
+                        if ("id" in item) this.ignoreMessageIds.add(item.id);
                     });
                 }
             });
