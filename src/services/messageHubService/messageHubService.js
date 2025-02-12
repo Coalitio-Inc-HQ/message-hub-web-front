@@ -1,3 +1,5 @@
+import { uuidv4 } from '@/utilities/uuid';
+
 const loging = true;
 
 function sleep(ms) {
@@ -19,6 +21,9 @@ export class MessageHubService{
 
         this.responseFuncById = {};
         this.actionEventHandlers = {};
+
+        this.lastEventId = null;
+        this.ignoreMessageIds = new Set();
     }
 
     connect(url){
@@ -34,8 +39,41 @@ export class MessageHubService{
             this.last_connection = new Date();
             this.websocket = new WebSocket(this.url);
             this.setUpHandlers(this.websocket);
+            this.reloadLatestEvents();
         } else{
             await sleep(this.reconnection_delay * 1000); 
+        }
+    }
+
+    async reloadLatestEvents(){
+        if (this.lastEventId){
+            this.actionRequest(
+                {
+                    id: uuidv4(),
+                    name: 'get_buffer_messages',
+                    body: {
+                        "event_id": this.lastEventId,
+                    }
+                },
+                true
+            ).then((action_res)=>{
+                if (loging) console.log("reloadLatestEvents", action_res);
+    
+                if ("body" in action_res && "events" in action_res.body && action_res.body.events.length){
+                    
+                    action_res.body.events.forEach(item => {
+                       
+                        if ("id" in item) this.ignoreMessageIds.add(item.id);
+    
+                        if (item.name in this.actionEventHandlers){
+                            this.actionEventHandlers[item.name](item);
+                        } else{
+                            console.log("Not resolve actionEventHandler", item);
+                        }
+    
+                    });
+                }
+            });
         }
     }
 
@@ -104,9 +142,9 @@ export class MessageHubService{
         await this.reConnect();
     }
 
-    sendAction (action) {
+    sendAction (action, unsave = false) {
         if (loging) console.log("WebSocket action send:", action);
-        this.sendedActions.push(action);
+        if (!unsave) this.sendedActions.push(action);
         if (this.connected) this.websocket.send(JSON.stringify(action));
     }
 
@@ -121,6 +159,7 @@ export class MessageHubService{
         if (loging) console.log("WebSocket connection message:", event);
         try{
             let action_res = JSON.parse(event.data);
+            if ("id" in action_res && this.ignoreMessageIds.has(action_res.id)) return;
             if ("id" in action_res) this.sendedActions=this.sendedActions.filter((item)=>{return item.id!=action_res.id});
     
             if (action_res.id in this.responseFuncById){
@@ -129,6 +168,7 @@ export class MessageHubService{
             else{
                 if (action_res.name in this.actionEventHandlers){
                     this.actionEventHandlers[action_res.name](action_res);
+                    if ("body" in action_res && "event_id" in action_res.body) this.lastEventId = action_res.body.event_id;
                 } else{
                     console.log("Not resolve actionEventHandler", action_res);
                 }
@@ -139,7 +179,7 @@ export class MessageHubService{
         }
     }
 
-    actionRequest(action){
+    actionRequest(action, unsave = false){
         return new Promise((function (resolve, reject) {
             this.responseFuncById[action.id] = (action_res) =>{
                 if (action_res.status_code==200){
@@ -149,7 +189,7 @@ export class MessageHubService{
                     reject(action_res);
                 }
             }
-            this.sendAction(action);
+            this.sendAction(action, unsave);
         }).bind(this));
     }
 }
