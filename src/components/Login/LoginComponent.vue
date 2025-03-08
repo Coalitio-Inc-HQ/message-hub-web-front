@@ -16,7 +16,6 @@
 import LoginForm from './LoginForm.vue';
 import { request_login } from '@/services/authService';
 
-
 export default {
   components: {
     LoginForm
@@ -26,8 +25,8 @@ export default {
       registerActive: false,
       loginfail: false,
       loginData: {
-        username: '',
-        password: ''
+        username: this.$route.query.username,
+        password: this.$route.query.password
       }
     };
   },
