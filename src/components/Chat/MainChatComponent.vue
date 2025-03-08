@@ -86,7 +86,7 @@
   import { MessageHubService } from '@/services/messageHubService/messageHubService';
   import { refreshUser, setIsCompletedTutorialUser } from '@/services/messageHubService/userMessageHubService';
   import { refreshPlatforms } from '@/services/messageHubService/platformMessageHubService';
-  import { refreshChats, create_message, getUsersByChatRequest, addUserToChatRequest, sendMessageToChat, getMessagesByChat ,handleNewUserInChat, removeChatToArchive, setLastReadMessageIdInChat, handleNewMessage, handleChatUpdate, handleEventSetLastReadMessageId, deleteMessageInChat, handleEventDeleteMessage,} from '@/services/messageHubService/chatMessageHubService';
+  import { refreshChats, create_message, getUsersByChatRequest, addUserToChatRequest, sendMessageToChat, getMessagesByChat ,handleNewUserInChat, removeChatToArchive, setLastReadMessageIdInChatTimeout, handleNewMessage, handleChatUpdate, handleEventSetLastReadMessageId, deleteMessageInChat, handleEventDeleteMessage,} from '@/services/messageHubService/chatMessageHubService';
   
   import { addTutorialStep, setTutorialStep, updateTutorialStepTargetFunc, addCloseTuturialEventHandlers, addEndTuturialEventHandlers } from '@/tutorial/tutorialPlugin';
   import tutorialWelcomeComponent from '../tutorial/tutorialWelcomeComponent.vue';
@@ -340,12 +340,12 @@
             clearTimeout(setLastRedbleMessageTimeout);
             if (chat.last_read_message_id >-1){
               setLastRedbleMessageTimeout = setTimeout(() => {
-                setLastReadMessageIdInChat(this, MHS, chat.id, chat.last_read_message_id);
+                setLastReadMessageIdInChatTimeout(this, MHS, chat.id, chat.last_read_message_id);
               }, 500);
             }
           } else if(chat.last_read_message_id==null){
             if (chat.messages[index].id>-1){
-              setLastReadMessageIdInChat(this, MHS, chat.id, chat.messages[index].id);
+              setLastReadMessageIdInChatTimeout(this, MHS, chat.id, chat.messages[index].id);
             }
           }
         }

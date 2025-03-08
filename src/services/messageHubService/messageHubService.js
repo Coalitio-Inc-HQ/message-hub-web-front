@@ -1,6 +1,6 @@
 import { uuidv4 } from '@/utilities/uuid';
 
-const loging = true;
+const loging = false;
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));

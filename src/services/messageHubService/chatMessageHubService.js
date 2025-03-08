@@ -328,7 +328,7 @@ export function sendMessageToChat(context, MessageHubService, message){
                     if(context.chats.chats[index].messages[i].front_message_id === front_message_id){
                         
                         if (context.chats.chats[index].last_read_message_id == context.chats.chats[index].messages[i].id){
-                            setLastReadMessageIdInChat(context, MessageHubService, context.chats.chats[index].id, id);
+                            setLastReadMessageIdInChatTimeout(context, MessageHubService, context.chats.chats[index].id, id);
                             context.chats.chats[index].last_read_message_id = id;
                         }
     
@@ -379,7 +379,33 @@ export function setLastReadMessageIdInChat(context, MessageHubService, chat_id, 
         if (loging) console.log("setLastReadMessageIdInChat", action_res);
     })
 }
-  
+
+let setLastReadMessageIdInChatTimers = {};
+
+export function setLastReadMessageIdInChatTimeout(context, MessageHubService, chat_id, last_read_message_id){
+
+    if (chat_id in setLastReadMessageIdInChatTimers){
+        if (setLastReadMessageIdInChatTimers[chat_id].last_read_message_id<last_read_message_id){
+            setLastReadMessageIdInChatTimers[chat_id].last_read_message_id = last_read_message_id;
+            clearTimeout(setLastReadMessageIdInChatTimers[chat_id].timer);
+    
+            setLastReadMessageIdInChatTimers[chat_id].timer = setTimeout(() => {
+                setLastReadMessageIdInChat(context, MessageHubService, chat_id, last_read_message_id);
+            }, 500);
+        }
+    }
+    else{
+        let dict = {};
+        dict.last_read_message_id = last_read_message_id;
+        dict.timer = setTimeout(() => {
+            setLastReadMessageIdInChat(context, MessageHubService, chat_id, last_read_message_id);
+        }, 500);
+        setLastReadMessageIdInChatTimers[chat_id] = dict;
+    }
+
+    setLastReadMessageIdInChat(context, MessageHubService, chat_id, last_read_message_id);
+}
+
 /**
  * Отправляет запрос на удаление сообщения в чате
  */
