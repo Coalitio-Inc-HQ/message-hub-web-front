@@ -53,6 +53,7 @@
       </div>
     </template>
     <div class="flex-list left-drawer-container">
+      <Button severity="secondary" @click="open_tg_bot">Telegram bot</Button>
       <div class="flex-scale"/>
       <Button ref="logout_button" @click="this.deleteCookies(); this.setPage('/login');">Выйти</Button>
     </div>
@@ -248,6 +249,8 @@
         isSidebarVisible: true,
         is_min_window: window.innerWidth <= 768? true : false,
         leftmenu_visible: false,
+
+        tg_bot_ref: process.env.VUE_APP_TG_BOT_REF,
       };
     },
 
@@ -306,6 +309,14 @@
 
     methods: {
       deleteCookies,
+
+      open_tg_bot(){
+        console.log(this.tg_bot_ref);
+        const newTab = window.open(this.tg_bot_ref, '_blank'); 
+        if (newTab) {
+          newTab.opener = null;
+        }
+      },
 
       deleteMessage(msg){
         let chatIndex = this.chats.chats.findIndex((item)=>{return item.id == msg.chat_id;});
