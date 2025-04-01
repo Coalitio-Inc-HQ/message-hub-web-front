@@ -19,6 +19,7 @@
       </Popover>
     </div>
     <VirtualScroll 
+      v-if="user && current_chat"
       ref="chat_scroll_container" 
       :current_chat="current_chat" 
       :max_mode="max_mode" 
@@ -56,7 +57,7 @@
             </div>
       </template>
     </VirtualScroll>
-
+    <div v-else class="flex-scale"/>
     <form class="dialog-submit-form flex-list" >
       <!-- <div v-if="this.selected_files.length!=0" class="flex-list-w dialog-submit-file-scroll overflow-h-hiddne w-scrollbar">
         <FileAvatar v-for="file in this.selected_files" 

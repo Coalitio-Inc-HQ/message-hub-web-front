@@ -18,11 +18,14 @@ export function refreshPlatforms(context, MessageHubService){
     MessageHubService.actionRequest(
         {
             id: uuidv4(),
-            name: 'get_platforms',
-            body: {}
+            type: "Request",
+            obj: {
+                name: 'platform.list',
+                body: {}
+            }
         }
-    ).then((action_res)=>{
-        let platforms = action_res.body.platforms; 
+    ).then((action_res_obj)=>{
+        let platforms = action_res_obj.body.platforms; 
         let pl = {};
         platforms.forEach((item)=>{
             pl[item.id] = item

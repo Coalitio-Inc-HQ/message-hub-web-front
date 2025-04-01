@@ -9,17 +9,18 @@ export function getCookie(name) {
     return null;
 }
 
-export function deleteCookies() {
-    const cookies = document.cookie.split(";");
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i];
-      const eqPos = cookie.indexOf("=");
-      const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-      if (name) {
-        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
-        console.log(`Cookie удалена: ${name}`);
-      } else {
-        console.log('Куки не обнаружены для удаления.');
-    }
+
+export function deleteCookies(name) {
+  document.cookie = name + "=; Max-Age=-1; path=/";
+}
+
+
+export function  setCookie(name, value, days) {
+  var expires = "";
+  if (days) {
+    var date = new Date();
+    date.setTime(date.getTime() + (days*24*60*60*1000));
+    expires = "; expires=" + date.toUTCString();
   }
+  document.cookie = name + "=" + (value || "") + expires + "; path=/";
 }

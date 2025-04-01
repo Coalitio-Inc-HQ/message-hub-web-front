@@ -32,8 +32,11 @@ export function refreshChats(context, MessageHubService){
     MessageHubService.actionRequest(
         {
             id: uuidv4(),
-            name: 'get_chats_by_user',
-            body: {}
+            type: "Request",
+            obj: {
+                name: 'chat.list',
+                body: {},
+            }
         }
     ).then((action_res)=>{
         let chats = action_res.body.chats;
@@ -65,8 +68,13 @@ export function getUsersByChatRequest(context, MessageHubService, chat_id){
     MessageHubService.actionRequest(
         {
             id: uuidv4(),
-            name: 'get_users_by_chat',
-            body: { chat_id: chat_id }
+            type: "Request",
+            obj:{
+                name: 'chat.user.list',
+                body: { 
+                    chat_id: chat_id,
+                }
+            }
         }
     ).then((action_res)=>{
         let body = action_res.body; 
@@ -89,14 +97,17 @@ export function getMessagesByChat(context, MessageHubService, chat, count = 50, 
     MessageHubService.actionRequest(
         {
             id: uuidv4(),
-            name: 'get_messages_by_chat',
-            body: {
-              chat_id: chat.id,
-              count: count,
-              offset_message_id: offsetMessageId,
-              include_messege: include_messege,
-              mode: mode,
-            }
+            type: "Request",
+            obj:{
+                name: 'chat.message.list',
+                body: {
+                  chat_id: chat.id,
+                  count: count,
+                  offset_message_id: offsetMessageId,
+                  include_messege: include_messege,
+                  mode: mode,
+                },
+            },
         }
     ).then((action_res)=>{
         let body = action_res.body; 
@@ -218,11 +229,14 @@ export function addUserToChatRequest(context, MessageHubService, chat_id, user_i
     MessageHubService.actionRequest(
         {
             id: uuidv4(),
-            name: 'add_user_to_chat',
-            body: { 
-              chat_id: chat_id, 
-              user_id:user_id, 
-              event_id: event_id,
+            type: "Request",
+            obj:{
+                name: "chat.user.add",
+                body: { 
+                  chat_id: chat_id, 
+                  user_id:user_id, 
+                  event_id: event_id,
+                }
             }
         }
     ).then((action_res)=>{
@@ -306,10 +320,13 @@ export function sendMessageToChat(context, MessageHubService, message){
     MessageHubService.actionRequest(
         {
             id: uuidv4(),
-            name: 'send_message_to_chat',
-            body: {
-              message: message,
-              event_id:event_id,
+            type: "Request",
+            obj:{
+                name: "chat.message.send",
+                body: {
+                  message: message,
+                  event_id:event_id,
+                }
             }
         }
     ).then((action_res)=>{
@@ -349,10 +366,13 @@ export function removeChatToArchive(context, MessageHubService, chat_id){
     MessageHubService.actionRequest(
         {
             id: uuidv4(),
-            name: 'remove_to_archive',
-            body: { 
-              chat_id: chat_id,
-              event_id: uuidv4(),
+            type: "Request",
+            obj:{
+                name: "chat.archive",
+                body: { 
+                  chat_id: chat_id,
+                  event_id: uuidv4(),
+                }
             }
         }
     ).then((action_res)=>{
@@ -368,11 +388,14 @@ export function setLastReadMessageIdInChat(context, MessageHubService, chat_id, 
     MessageHubService.actionRequest(
         {
             id: uuidv4(),
-            name: 'set_last_read_message_id',
-            body: { 
-              chat_id: chat_id,
-              last_read_message_id: last_read_message_id,
-              event_id: uuidv4(), 
+            type: "Request",
+            obj:{
+                name: "chat.message.last_read_message_id",
+                body: { 
+                  chat_id: chat_id,
+                  last_read_message_id: last_read_message_id,
+                  event_id: uuidv4(), 
+                }
             }
         }
     ).then((action_res)=>{
@@ -403,7 +426,7 @@ export function setLastReadMessageIdInChatTimeout(context, MessageHubService, ch
         setLastReadMessageIdInChatTimers[chat_id] = dict;
     }
 
-    setLastReadMessageIdInChat(context, MessageHubService, chat_id, last_read_message_id);
+    // setLastReadMessageIdInChat(context, MessageHubService, chat_id, last_read_message_id);
 }
 
 /**
@@ -415,10 +438,13 @@ export function deleteMessageInChat(context, MessageHubService, message_id){
     MessageHubService.actionRequest(
         {
             id: uuidv4(),
-            name: 'delete_message',
-            body: { 
-              message_id: message_id,
-              event_id: event_id, 
+            type: "Request",
+            obj:{
+                name: "chat.message.delete",
+                body: { 
+                  message_id: message_id,
+                  event_id: event_id, 
+                }
             }
         }
     ).then((action_res)=>{
@@ -439,7 +465,7 @@ export async function handleNewUserInChat(action_res) {
     for (let index = 0; index < this.chats.chats.length; index++) {
         if(this.chats.chats[index].id == chat.id){
             if (this.chats.chats[index].users) this.chats.chats[index].users.push(user);
-            if (user.id==this.user.id) this.chats.chats[index].is_not_connected=false;
+            if (user.id==this.AuthServiceStore.userInfo.id) this.chats.chats[index].is_not_connected=false;
             break;
         }
     }
@@ -450,7 +476,7 @@ export async function handleNewMessage(action_res) {
     console.log("Handler new_message:", action_res);
     let body = action_res.body; 
     let msg = messagePrepere(body.message);
-    let event_id = body.event_id;
+    let event_id = action_res.event_id;
 
     let event_index = ignoreEventId.findIndex((item)=>{return item == event_id;});
 
@@ -464,7 +490,7 @@ export async function handleNewMessage(action_res) {
                 this.chats.chats[chat_index].messages.push(msg);
             }
 
-            if (msg.sender_id!=this.user.id){
+            if (msg.sender_id!=this.AuthServiceStore.userInfo.id){
                 this.chats.chats[chat_index].count_unredeble_messgaes+=1;
             }
 
@@ -555,7 +581,7 @@ export async function handleEventDeleteMessage(action_res) {
     console.log("handleEventDeleteMessage", action_res);
     let body = action_res.body; 
     let msg = body.message; 
-    let event_id = body.event_id;
+    let event_id = action_res.event_id;
 
     let event_index = ignoreEventId.findIndex((item)=>{return item == event_id;});
     if (event_index==-1){

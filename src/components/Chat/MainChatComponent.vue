@@ -22,7 +22,7 @@
         </SplitterPanel>
         <SplitterPanel v-if="!this.is_min_window  ||  this.is_min_window  &&  this.chats.curentChat" class="flex items-center justify-center" size="99">
           <ChatComponent 
-          :user="user"
+          :user="AuthServiceStore.userInfo"
           :current_chat="chats.curentChat" 
           :is_min_window="is_min_window"
           @set-last-viseble-message="setLastVisebleMessage"
@@ -42,9 +42,9 @@
   <Drawer v-model:visible="leftmenu_visible" header="Drawer">
     <template #header>
       <div class="flex-list-w" style="align-items:  center;">
-        <template v-if="user.loaded">
-          <Avatar :label="this.user.name[0]" />
-          <p class="chat-item-text">{{ this.user.name }}</p>
+        <template v-if="AuthServiceStore.userInfo">
+          <Avatar :label="this.AuthServiceStore.userInfo.name[0]" />
+          <p class="chat-item-text">{{ this.AuthServiceStore.userInfo.name }}</p>
         </template>
         <template v-else>
           <Skeleton size="2rem" width="2rem" class="mr-2"/>
@@ -84,8 +84,8 @@
 
   let setLastRedbleMessageTimeout = setTimeout(() => {}, 0);
 
-  import { MessageHubService } from '@/services/messageHubService/messageHubService';
-  import { refreshUser, setIsCompletedTutorialUser } from '@/services/messageHubService/userMessageHubService';
+  import { MessageHubService, MessageHubServiceEventRouterByAttribute } from '@/services/messageHubService/messageHubService';
+  // import { refreshUser, setIsCompletedTutorialUser } from '@/services/messageHubService/userMessageHubService';
   import { refreshPlatforms } from '@/services/messageHubService/platformMessageHubService';
   import { refreshChats, create_message, getUsersByChatRequest, addUserToChatRequest, sendMessageToChat, getMessagesByChat ,handleNewUserInChat, removeChatToArchive, setLastReadMessageIdInChatTimeout, handleNewMessage, handleChatUpdate, handleEventSetLastReadMessageId, deleteMessageInChat, handleEventDeleteMessage,} from '@/services/messageHubService/chatMessageHubService';
   
@@ -188,14 +188,11 @@
 
   import Skeleton from 'primevue/skeleton';
 
-  const MHS = new MessageHubService();
+  import { useAuthService } from '@/services/authService';
+  import { mapStores } from 'pinia'
 
-  const set_is_complite_tutorial = ()=>{
-    setIsCompletedTutorialUser(null, MHS);
-  }
 
-  addCloseTuturialEventHandlers(set_is_complite_tutorial);
-  addEndTuturialEventHandlers(set_is_complite_tutorial);
+  let MHS = null;
 
   export default {
     components: {
@@ -221,16 +218,42 @@
       updateTutorialStepTargetFunc("logout-button", ()=>{
         return logout_button;
       });
+
+      const AuthService = useAuthService();
+
+      const set_is_complite_tutorial = ()=>{
+        AuthService.set_settings("is_completed_tutorial", true);
+      }
+
+      addCloseTuturialEventHandlers(set_is_complite_tutorial);
+      addEndTuturialEventHandlers(set_is_complite_tutorial);
+
+      const MHSRouter = new MessageHubServiceEventRouterByAttribute('name');
+      MHS = new MessageHubService(MHSRouter, ()=>{return AuthService.token;}, ()=>{console.log('Попытка перефтентификации');}, 1);
+      MHS.changeAuthPermissionsEventHandlers.push((permisions)=>{
+        AuthService.permissions = permisions;
+      })
+      MHS.failAuthEventHandlers.push(()=>{
+        router.push('/login');
+      });
+      MHS.failSincEventHandlers.push(()=>{
+        router.push('/chat');
+        // В посделствии сброс стореджа
+      });
+    },
+
+    computed:{
+      ...mapStores(useAuthService)
     },
 
     data() {
       return {
-        user:{
-          loaded: false,
-          name: null,
-          id: null,
-          is_completed_tutorial: null,
-        },
+        // user:{
+        //   loaded: false,
+        //   name: null,
+        //   id: null,
+        //   is_completed_tutorial: null,
+        // },
 
         platforms:{
           loaded: false,
@@ -255,25 +278,16 @@
     },
 
     async created() {
-      let token = this.get_cookie("token");
-      if (token) {
-        MHS.fatalCloseEventHandlers.push(()=>{
-          router.push('/login');
-        });
+      MHS.eventRouter.addRoute("chat.add.user", handleNewUserInChat.bind(this));
+      MHS.eventRouter.addRoute("chat.new_message", handleNewMessage.bind(this));
+      MHS.eventRouter.addRoute("chat.update", handleChatUpdate.bind(this));
+      MHS.eventRouter.addRoute("chat.set.last_read_message_id", handleEventSetLastReadMessageId.bind(this));
+      MHS.eventRouter.addRoute("chat.delete_message", handleEventDeleteMessage.bind(this));
 
-        MHS.actionEventHandlers["chat.add.user"] = handleNewUserInChat.bind(this);
-        MHS.actionEventHandlers["chat.new_message"] = handleNewMessage.bind(this);
-        MHS.actionEventHandlers["chat.update"] = handleChatUpdate.bind(this);
-        MHS.actionEventHandlers["chat.set.last_read_message_id"] = handleEventSetLastReadMessageId.bind(this);
-        MHS.actionEventHandlers["chat.delete_message"] = handleEventDeleteMessage.bind(this);
-
-        MHS.connect(WS_URL + "?token=" + token);
-        refreshUser(this, MHS);
-        refreshPlatforms(this, MHS);
-        refreshChats(this, MHS);
-      } else {
-        router.push('/login');
-      }
+      MHS.connect(WS_URL);
+      // refreshUser(this, MHS);
+      refreshPlatforms(this, MHS);
+      refreshChats(this, MHS);
     },
 
     watch:{
@@ -467,7 +481,7 @@
                   if (!local_current_chat.waiting_connaction) {
                     local_current_chat.waiting_messages = [];
                     local_current_chat.waiting_connaction = true;
-                    addUserToChatRequest(this, MHS, local_current_chat.id, this.user.id);
+                    addUserToChatRequest(this, MHS, local_current_chat.id, this.AuthServiceStore.userInfo.id);
                   }
                   local_current_chat.waiting_messages.push(message);
                 }
@@ -579,7 +593,7 @@
         return {
           id: -chat.message_iterator,
           chat_id: chat.id,
-          sender_id: this.user.id,
+          sender_id: this.AuthServiceStore.userInfo.id,
           sended_at: new Date(),
           text: text,
           front_message_id: chat.message_iterator,
