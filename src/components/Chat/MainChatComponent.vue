@@ -2,7 +2,7 @@
   <div class="chat-component full-height">
     <div class="wrapper">
       <Splitter style="min-height: 100%; min-width: 100%;" class="mb-8">
-        <SplitterPanel v-if="!this.is_min_window  ||  this.is_min_window  &&  !this.chats.curentChat" class="flex items-center justify-center" style="min-width: 15em;" :size="1">
+        <SplitterPanel v-if="!this.SizeServiceStore.minWindow  ||  this.SizeServiceStore.minWindow  &&  !this.chats.curentChat" style="min-width: 15em;" :size="1">
           <div class="left-panel flex-list full-height ">
             <div class="left-panel-header-container flex-list-w">
               <Button variant="text" size="small" icon="pi pi-bars" @click="leftmenu_visible=true;" ref="open_menu_button"/>
@@ -20,11 +20,11 @@
               @select-user-chat="select_chat"/>
           </div>
         </SplitterPanel>
-        <SplitterPanel v-if="!this.is_min_window  ||  this.is_min_window  &&  this.chats.curentChat" size="99">
+        <SplitterPanel v-if="!this.SizeServiceStore.minWindow  ||  this.SizeServiceStore.minWindow  &&  this.chats.curentChat" size="99">
           <ChatComponent 
           :user="AuthServiceStore.userInfo"
           :current_chat="chats.curentChat" 
-          :is_min_window="is_min_window"
+          :is_min_window="this.SizeServiceStore.minWindow"
           @set-last-viseble-message="setLastVisebleMessage"
           ref="сhat_сomponent"
           @send-message="send_message"
@@ -189,6 +189,7 @@
   import Skeleton from 'primevue/skeleton';
 
   import { useAuthService } from '@/services/authService';
+  import { useSizeService } from '@/services/sizeService';
   import { mapStores } from 'pinia'
 
 
@@ -243,7 +244,7 @@
     },
 
     computed:{
-      ...mapStores(useAuthService)
+      ...mapStores(useAuthService, useSizeService)
     },
 
     data() {
@@ -270,7 +271,7 @@
         search_name: '',
         message_iterator: 0,
         isSidebarVisible: true,
-        is_min_window: window.innerWidth <= 768? true : false,
+        // is_min_window: window.innerWidth <= 768? true : false,
         leftmenu_visible: false,
 
         tg_bot_ref: import.meta.env.VITE_TG_BOT_REF,
@@ -314,12 +315,12 @@
       }
     },
 
-    mounted(){
-      window.addEventListener("resize", this.resize_window);
-    },
-    unmounted() {
-      window.removeEventListener("resize", this.resize_window);
-    },
+    // mounted(){
+    //   window.addEventListener("resize", this.resize_window);
+    // },
+    // unmounted() {
+    //   window.removeEventListener("resize", this.resize_window);
+    // },
 
     methods: {
       deleteCookies,
@@ -408,9 +409,9 @@
         this.$tutorial.emit_event("unselect-chat");
       },
 
-      resize_window(){
-        this.is_min_window = window.innerWidth <= 768? true : false;
-      },
+      // resize_window(){
+      // this.is_min_window = window.innerWidth <= 768? true : false;
+      // },
       select_chat(chat) {
         console.log('Мы находимся в select_chat с chatId:', chat.id);
         this.$tutorial.emit_event("select-chat");

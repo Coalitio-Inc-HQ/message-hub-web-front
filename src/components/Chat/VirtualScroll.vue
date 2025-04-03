@@ -62,6 +62,8 @@
     import {format_date_for_display} from '@/services/dateUtils';
     import Skeleton from 'primevue/skeleton';
 
+    let reSizeTimer = null;
+
     let last_vis = null;
 
     export default {
@@ -74,12 +76,13 @@
             "max_mode",
             "show_deleted_messages",
         ],
+
         data(){
             return{
 
             }
         },
-  
+        
         methods: {
             format_date_for_display,
 
@@ -161,7 +164,12 @@
             },
 
             onResize(){
-                this.$nextTick(this.checkVisible);
+                clearTimeout(reSizeTimer);
+
+                reSizeTimer = setTimeout(() => {
+                    this.checkVisible();
+                }, 500);
+                // this.$nextTick(this.checkVisible);
             },
         },
 

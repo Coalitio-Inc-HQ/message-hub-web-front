@@ -63,7 +63,7 @@
         <FileAvatar v-for="file in this.selected_files" 
         :key="file.value.name"
         :file_info="file.value"
-        :is_min_window="is_min_window"
+        :is_min_window="SizeServiceStore.minWindow"
         />
       </div> -->
       <UploadedFileList ref="dialog_submit_form" :files="this.selected_files"/>
@@ -117,6 +117,9 @@
   import { addTutorialStep, updateTutorialStepTargetFunc } from '@/tutorial/tutorialPlugin';
   import tutorialTextComponent from '../tutorial/tutorialTextComponent.vue';
   import {useTemplateRef} from 'vue';
+
+  // import { useSizeService } from '@/services/sizeService';
+  // import { mapStores } from 'pinia'
 
   addTutorialStep("dialog-submit-form-info",
     {
@@ -182,6 +185,7 @@
     }
   );
 
+  let max_mode_last = true;
 
   export default {
     components:{
@@ -202,7 +206,6 @@
     props: [
       "user",
       "current_chat",
-      "is_min_window",
     ],
 
     watch: { 
@@ -253,6 +256,10 @@
         selected_message: null,
       }
     },
+
+    // computed:{
+    //   ...mapStores(useSizeService)
+    // },
 
     setup(){
       const dialog_submit_form = useTemplateRef('dialog_submit_form');
@@ -402,7 +409,11 @@
       // },
 
       onResize () {
-        this.max_mode = this.$refs.main_div.offsetWidth>750 
+        if (max_mode_last!=this.$refs.main_div.offsetWidth>750){
+          max_mode_last = !max_mode_last;
+          this.max_mode = max_mode_last;
+        }
+        // this.max_mode = this.$refs.main_div.offsetWidth>750 
       },
     },
 
@@ -410,6 +421,7 @@
       // this.scroll_down(false);
       this.context_menu_items[0].command = this.deleteMessage;
 
+      this.onResize();
       this.observer = new ResizeObserver(this.onResize);
       this.observer.observe(this.$refs.main_div);
     },
