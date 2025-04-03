@@ -2,12 +2,14 @@ import axios from 'axios';
 import {ref} from 'vue';
 import { uuidv4 } from '@/utilities/uuid';
 import {generateVideoPreview} from "@/utilities/VideoMiniature";
+import { useAuthService } from './authService';
 
 const loging = true;
 const max_file_size = 52428800;
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const FILE_UPLOAD_URL = `${API_BASE_URL}${import.meta.env.VITE_FILE_UPLOAD_URL}`;
+
 
 export function upload_file(file, token) {
   if (file.size>max_file_size) throw "large_file";
@@ -76,10 +78,12 @@ export function upload_file(file, token) {
     let file_neme = uuidv4()+".png";
     let m_file = dataURLToFile(m_url, file_neme);
 
+    const authService = useAuthService();
     const m_formData = new FormData();
+    m_formData.append("token", authService.token);
     m_formData.append('file', m_file);
 
-    axios.post(FILE_UPLOAD_URL+"?token="+token, m_formData,)
+    axios.post(FILE_UPLOAD_URL, m_formData,)
     .then((e)=>{if (res.value.miniature_download_call_back) res.value.miniature_download_call_back(e);})
     .catch((e)=>{if (res.value.miniature_err_download_call_back) res.value.miniature_err_download_call_back(e);})
 
@@ -90,10 +94,12 @@ export function upload_file(file, token) {
     generateVideoPreview(res.value.url).then((e)=>{if (res.value.miniature_call_back) res.value.miniature_call_back(e);});
   }
 
+  const authService = useAuthService();
   const formData = new FormData();
+  formData.append("token", authService.token);
   formData.append('file', file);
   
-  axios.post(FILE_UPLOAD_URL+"?token="+token, formData, 
+  axios.post(FILE_UPLOAD_URL, formData, 
   {
     onUploadProgress: (e)=> {if (res.value.on_upload_progress) res.value.on_upload_progress(e);},
   })

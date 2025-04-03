@@ -20,7 +20,7 @@
               @select-user-chat="select_chat"/>
           </div>
         </SplitterPanel>
-        <SplitterPanel v-if="!this.is_min_window  ||  this.is_min_window  &&  this.chats.curentChat" class="flex items-center justify-center" size="99">
+        <SplitterPanel v-if="!this.is_min_window  ||  this.is_min_window  &&  this.chats.curentChat" size="99">
           <ChatComponent 
           :user="AuthServiceStore.userInfo"
           :current_chat="chats.curentChat" 
