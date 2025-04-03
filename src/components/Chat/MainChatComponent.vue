@@ -80,7 +80,7 @@
 
   import Avatar from 'primevue/avatar';
 
-  const WS_URL = process.env.VUE_APP_WS_URL;
+  const WS_URL = import.meta.env.VITE_API_BASE_URL.replace(/^http/, 'ws') + import.meta.env.VITE_WS_LISTMER_URL;
 
   let setLastRedbleMessageTimeout = setTimeout(() => {}, 0);
 
@@ -273,7 +273,7 @@
         is_min_window: window.innerWidth <= 768? true : false,
         leftmenu_visible: false,
 
-        tg_bot_ref: process.env.VUE_APP_TG_BOT_REF,
+        tg_bot_ref: import.meta.env.VITE_TG_BOT_REF,
       };
     },
 
@@ -621,7 +621,7 @@
   };
 </script>
 
-<style scoped>
+<style>
   @import '@/assets/ChatComponent.css'; 
   @import 'primeicons/primeicons.css';
   @import '@/assets/Layout.css';

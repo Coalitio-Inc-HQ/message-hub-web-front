@@ -7,11 +7,11 @@ import { ref } from 'vue';
 
 const loging = true;
 
-const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
-const AUTH_LOGIN_URL = `${API_BASE_URL}${process.env.VUE_APP_AUTH_LOGIN_URL}`;
-const VUE_APP_USER_INFO_URL = `${API_BASE_URL}${process.env.VUE_APP_USER_INFO_URL}`;
-const VUE_APP_USER_SET_SETTINGS_URL = `${API_BASE_URL}${process.env.VUE_APP_USER_SET_SETTINGS_URL}`;
-// const AUTH_REGISTER_URL = `${API_BASE_URL}${process.env.VUE_APP_AUTH_REGISTER_URL}`;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const AUTH_LOGIN_URL = `${API_BASE_URL}${import.meta.env.VITE_AUTH_LOGIN_URL}`;
+const VITE_USER_INFO_URL = `${API_BASE_URL}${import.meta.env.VITE_USER_INFO_URL}`;
+const VITE_USER_SET_SETTINGS_URL = `${API_BASE_URL}${import.meta.env.VITE_USER_SET_SETTINGS_URL}`;
+// const AUTH_REGISTER_URL = `${API_BASE_URL}${VITE_AUTH_REGISTER_URL}`;
 
 export const useAuthService = defineStore('AuthService',()=>{
 
@@ -22,7 +22,7 @@ export const useAuthService = defineStore('AuthService',()=>{
   });
 
   // Получение сведений о пользователе и проверка валидности токена
-  axios.post(VUE_APP_USER_INFO_URL, {"token": token.value}).then((response)=>{
+  axios.post(VITE_USER_INFO_URL, {"token": token.value}).then((response)=>{
     if (loging) console.log('Проверка токена успешна', response.data);
     userInfo.value = response.data;
   }).catch((error)=>{
@@ -74,7 +74,7 @@ export const useAuthService = defineStore('AuthService',()=>{
   const set_settings = async (key, value)=>{
     try{
       const response = await axios.post(
-        VUE_APP_USER_SET_SETTINGS_URL,
+        VITE_USER_SET_SETTINGS_URL,
         {
           key: key,
           value: value,

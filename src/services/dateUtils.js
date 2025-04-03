@@ -1,5 +1,6 @@
 // services/dateUtils.js
-const moment = require('moment-timezone');
+import {moment} from 'moment-timezone'
+// const moment = require('moment-timezone');
 
 export function extract_time_from_timestamp_handler(timestamp) {
   const time_zone = Intl.DateTimeFormat().resolvedOptions().timeZone;

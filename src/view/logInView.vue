@@ -63,8 +63,8 @@
   </script>
   
   
-  <style scoped>
-  @import '@/assets/LoginComponent.css';
-  @import '@/assets/Layout.css';
+  <style>
+    @import '@/assets/LoginComponent.css';
+    @import '@/assets/Layout.css';
   </style>
   

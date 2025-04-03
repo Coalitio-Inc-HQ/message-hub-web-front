@@ -34,19 +34,19 @@
   </il>
 </template>
   
-  <script>
-    import Avatar from 'primevue/avatar';
-  
-    export default {
-      props: ["chat","is_iselected", "platforms", "count_unredeble_messgaes"],
-      components:{
-        Avatar,
-      },
-      methods:{
-      },
-      data() {
-        return {
-        };
-      },
-    };
-  </script>
+<script>
+  import Avatar from 'primevue/avatar';
+
+  export default {
+    props: ["chat","is_iselected", "platforms", "count_unredeble_messgaes"],
+    components:{
+      Avatar,
+    },
+    methods:{
+    },
+    data() {
+      return {
+      };
+    },
+  };
+</script>

@@ -36,7 +36,7 @@
     }
 </script>
 
-<style scoped>
+<style>
     @import '@/assets/ChatComponent.css'; 
     @import 'primeicons/primeicons.css';
     @import '@/assets/Layout.css';

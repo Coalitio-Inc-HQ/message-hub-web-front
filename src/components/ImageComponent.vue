@@ -50,8 +50,8 @@
     };
   </script>
   
-  <style scoped>
-  @import '@/assets/Image.css'; 
-  @import 'primeicons/primeicons.css';
-  @import '@/assets/Layout.css';
+  <style>
+    @import '@/assets/Image.css'; 
+    @import 'primeicons/primeicons.css';
+    @import '@/assets/Layout.css';
   </style>

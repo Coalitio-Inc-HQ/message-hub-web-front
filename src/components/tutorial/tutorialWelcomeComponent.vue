@@ -21,7 +21,7 @@
     };
   </script>
 
-<style scoped>
+<style>
     @import '@/assets/Layout.css';
     @import 'primeicons/primeicons.css';
 

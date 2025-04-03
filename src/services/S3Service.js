@@ -6,8 +6,8 @@ import {generateVideoPreview} from "@/utilities/VideoMiniature";
 const loging = true;
 const max_file_size = 52428800;
 
-const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
-const FILE_UPLOAD_URL = `${API_BASE_URL}${process.env.VUE_APP_FILE_UPLOAD_URL}`;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const FILE_UPLOAD_URL = `${API_BASE_URL}${import.meta.env.VITE_FILE_UPLOAD_URL}`;
 
 export function upload_file(file, token) {
   if (file.size>max_file_size) throw "large_file";

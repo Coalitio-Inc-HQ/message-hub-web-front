@@ -118,7 +118,7 @@
     }
 </script>
 
-<style scoped>
+<style>
     @import 'primeicons/primeicons.css';
     @import '@/assets/Layout.css';
     @import '@/assets/UploadedFileList.css';

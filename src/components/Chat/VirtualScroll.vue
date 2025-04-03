@@ -260,9 +260,9 @@
     };
   </script>
   
-  <style scoped>
-  @import '@/assets/ChatComponent.css'; 
-  @import '@/assets/VirtualScroll.css'; 
-  @import 'primeicons/primeicons.css';
-  @import '@/assets/Layout.css';
+  <style>
+    @import '@/assets/ChatComponent.css'; 
+    @import '@/assets/VirtualScroll.css'; 
+    @import 'primeicons/primeicons.css';
+    @import '@/assets/Layout.css';
   </style>
