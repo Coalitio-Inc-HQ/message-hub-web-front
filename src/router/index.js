@@ -1,12 +1,21 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import logInView from '@/view/logInView.vue';
+import mainView from '@/view/mainView.vue';
+import adminView from '@/view/adminView.vue';
 import MainChatComponent from '@/components/Chat/MainChatComponent.vue';
 
 const routes = [
   { path: '/', component: logInView },
   { path: '/login', component: logInView },
-  { path: '/chat', component: MainChatComponent}  
+  // { path: '/chat', component: MainChatComponent},
+  { path: "/ui/menu", component: mainView},
+  { path: "/ui/", component: mainView,
+    children:[
+      { path: 'chat', component: MainChatComponent},
+      { path: 'admin', component: adminView},
+    ]
+  }
 ];
 
 const router = createRouter({

@@ -5,7 +5,7 @@
         <SplitterPanel v-if="!this.SizeServiceStore.minWindow  ||  this.SizeServiceStore.minWindow  &&  !this.chats.curentChat" style="min-width: 15em;" :size="1">
           <div class="left-panel flex-list full-height ">
             <div class="left-panel-header-container flex-list-w">
-              <Button variant="text" size="small" icon="pi pi-bars" @click="leftmenu_visible=true;" ref="open_menu_button"/>
+              <Button v-if="this.SizeServiceStore.minWindow" variant="text" size="small" icon="pi pi-arrow-left" @click="this.$router.push('/ui/menu');" ref="open_menu_button"/>
               <!-- <InputText type="text" v-model="value" style="flex-grow: 1;"/> -->
               <IconField class="flex-scale search-field-box">
                   <InputIcon class="pi pi-search" />
@@ -38,26 +38,6 @@
       </Splitter>
     </div>
   </div>
-
-  <Drawer v-model:visible="leftmenu_visible" header="Drawer">
-    <template #header>
-      <div class="flex-list-w" style="align-items:  center;">
-        <template v-if="AuthServiceStore.userInfo">
-          <Avatar :label="this.AuthServiceStore.userInfo.name[0]" />
-          <p class="chat-item-text">{{ this.AuthServiceStore.userInfo.name }}</p>
-        </template>
-        <template v-else>
-          <Skeleton size="2rem" width="2rem" class="mr-2"/>
-          <Skeleton class="mb-2 chat-item-text" width="5rem"/>
-        </template>
-      </div>
-    </template>
-    <div class="flex-list left-drawer-container">
-      <Button severity="secondary" @click="open_tg_bot">Telegram bot</Button>
-      <div class="flex-scale"/>
-      <Button ref="logout_button" @click="this.deleteCookies(); this.setPage('/login');">Выйти</Button>
-    </div>
-  </Drawer>
 </template>
 
 <script>
@@ -75,8 +55,6 @@
   import Button from 'primevue/button';
   
   import Drawer from 'primevue/drawer';
-
-  import { deleteCookies,  } from '@/utilities/cookie';
 
   import Avatar from 'primevue/avatar';
 
@@ -273,8 +251,6 @@
         isSidebarVisible: true,
         // is_min_window: window.innerWidth <= 768? true : false,
         leftmenu_visible: false,
-
-        tg_bot_ref: import.meta.env.VITE_TG_BOT_REF,
       };
     },
 
@@ -323,15 +299,6 @@
     // },
 
     methods: {
-      deleteCookies,
-
-      open_tg_bot(){
-        console.log(this.tg_bot_ref);
-        const newTab = window.open(this.tg_bot_ref, '_blank'); 
-        if (newTab) {
-          newTab.opener = null;
-        }
-      },
 
       deleteMessage(msg){
         let chatIndex = this.chats.chats.findIndex((item)=>{return item.id == msg.chat_id;});

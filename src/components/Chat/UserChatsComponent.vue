@@ -1,7 +1,7 @@
 <template>
   <div :class="{'flex-scale':button_waiting_chats, 'flex-list': true, 'overflow-h-hiddne': button_waiting_chats}" >
     <div class="chat-group-button-box">
-      <Button ref="button_waiting_chats" class="chat-group-button" @click="ClicOnButtonInListWaitingChats" >Ожидающие ответа чаты</button>
+      <Button ref="button_waiting_chats" class="chat-group-button w-full" @click="ClicOnButtonInListWaitingChats" >Входящие чаты</button>
     </div>
     <div class="chat-group-inner-box overflow-h-hiddne flex-list flex-scale">
       <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_waiting_chats" step="20">
@@ -21,7 +21,7 @@
           </template>
           <template v-else>
             <il class="chat-item flex-list-w align-items-center">
-              <p class="chat-list-empty-text" >Ожидающие ответа чаты отсутствуют</p>
+              <p class="chat-list-empty-text" >Входящие чаты отсутствуют</p>
             </il>
           </template>
         </template>
@@ -33,7 +33,7 @@
   </div>
   <div :class="{'flex-scale':button_my_chats, 'flex-list': true, 'overflow-h-hiddne': button_my_chats}">
     <div class="chat-group-button-box">
-      <Button ref="button_my_chats" class="chat-group-button" @click="ClicOnButtonInListMyChats" >Ваши чаты</button>
+      <Button ref="button_my_chats" class="chat-group-button w-full" @click="ClicOnButtonInListMyChats" >Ваши чаты</button>
     </div>
     <div class="chat-group-inner-box overflow-h-hiddne flex-list flex-scale">
       <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_my_chats" step="20">
@@ -66,7 +66,7 @@
   </div>
   <div :class="{'flex-scale':button_other_chats, 'flex-list': true, 'overflow-h-hiddne': button_other_chats}">
     <div class="chat-group-button-box">
-      <Button ref="button_other_chats" class="chat-group-button" @click="ClicOnButtonInListOtherChats" >Остальные чаты</button>
+      <Button ref="button_other_chats" class="chat-group-button w-full" @click="ClicOnButtonInListOtherChats" >Остальные чаты</button>
     </div>
     <div class="chat-group-inner-box overflow-h-hiddne flex-list flex-scale">
       <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_other_chats" step="20">
@@ -85,7 +85,7 @@
             </template>
           </template>
           <template v-else>
-            <il class="chat-item flex-list-w align-items-center">
+            <il class="chat-item flex-list-w align-items-center w-full">
               <p class="chat-list-empty-text" >Остальные чаты отсутствуют</p>
             </il>
           </template>
@@ -99,7 +99,7 @@
 
   <div :class="{'flex-scale':button_archive_chats, 'flex-list': true, 'overflow-h-hiddne': button_archive_chats}">
     <div class="chat-group-button-box">
-      <Button ref="button_archive_chats" class="chat-group-button" @click="ClicOnButtonInListArchiveChats" >Архивные чаты</button>
+      <Button ref="button_archive_chats" class="chat-group-button w-full" @click="ClicOnButtonInListArchiveChats" >Архивные чаты</button>
     </div>
     <div class="chat-group-inner-box overflow-h-hiddne flex-list flex-scale">
       <ScrollPanel class="chat-list overflow-h-hiddne overflow-w-hiddne" v-if="button_archive_chats" step="20">

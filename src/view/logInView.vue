@@ -12,7 +12,7 @@
             <label for="password">Пароль</label>
           </FloatLabel>
           <div class="button-container">
-            <Button type="submit">Войти</button>
+            <Button type="submit" class="w-full">Войти</button>
           </div>
         </form>
       </div>
@@ -52,7 +52,7 @@
         async handleLogin() {
           let res = await this.AuthServiceStore.login(this.username, this.password);
           if (res === true){
-            router.push('/chat');
+            router.push('/ui/chat');
           } 
           else {
             alert(res.description);

@@ -19,7 +19,6 @@
     "primeicons": "^7.0.0",
     "primevue": "^4.2.1",
     "socket.io-client": "^4.7.5",
-    "tailwindcss": "^4.1.1",
     "tailwindcss-primeui": "^0.6.1",
     "tz": "^0.1.1",
     "vue": "^3.2.13",
@@ -36,6 +35,7 @@
     "@vitejs/plugin-vue": "^5.2.3",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
+    "tailwindcss": "^4.1.2",
     "vite": "^6.2.4"
   },
   "eslintConfig": {

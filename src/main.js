@@ -8,6 +8,8 @@ import { definePreset } from '@primevue/themes';
 // import { presets } from 'babel.config';
 import { createPinia } from 'pinia'
 
+import ConfirmationService from 'primevue/confirmationservice';
+
 import { tutorialPlugin } from './tutorial/tutorialPlugin';
 
 const app = createApp(App);
@@ -31,6 +33,22 @@ const MyPreset = definePreset(Aura, {
             900: '{slate.900}',
             950: '{slate.950}'
         },
+
+        surface: {
+            50: '{slate.50} !important',
+            100: '{slate.100} !important',
+            200: '{slate.200} !important',
+            300: '{slate.300} !important',
+            400: '{slate.400} !important',
+            500: '{slate.500} !important',
+            600: '{slate.600} !important',
+            700: '{slate.700} !important',
+            800: '{slate.800} !important',
+            900: '{slate.900} !important',
+            950: '{slate.950} !important'
+        },
+
+
         "heder-font-size":'2rem',
         "text-font-size":'1rem',
 
@@ -87,12 +105,14 @@ app.use(PrimeVue, {
         options: {
             prefix: 'p',
             // darkModeSelector: 'system',
-            darkModeSelector: '.my-app-dark',
+            darkModeSelector: '.dark',
             cssLayer: false
         }
     }
  });
 
+app.use(ConfirmationService)
+
 app.mount('#app');
 
-document.documentElement.classList.toggle('my-app-dark');
+document.documentElement.classList.toggle('dark');

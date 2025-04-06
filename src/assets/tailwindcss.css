@@ -1,3 +1,28 @@
 @import "tailwindcss";
 @import "tailwindcss-primeui";
-@custom-variant dark (&:where(.my-app-dark, .my-app-dark *));    
+@custom-variant dark (&:where(.dark, .dark *));
+/* @custom-variant dark (&:where(.my-app-dark, .my-app-dark *));     */
+
+@layer utilities {
+    /* Основной контейнер скроллбара */
+    ::-webkit-scrollbar {
+      width: 8px; /* Толщина */
+      height: 8px;
+    }
+  
+    /* Ползунок (бегунок) */
+    ::-webkit-scrollbar-thumb {
+      background-color: var(--p-surface-500);
+      border-radius: 4px;
+    }
+  
+    /* Фон дорожки */
+    ::-webkit-scrollbar-track {
+      background: none;
+      border-radius: 0;
+    }
+
+    ::-webkit-scrollbar-corner{
+        background: none;
+    }
+}
