@@ -10,7 +10,7 @@
         <div class="grow bg-surface-500 p-2 overflow-hidden">
             <div class="bg-surface-700 size-full rounded-border p-2 ">
                 <template v-if="this.selected_table==='пользоавтлями'">
-                    <DataTable scrollable scrollHeight="flex" v-model:editingRows="editing_users" :value="users" editMode="row" dataKey="id" @row-edit-save=""
+                    <DataTable scrollable scrollHeight="flex" v-model:selection="selected_users" v-model:editingRows="editing_users" :value="users" editMode="row" dataKey="id" @row-edit-save="row_edit_save_user"
                         :pt="{
                             // table: { style: 'min-width: 50rem' },
                             column: {
@@ -20,14 +20,15 @@
                             }
                         }"
                     >
+                        <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
                         <Column field="name" header="Имя" style="width: auto">
                             <template #editor="{ data, field }">
-                                <InputText v-model="data[field]" />
+                                <InputText v-model="data[field]" class="w-full" />
                             </template>
                         </Column>
                         <Column field="email" header="email" style="width: auto">
                             <template #editor="{ data, field }">
-                                <InputText v-model="data[field]" fluid />
+                                <InputText v-model="data[field]" fluid class="w-full" />
                             </template>
                         </Column>
                         <Column field="role_id" header="Роль" style="width: auto">
@@ -36,8 +37,8 @@
                                     <p class="text-nowrap">Супер пользователь</p>
                                 </template>
                                 <template v-else>
-                                    <Select v-model="data[field]" :options="roles" optionLabel="label" optionValue="value" placeholder="Select a Status" fluid>
-                                    </Select>
+                                    <!-- <Select v-model="data[field]" :options="roles" optionLabel="label" optionValue="value" placeholder="Select a Status" fluid  class="w-full"/> -->
+                                    <Select v-model="data[field]" :options="selection_roles" option-label="name"  class="w-full" placeholder="Роль" option-value="id"/>
                                 </template>
                             </template>
                             <template #body="slotProps">
@@ -45,18 +46,29 @@
                                     <p class="text-nowrap">Супер пользователь</p>
                                 </template>
                                 <template v-else>
-                                    <p>{{slotProps.data.role_id}}</p>
+                                    <!-- <p>{{this.selection_roles[slotProps.data.role_id].name}}</p> -->
+                                    <p>{{ selection_roles.find(role => role.id === slotProps.data.role_id)?.name || "Роль не найдена" }}</p>
                                 </template>
                             </template>
                         </Column>
                         <Column field="password" header="Пароль" style="width: auto">
                             <template #editor="{ data, field }">
+                                <!-- <FloatLabel class="input-field-box">
+                                    <Password inputClass="input-field" class="input-field" v-model="data[field]" :feedback="false" toggleMask />
+                                    <label for="password">Пароль</label>
+                                </FloatLabel> -->
+                                <Button class="text-nowrap" label="Создать ссылку востановления пароля" />
                             </template>
                             <template #body="slotProps">
-                                <Button class="text-nowrap" label="Создать ссылку востановления пароля"/>
+                                <Button class="text-nowrap" label="Создать ссылку востановления пароля" />
                             </template>
                         </Column>
                         <Column :rowEditor="true" style="width: auto" bodyStyle="text-align:center"></Column>
+                        <template v-if="selected_users.length" #footer>
+                            <Button v-if="!delete_user_await" icon="pi pi-trash"  label="Удалить выбранных пользователей" @click="confirm_delete_users"/>
+                            <Message class="w-full text-wrap whitespace-pre-wrap mt-1" v-if="delete_user_error" severity="error">{{delete_user_error}}</Message>
+                            <Message class="w-full text-wrap whitespace-pre-wrap mt-1" v-if="delete_user_await" severity="info">Идёт удаление ролей</Message>
+                        </template>
                     </DataTable>
                 </template>
 
@@ -167,6 +179,8 @@
     const BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const USER_LIST_URL = BASE_URL + import.meta.env.VITE_USER_LIST_URL;
     const USER_CREATE_URL = BASE_URL + import.meta.env.VITE_USER_CREATE_URL;
+    const USER_UPDATE_URL = BASE_URL + import.meta.env.VITE_USER_UPDATE_URL;
+    const USER_DELETE_URL = BASE_URL + import.meta.env.VITE_USER_DELETE_URL;
 
     const ROLE_LIST_URL = BASE_URL + import.meta.env.VITE_ROLE_LIST_URL;
     const ROLE_CREATE_URL = BASE_URL + import.meta.env.VITE_ROLE_CREATE_URL;
@@ -215,6 +229,9 @@
                 creating_user_await: false,
                 creating_user_error: null,
                 creating_user_succes: false,
+
+                delete_user_await: false,
+                delete_user_error: null,
 
                 creating_user:{
                     name: null,
@@ -576,6 +593,8 @@
                 const ids = [];
                 delete_roles.forEach((role)=>{ids.push(role.id)});
 
+                let res = true;
+
                 this.selected_roles = [];
 
                 this.delete_role_await = true;
@@ -731,6 +750,164 @@
                 return res;
             },
 
+            row_edit_save_user(event){
+                let errors = [];
+                if (!event.data.name){
+                    errors.push("Не введено имя пользователя.");
+                }
+                if (!event.data.email){
+                    errors.push("Не введена электронная почта.");
+                }
+
+                if (errors.length){
+                    event.data.request_error = errors.join("\n");
+                    return;
+                }
+
+                if (!event.data.request_await){
+                    this.update_user(event.data, event.newData);
+                }
+            },
+
+            async update_user(user_obj, newData = null){
+                const edit_obj = user_obj;
+
+                let res = true;
+
+                edit_obj.request_await = true;
+                edit_obj.request_error = null;
+                try{
+                    const res = await axios.post(USER_UPDATE_URL, {token: this.AuthServiceStore.token, update_user: newData?newData: user_obj});
+
+                    for (const key in res.data){
+                        edit_obj[key] = res.data[key]
+                    }
+
+                    edit_obj.request_succes = true;
+                    setTimeout(()=>{
+                        edit_obj.request_succes = false;
+                    },1000);
+                    // if (edit_obj == this.edit_dialog_obj) this.visible_edit_dialog = false;
+                } 
+                catch(error){
+                    if ("response" in error){
+                        if (error.response.status === 401){
+                            edit_obj.request_error = "Ошибка аутентификации.";
+                            this.AuthServiceStore.failAuthFunc();
+
+                            res ={
+                                error: error,
+                                description: "Ошибка аутентификации.",
+                                status: 401,
+                            };
+                        } else if (error.response.status === 403){
+                            edit_obj.request_error = "Ошибка. Недостаточно прав.";
+
+                            this.AuthServiceStore.userInfo = error.response.data.detail;
+
+                            res ={
+                                error: error,
+                                description: "Ошибка. Недостаточно прав.",
+                                status: 403,
+                            };
+                        } else {
+                            edit_obj.request_error = "Непредвиденная ошибка.";
+
+                            res ={
+                                error: error,
+                                description: "Непредвиденная ошибка.",
+                                status: error.response.status,
+                            };
+                        }
+                    } else {
+                        edit_obj.request_error = "Непредвиденная ошибка.";
+
+                        res ={
+                            error: error,
+                            description: "Непредвиденная ошибка.",
+                            status: null,
+                        };
+                    }
+                }
+                edit_obj.request_await = false;
+
+                return res;
+            },
+
+            confirm_delete_users(){
+                let user_names = [];
+                this.selected_users.forEach((user)=>{user_names.push(user.name)});
+                this.$confirm.require({"message":`Удалить пользователей:\n ${user_names.join(',')}?`, "acceptLabel": "Да", "rejectLabel": "Нет", "accept": ()=>this.delete_users(this.selected_users)});
+            },
+
+            async delete_users(delete_users){
+                const ids = [];
+                delete_users.forEach((users)=>{ids.push(users.id)});
+
+                let res = true;
+
+                this.selected_users = [];
+
+                this.delete_user_await = true;
+                this.delete_user_error = null;
+
+                try{
+                    const res = await axios.post(USER_DELETE_URL, {token: this.AuthServiceStore.token, user_ids: ids});
+
+                    this.users = this.users.filter(item => !ids.includes(item.id));
+                } 
+                catch(error){
+                    if ("response" in error){
+                        if (error.response.status === 401){
+                            this.delete_user_error = "Ошибка аутентификации.";
+                            this.AuthServiceStore.failAuthFunc();
+
+                            res ={
+                                error: error,
+                                description: "Ошибка аутентификации.",
+                                status: 401,
+                            };
+                        } else if (error.response.status === 403){
+                            this.delete_user_error = "Ошибка. Недостаточно прав.";
+
+                            this.AuthServiceStore.userInfo = error.response.data.detail;
+
+                            res ={
+                                error: error,
+                                description: "Ошибка. Недостаточно прав.",
+                                status: 403,
+                            };
+                        } else if(error.response.status === 422 && "fail_delete_users" in error.response.data){
+                            this.delete_user_error = "Ошибка удаления пользователей. Среди выбранных пользователей есть супер пользователь";
+                            res ={
+                                error: error,
+                                description: "Ошибка удаления пользователей. Среди выбранных пользователей есть супер пользователь",
+                                status: error.response.status,
+                            };
+                        } else {
+                            this.delete_user_error = "Непредвиденная ошибка.";
+
+                            res ={
+                                error: error,
+                                description: "Непредвиденная ошибка.",
+                                status: error.response.status,
+                            };
+                        }
+                    } else {
+                        this.delete_user_error = "Непредвиденная ошибка.";
+
+                        res ={
+                            error: error,
+                            description: "Непредвиденная ошибка.",
+                            status: null,
+                        };
+                    }
+                }
+
+                this.delete_user_await = false;
+            },
+
+            
         },
 
         

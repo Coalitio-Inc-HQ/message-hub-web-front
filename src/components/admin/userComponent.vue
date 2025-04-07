@@ -15,8 +15,12 @@
         <Select v-model="user.role_id" :options="roles" option-label="name"  class="w-full" placeholder="Роль" option-value="id"/>
     </div>
     <div>
-        <FloatLabel variant="on">
+        <!-- <FloatLabel variant="on">
             <InputText name="password" type="text" id="password" v-model="user.password" class="w-full" :disabled="read_only"/>
+            <label for="password">Пароль</label>
+        </FloatLabel> -->
+        <FloatLabel variant="on">
+            <Password inputClass="input-field" class="input-field" v-model="user.password" :feedback="false" toggleMask />
             <label for="password">Пароль</label>
         </FloatLabel>
     </div>
