@@ -5,22 +5,30 @@
             <label for="name">Название роли</label>
         </FloatLabel>
     </div>
-    <span class="text-surface-500 dark:text-surface-400 block mt-2">Контроль достуа.</span>
+
+    <span class="text-surface-500 dark:text-surface-400 block mt-2">Управление пользователями</span>
+
     <div class="flex items-center gap-1">
         <p>Просмотр списка пользователей</p>
         <div class="grow"/>
-        <ToggleButton v-model="role.permissions.user.list" onLabel="Да" offLabel="Нет" :disabled="read_only" />
+        <ToggleButton v-model="role.permissions.user.list" onLabel="Да" offLabel="Нет" :disabled="read_only" @value-change="changeUserList" />
     </div>
     <div class="flex items-center gap-1">
         <p>Редактирование пользователей</p>
         <div class="grow"/>
         <ToggleButton v-model="role.permissions.user.update" onLabel="Да" offLabel="Нет" :disabled="read_only" />
     </div>
+    <div class="flex items-center gap-1">
+        <p>Создание ссылок востановления пароля</p>
+        <div class="grow"/>
+        <ToggleButton v-model="role.permissions.user.password.chenge.init" onLabel="Да" offLabel="Нет" :disabled="read_only" />
+    </div>
 
+    <span class="text-surface-500 dark:text-surface-400 block mt-2">Управление ролями</span>
     <div class="flex items-center gap-1">
         <p>Просмотр списка ролей</p>
         <div class="grow"/>
-        <ToggleButton v-model="role.permissions.role.list" onLabel="Да" offLabel="Нет" :disabled="read_only" />
+        <ToggleButton v-model="role.permissions.role.list" onLabel="Да" offLabel="Нет" :disabled="read_only || role.permissions.user.list" />
     </div>
     <div class="flex items-center gap-1">
         <p>Редактирование ролей</p>
@@ -71,12 +79,22 @@
             "update:role"
         ],
         computed:{
+            role_c(){
+                return this.$props.role;
+            }
+        },
+        watch:{
         },
         data() {
             return {
             };
         },
         methods: {
+            changeUserList(newValue){
+                if (newValue){
+                    this.$props.role.permissions.role.list = this.$props.role.permissions.user.list;
+                }
+            }
         },
     };
 </script>

@@ -3,9 +3,13 @@
         <div class="bg-surface-500 gap-2 p-1.5 flex items-center flex-wrap">
             <Button v-if="this.SizeServiceStore.minWindow" variant="text" size="small" icon="pi pi-arrow-left" @click="this.$router.push('/ui/menu');"/>
             <h1 class="text-3xl">Управление</h1>
-            <Select class="mt-1" v-model="selected_table" :options="['пользоавтлями','ролями']"/>
+            <Select class="mt-1" v-model="selected_table" :options="selection_tables"/>
             <div class="grow"/>
-            <Button icon="pi pi-plus" label="Создать новый элемент" @click="this.visible_create_dialog=true;"/>
+            <Button 
+                v-if="AuthServiceStore.userInfo &&(AuthServiceStore.userInfo.role_permissions && AuthServiceStore.userInfo.role_permissions.user && AuthServiceStore.userInfo.role_permissions.user.update || this.AuthServiceStore.userInfo.is_root) && this.selected_table==='пользоавтлями' ||
+                AuthServiceStore.userInfo &&(AuthServiceStore.userInfo.role_permissions && AuthServiceStore.userInfo.role_permissions.role && AuthServiceStore.userInfo.role_permissions.role.update || this.AuthServiceStore.userInfo.is_root) && this.selected_table==='ролями'
+                "
+                icon="pi pi-plus" label="Создать новый элемент" @click="this.visible_create_dialog=true;"/>
         </div>
         <div class="grow bg-surface-500 p-2 overflow-hidden">
             <div class="bg-surface-700 size-full rounded-border p-2 ">
@@ -20,18 +24,19 @@
                             }
                         }"
                     >
-                        <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-                        <Column field="name" header="Имя" style="width: auto">
+                        <Column v-if="AuthServiceStore.userInfo &&(AuthServiceStore.userInfo.role_permissions && AuthServiceStore.userInfo.role_permissions.user && AuthServiceStore.userInfo.role_permissions.user.update || this.AuthServiceStore.userInfo.is_root)"
+                         selectionMode="multiple" headerStyle="width: 3rem"></Column>
+                        <Column field="name" header="Имя" sortable style="width: auto">
                             <template #editor="{ data, field }">
                                 <InputText v-model="data[field]" class="w-full" />
                             </template>
                         </Column>
-                        <Column field="email" header="email" style="width: auto">
+                        <Column field="email" header="email" sortable style="width: auto">
                             <template #editor="{ data, field }">
                                 <InputText v-model="data[field]" fluid class="w-full" />
                             </template>
                         </Column>
-                        <Column field="role_id" header="Роль" style="width: auto">
+                        <Column field="role_id" header="Роль" sortable sortField="role_id" style="width: auto">
                             <template #editor="{ data, field }">
                                 <template v-if="data['is_root']">
                                     <p class="text-nowrap">Супер пользователь</p>
@@ -51,7 +56,9 @@
                                 </template>
                             </template>
                         </Column>
-                        <Column field="password" header="Пароль" style="width: auto">
+                        <Column 
+                        v-if="AuthServiceStore.userInfo &&(AuthServiceStore.userInfo.role_permissions && AuthServiceStore.userInfo.role_permissions.user && AuthServiceStore.userInfo.role_permissions.user.password && AuthServiceStore.userInfo.role_permissions.user.password.chenge.init || this.AuthServiceStore.userInfo.is_root)" 
+                        field="password" header="Пароль" style="width: auto">
                             <template #editor="{ data, field }">
                                 <!-- <FloatLabel class="input-field-box">
                                     <Password inputClass="input-field" class="input-field" v-model="data[field]" :feedback="false" toggleMask />
@@ -60,10 +67,21 @@
                                 <Button class="text-nowrap" label="Создать ссылку востановления пароля" />
                             </template>
                             <template #body="slotProps">
-                                <Button class="text-nowrap" label="Создать ссылку востановления пароля" />
+                                <template v-if="slotProps.data.request_password_await">
+                                    <Button class="text-nowrap" label="Ссылка создаётся ..." disabled />
+                                </template>
+                                <template v-else>
+                                    <template v-if="slotProps.data.ref_token">
+                                        <Button v-if="slotProps.data.copped_link" class="text-nowrap" label="Ссылка скопирована" disabled />
+                                        <Button v-else class="text-nowrap" label="Скопировать ссылку" @click="coppyChengePasswordLink(slotProps.data)"/>
+                                    </template>
+                                    <Button v-else class="text-nowrap" label="Создать ссылку востановления пароля" @click="init_chnge_password(slotProps.data)" />
+                                </template>
                             </template>
                         </Column>
-                        <Column :rowEditor="true" style="width: auto" bodyStyle="text-align:center"></Column>
+                        <Column 
+                        v-if="AuthServiceStore.userInfo &&(AuthServiceStore.userInfo.role_permissions && AuthServiceStore.userInfo.role_permissions.user && AuthServiceStore.userInfo.role_permissions.user.update || this.AuthServiceStore.userInfo.is_root)"
+                        :rowEditor="true" style="width: auto" bodyStyle="text-align:center"></Column>
                         <template v-if="selected_users.length" #footer>
                             <Button v-if="!delete_user_await" icon="pi pi-trash"  label="Удалить выбранных пользователей" @click="confirm_delete_users"/>
                             <Message class="w-full text-wrap whitespace-pre-wrap mt-1" v-if="delete_user_error" severity="error">{{delete_user_error}}</Message>
@@ -82,8 +100,10 @@
                             }
                         }"
                     >
-                        <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-                        <Column field="name" header="Название роли" style="width: auto">
+                        <Column
+                            v-if="AuthServiceStore.userInfo &&(AuthServiceStore.userInfo.role_permissions && AuthServiceStore.userInfo.role_permissions.role && AuthServiceStore.userInfo.role_permissions.role.update || this.AuthServiceStore.userInfo.is_root)"
+                            selectionMode="multiple" headerStyle="width: 3rem"></Column>
+                        <Column field="name" header="Название роли" sortable style="width: auto">
                             <template #editor="{ data, field }">
                                 <InputText v-model="data[field]" />
                             </template>
@@ -98,7 +118,9 @@
                                 <Button class="text-nowrap" label="Просмотреть" @click="this.edit_dialog_obj=slotProps.data; this.edit_dialog_read_only=true; this.visible_edit_dialog=true;"/>
                             </template>
                         </Column>
-                        <Column :rowEditor="true" style="width: auto" bodyStyle="text-align:center"></Column>
+                        <Column
+                            v-if="AuthServiceStore.userInfo &&(AuthServiceStore.userInfo.role_permissions && AuthServiceStore.userInfo.role_permissions.role && AuthServiceStore.userInfo.role_permissions.role.update || this.AuthServiceStore.userInfo.is_root)" 
+                            :rowEditor="true" style="width: auto" bodyStyle="text-align:center"></Column>
                         <template v-if="selected_roles.length" #footer>
                             <Button v-if="!delete_role_await" icon="pi pi-trash"  label="Удалить выбраные роли" @click="confirm_delete_roles"/>
                             <Message class="w-full text-wrap whitespace-pre-wrap mt-1" v-if="delete_role_error" severity="error">{{delete_role_error}}</Message>
@@ -112,7 +134,7 @@
 
 
     <Dialog v-model:visible="visible_create_dialog" modal :header="this.selected_table === 'пользоавтлями'?'Создание пользователя': 'Создание роли'">
-        <div class="flex flex-col gap-1 mb-4 p-2">
+        <div class="flex flex-col gap-2 mb-4 p-2">
             <template v-if="this.selected_table === 'пользоавтлями'">
                 <userComponent v-model:user="this.creating_user" :roles="selection_roles" :read_only="false"/>
                 <Message class="w-full text-wrap whitespace-pre-wrap mt-1" v-if="creating_user_error" severity="error">{{creating_user_error}}</Message>
@@ -181,11 +203,14 @@
     const USER_CREATE_URL = BASE_URL + import.meta.env.VITE_USER_CREATE_URL;
     const USER_UPDATE_URL = BASE_URL + import.meta.env.VITE_USER_UPDATE_URL;
     const USER_DELETE_URL = BASE_URL + import.meta.env.VITE_USER_DELETE_URL;
+    const USER_PASSWORD_CHENGE_INIT_URL = BASE_URL + import.meta.env.VITE_USER_PASSWORD_CHENGE_INIT_URL; 
 
     const ROLE_LIST_URL = BASE_URL + import.meta.env.VITE_ROLE_LIST_URL;
     const ROLE_CREATE_URL = BASE_URL + import.meta.env.VITE_ROLE_CREATE_URL;
     const ROLE_UPDATE_URL = BASE_URL + import.meta.env.VITE_ROLE_UPDATE_URL;
     const ROLE_DELETE_URL = BASE_URL + import.meta.env.VITE_ROLE_DELETE_URL;
+
+    const THIS_BASE_URL = import.meta.env.VITE_THIS_BASE_URL;
 
     let await_auth = false;
   
@@ -214,11 +239,32 @@
             ...mapStores(useAuthService, useSizeService),
             selection_roles(){
                 return [...this.roles, {"id": null, name: "Не назначена"}]
+            },
+
+            selection_tables(){
+                const variants = [];
+                if (this.AuthServiceStore.userInfo && this.AuthServiceStore.userInfo.role_permissions){
+                    if (this.AuthServiceStore.userInfo.role_permissions.user.list){
+                        variants.push('пользоавтлями');
+                    }
+
+                    if (this.AuthServiceStore.userInfo.role_permissions.role.list){
+                        variants.push('ролями');
+                    }
+                }
+                if (this.AuthServiceStore.userInfo && this.AuthServiceStore.userInfo.is_root){
+                    this.selected_table = 'пользоавтлями';
+                    return ['пользоавтлями', 'ролями']
+                }
+
+                this.selected_table = variants[0];
+                return variants;
             }
         },
         data() {
             return {
-                selected_table: "пользоавтлями",
+                // selected_table: "пользоавтлями",
+                selected_table: null,
 
                 users: [],
                 editing_users: [],
@@ -261,6 +307,11 @@
                         user:{
                             list: false,
                             update: false,
+                            password:{
+                                chenge:{
+                                    init: false
+                                }
+                            }
                         },
                         // "user.list": false,
                         // 'user.update': false,
@@ -407,6 +458,11 @@
                         user:{
                             list: false,
                             update: false,
+                            password:{
+                                chenge:{
+                                    init: false
+                                }
+                            }
                         },
 
                         role:{
@@ -663,7 +719,7 @@
                         role_id: null,
                         password: null,
                         icon_url: null,
-                    }
+                }
             },
 
             clik_create_user(){
@@ -673,13 +729,23 @@
                 }
                 if (!this.creating_user.email){
                     errors.push("Не введена электронная почта.");
+                } else {
+                    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if(!regex.test(this.creating_user.email)){
+                        errors.push("Не введена не валидная электронная почта.");
+                    }
                 }
+
                 if (!this.creating_user.password){
                     errors.push("Не введен пароль пользователя.");
+                } else{
+                    if(this.creating_user.password.length<8){
+                        errors.push("Пароль короче 8 символов.");
+                    }
                 }
 
                 if (errors.length){
-                    this.creating_role_error = errors.join("\n");
+                    this.creating_user_error = errors.join("\n");
                     return;
                 }
 
@@ -907,7 +973,80 @@
                 this.delete_user_await = false;
             },
 
-            
+
+            async init_chnge_password(user_obj){
+                if (user_obj.ref_token){
+                    return true;
+                }
+
+                const edit_obj = user_obj;
+
+                let res = true;
+
+                edit_obj.request_password_await = true;
+                edit_obj.request_password_error = null;
+                try{
+                    const res = await axios.post(USER_PASSWORD_CHENGE_INIT_URL, {token: this.AuthServiceStore.token, user_id: user_obj.id});
+
+                    edit_obj.ref_token = res.data.token;
+
+                    edit_obj.request_password_succes = true;
+                    setTimeout(()=>{
+                        edit_obj.request_password_succes = false;
+                    },1000);
+                } 
+                catch(error){
+                    if ("response" in error){
+                        if (error.response.status === 401){
+                            edit_obj.request_password_error = "Ошибка аутентификации.";
+                            this.AuthServiceStore.failAuthFunc();
+
+                            res ={
+                                error: error,
+                                description: "Ошибка аутентификации.",
+                                status: 401,
+                            };
+                        } else if (error.response.status === 403){
+                            edit_obj.request_password_error = "Ошибка. Недостаточно прав.";
+
+                            this.AuthServiceStore.userInfo = error.response.data.detail;
+
+                            res ={
+                                error: error,
+                                description: "Ошибка. Недостаточно прав.",
+                                status: 403,
+                            };
+                        } else {
+                            edit_obj.request_password_error = "Непредвиденная ошибка.";
+
+                            res ={
+                                error: error,
+                                description: "Непредвиденная ошибка.",
+                                status: error.response.status,
+                            };
+                        }
+                    } else {
+                        edit_obj.request_password_error = "Непредвиденная ошибка.";
+
+                        res ={
+                            error: error,
+                            description: "Непредвиденная ошибка.",
+                            status: null,
+                        };
+                    }
+                }
+                edit_obj.request_password_await = false;
+
+                return res;
+            },
+
+            coppyChengePasswordLink(user_obj){
+                navigator.clipboard.writeText(`${THIS_BASE_URL}/change-password?token=${encodeURIComponent(user_obj.ref_token)}&user_id=${encodeURIComponent(user_obj.id)}`);
+                user_obj.copped_link = true;
+                setTimeout(()=>{
+                    user_obj.copped_link = false;
+                },1000);
+            }
         },
 
         

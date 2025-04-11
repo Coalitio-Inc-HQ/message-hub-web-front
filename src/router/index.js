@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import logInView from '@/view/logInView.vue';
 import mainView from '@/view/mainView.vue';
 import adminView from '@/view/adminView.vue';
+import changePasswordView from '@/view/changePasswordView.vue';
 import MainChatComponent from '@/components/Chat/MainChatComponent.vue';
 
 const routes = [
@@ -15,7 +16,8 @@ const routes = [
       { path: 'chat', component: MainChatComponent},
       { path: 'admin', component: adminView},
     ]
-  }
+  },
+  { path: '/change-password', component: changePasswordView}
 ];
 
 const router = createRouter({

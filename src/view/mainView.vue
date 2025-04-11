@@ -38,7 +38,9 @@
                     </template>
                 </Button>
 
-                <Button variant="text" size="small"
+                <Button 
+                v-if="AuthServiceStore.userInfo && (AuthServiceStore.userInfo.role_permissions && (AuthServiceStore.userInfo.role_permissions.role.list || AuthServiceStore.userInfo.role_permissions.user.list) || AuthServiceStore.userInfo.is_root)"
+                variant="text" size="small"
                 :class="{'!bg-primary-contrast': this.splitedPath[2] === 'admin' || this.SizeServiceStore.minWindow}"
                 @click="this.$router.push('/ui/admin')">
 
