@@ -9,6 +9,7 @@
                 v-if="AuthServiceStore.userInfo &&(AuthServiceStore.userInfo.role_permissions && AuthServiceStore.userInfo.role_permissions.user && AuthServiceStore.userInfo.role_permissions.user.update || this.AuthServiceStore.userInfo.is_root) && this.selected_table==='пользоавтлями' ||
                 AuthServiceStore.userInfo &&(AuthServiceStore.userInfo.role_permissions && AuthServiceStore.userInfo.role_permissions.role && AuthServiceStore.userInfo.role_permissions.role.update || this.AuthServiceStore.userInfo.is_root) && this.selected_table==='ролями'
                 "
+                :class="{'w-full': this.SizeServiceStore.minWindow}"
                 icon="pi pi-plus" label="Создать новый элемент" @click="this.visible_create_dialog=true;"/>
         </div>
         <div class="grow bg-surface-500 p-2 overflow-hidden">
@@ -26,12 +27,12 @@
                     >
                         <Column v-if="AuthServiceStore.userInfo &&(AuthServiceStore.userInfo.role_permissions && AuthServiceStore.userInfo.role_permissions.user && AuthServiceStore.userInfo.role_permissions.user.update || this.AuthServiceStore.userInfo.is_root)"
                          selectionMode="multiple" headerStyle="width: 3rem"></Column>
-                        <Column field="name" header="Имя" sortable style="width: auto">
+                        <Column field="name" header="Имя" sortable style="width: auto;min-width: 15rem;">
                             <template #editor="{ data, field }">
                                 <InputText v-model="data[field]" class="w-full" />
                             </template>
                         </Column>
-                        <Column field="email" header="email" sortable style="width: auto">
+                        <Column field="email" header="email" sortable style="width: auto;min-width: 15rem;">
                             <template #editor="{ data, field }">
                                 <InputText v-model="data[field]" fluid class="w-full" />
                             </template>
