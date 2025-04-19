@@ -112,7 +112,7 @@
                         <Column field="permissions" header="Разрешения" style="width: auto">
                             <template #editor="{ data, field }">
                                 <Button class="text-nowrap" label="Изменить"
-                                @click="console.log(1); this.edit_dialog_obj=data; this.edit_dialog_read_only=false; this.visible_edit_dialog=true;"
+                                @click="this.edit_dialog_obj=data; this.edit_dialog_read_only=false; this.visible_edit_dialog=true;"
                                 />
                             </template>
                             <template #body="slotProps">

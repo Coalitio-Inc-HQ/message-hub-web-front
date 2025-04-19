@@ -32,14 +32,14 @@
         <Drawer v-if="this.openIndex!=null" v-model:visible="drawer_visible"  position="full">
             <template #header>
                 <div class="flex-list-w drawer-heder-container">
-                    <p class="drawer-heder-text">{{(this.openType=="images"? this.$props.attachments.images: this.$props.attachments.videos)[this.openIndex].value.name}}</p>
+                    <p class="drawer-heder-text line-clamp-1">{{(this.openType=="images"? this.$props.attachments.images: this.$props.attachments.videos)[this.openIndex].value.name}}</p>
                     <div class="flex-scale"></div>
                     <Button v-if="!(this.openType=='images'? this.$props.attachments.images: this.$props.attachments.videos)[this.openIndex].value.uploaded || this.openType=='videos' && 'miniature' in this.$props.attachments.videos[this.openIndex].value && !this.$props.attachments.videos[this.openIndex].value.miniature.uploaded" icon="pi pi-trash" variant="outlined" class="drawer-delete-button p-button-rounded p-button-text p-button-secondary" 
                     @click="(e)=>{(this.openType=='images'? this.$props.attachments.images: this.$props.attachments.videos)[this.openIndex].value.delete_call(); openMiniature(null, null); e.preventDefault();}"/>
                 </div>
             </template>
             <div class="full-container icon-slide-container" @mousemove="showSlideButtons">
-                <ImageComponent v-if="this.openType=='images'" class="full-image" container_class="full-image-container" use_background_image="True" :src="this.$props.attachments.images[this.openIndex].value.url" alt=" "/>
+                <ImageComponent v-if="this.openType=='images'" class="full-image" container_class="full-image-container" use_background_image="True" :src="this.$props.attachments.images[this.openIndex].value.url" alt=" " :use_background_image="false"/>
                 <video v-else class="full-video" :src="this.$props.attachments.videos[this.openIndex].value.url" controls/>
             
                 <i v-if="this.visible_slide_buttons && (this.openIndex>0 && this.openType=='images' || this.openType=='videos' && this.openIndex>0 || this.openType=='videos' && 'images' in this.$props.attachments && this.$props.attachments.images.length>0)" class="pi pi-chevron-left icon-slide-left" 

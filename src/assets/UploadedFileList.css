@@ -98,10 +98,6 @@
     text-wrap: nowrap;
     overflow: hidden;
     text-overflow: ellipsis; 
-
-    position: absolute;
-    top: 50%;
-    transform: translate(0%, -50%);
 }
 
 .drawer-content-container{

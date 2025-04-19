@@ -32,7 +32,7 @@
 
         <Drawer v-if="this.openIndex!=null" v-model:visible="drawer_visible"  position="full">
             <template #header>
-                <div class="flex-list-w drawer-heder-container">
+                <div class="flex-list-w drawer-heder-container items-center">
                     <p class="drawer-heder-container-text">{{this.files[this.openIndex].value.name}}</p>
                     <div class="flex-scale"></div>
                     <Button icon="pi pi-trash" variant="outlined" class="p-button-rounded p-button-text p-button-secondary" @click="(e)=>{this.files[this.openIndex].value.delete_call(); openMiniature(null); e.preventDefault();}"/>

@@ -27,13 +27,13 @@
         <Drawer v-if="this.openIndex!=null" v-model:visible="drawer_visible"  position="full">
             <template #header>
                 <div class="flex-list-w drawer-heder-container">
-                    <p class="drawer-heder-text">{{(this.openType=="images"? this.$props.attachments.images: this.$props.attachments.videos)[this.openIndex].name}}</p>
+                    <p class="drawer-heder-text line-clamp-1">{{(this.openType=="images"? this.$props.attachments.images: this.$props.attachments.videos)[this.openIndex].name}}</p>
                     <div class="flex-scale"></div>
                     <!-- <Button v-if="is_temp_messge" icon="pi pi-trash" variant="outlined" class="drawer-delete-button p-button-rounded p-button-text p-button-secondary" @click="this.miniatures[this.openIndex].delete"/> -->
                 </div>
             </template>
             <div class="full-container icon-slide-container" @mousemove="showSlideButtons">
-                <ImageComponent v-if="this.openType=='images'" class="full-image" container_class="full-image-container" :src="this.$props.attachments.images[this.openIndex].url" alt=" "/>
+                <ImageComponent v-if="this.openType=='images'" class="full-image" container_class="full-image-container" :src="this.$props.attachments.images[this.openIndex].url" alt=" " :use_background_image="false"/>
                 <video v-else class="full-video" :src="this.$props.attachments.videos[this.openIndex].url" controls/>
             
                 <i v-if="this.visible_slide_buttons && (this.openIndex>0 && this.openType=='images' || this.openType=='videos' && this.openIndex>0 || this.openType=='videos' && 'images' in this.$props.attachments && this.$props.attachments.images.length>0)" class="pi pi-chevron-left icon-slide-left" 
