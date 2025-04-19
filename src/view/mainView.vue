@@ -132,14 +132,14 @@
             </FloatLabel>
             <FloatLabel variant="on">
                 <Password inputClass="input-field" class="input-field" v-model="this.profile_edit_data.password" :feedback="false" toggleMask />
-                <label for="password">Новый пароль</label>
+                <label for="password">Новый пароль (не обязательно)</label>
             </FloatLabel>
             <FloatLabel variant="on">
                 <Password inputClass="input-field" class="input-field" v-model="this.profile_edit_data.password1" :feedback="false" toggleMask />
                 <label for="password1">Подтверждение пароля</label>
             </FloatLabel>
 
-            <Message class="w-full text-wrap whitespace-pre-wrap mt-1" v-if="update_profile_error" severity="error">{{creating_role_error}}</Message>
+            <Message class="w-full text-wrap whitespace-pre-wrap mt-1" v-if="update_profile_error" severity="error">{{update_profile_error}}</Message>
             <Message class="w-full text-wrap whitespace-pre-wrap mt-1" v-if="update_profile_await" severity="info">Идёт обновление сведений</Message>
             <Message class="w-full text-wrap whitespace-pre-wrap mt-1" v-if="update_profile_succes" severity="success">Сведения обновлены</Message>
 
