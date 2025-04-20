@@ -2,7 +2,7 @@
     <div class="full-screen center-container">
       <div class="login-container">
         <form class="flex-list" @submit.prevent="handleLogin">
-          <h4 class="heder">TestName</h4>
+          <h4 class="heder">MessageHub</h4>
           <FloatLabel class="input-field-box">
             <InputText class="input-field" name="username" type="text" id="username" v-model="username"/>
             <label for="username">Логин</label>

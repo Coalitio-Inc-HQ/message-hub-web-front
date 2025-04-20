@@ -2,7 +2,7 @@
     <div class="full-screen center-container">
       <div class="login-container">
         <form class="flex-list" @submit.prevent="handleChangePassword">
-          <h4 class="heder">TestName</h4>
+          <h4 class="heder">MessageHub</h4>
           <FloatLabel class="input-field-box">
             <Password inputClass="input-field" class="input-field" v-model="password" :feedback="false" toggleMask />
             <label for="password">Новый пароль</label>

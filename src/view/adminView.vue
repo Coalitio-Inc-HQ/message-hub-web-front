@@ -643,7 +643,7 @@
             confirm_delete_roles(){
                 let role_names = [];
                 this.selected_roles.forEach((role)=>{role_names.push(role.name)});
-                this.$confirm.require({"message":`Удалить роли:\n ${role_names.join(',')}?`, "acceptLabel": "Да", "rejectLabel": "Нет", "accept": ()=>this.delete_roles(this.selected_roles)});
+                this.$confirm.require({"header": "Подтверждение", "message":`Удалить роли:\n ${role_names.join(',')}?`, "acceptLabel": "Да", "rejectLabel": "Нет", "accept": ()=>this.delete_roles(this.selected_roles)});
             },
 
             async delete_roles(delete_roles){
@@ -904,7 +904,7 @@
             confirm_delete_users(){
                 let user_names = [];
                 this.selected_users.forEach((user)=>{user_names.push(user.name)});
-                this.$confirm.require({"message":`Удалить пользователей:\n ${user_names.join(',')}?`, "acceptLabel": "Да", "rejectLabel": "Нет", "accept": ()=>this.delete_users(this.selected_users)});
+                this.$confirm.require({"header": "Подтверждение", "message":`Удалить пользователей:\n ${user_names.join(',')}?`, "acceptLabel": "Да", "rejectLabel": "Нет", "accept": ()=>this.delete_users(this.selected_users)});
             },
 
             async delete_users(delete_users){
