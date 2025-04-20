@@ -229,7 +229,7 @@
                                         this.scrollToElement(newValue.messages.length-1);
                                     });
                                 }
-                                
+                                this.checkVisible();
                             }
                         }
                         if (newValue.messages.length) this.lastFistMessage = newValue.messages[0];
