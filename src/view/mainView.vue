@@ -60,7 +60,32 @@
                     <i class="pi pi-telegram"/>
                     <template v-if="this.open_left_menue">
                         <div class="grow"/>
-                        <p class="text-left text-color text-base">Telegram bot</p>
+                        <p class="text-left text-color text-base">Telegram бот</p>
+                    </template>
+                </Button>
+
+                <Button variant="text" size="small" @click="open_vk_bot"
+                :class="{'!bg-primary-contrast': this.SizeServiceStore.minWindow}"
+                >
+
+                    <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="1rem"
+                    height="1rem"
+                    viewBox="0 0 200 200"
+                    >
+                        <mask id="text-mask-1">
+                            <rect x="0" y="0" width="200" height="200" fill="white"/>
+                            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Arial, sans-serif" font-size="100" font-weight="bold">
+                            VK
+                            </text>
+                        </mask>
+                        <rect x="0" y="0" width="200" height="200" rx="30" style="fill: var(--p-button-text-primary-color);" mask="url(#text-mask-1)"/>
+                    </svg>
+                    
+                    <template v-if="this.open_left_menue">
+                        <div class="grow"/>
+                        <p class="text-left text-color text-base">Сообество ВКонтакте</p>
                     </template>
                 </Button>
 
@@ -214,6 +239,7 @@
             return {
                 open_left_menue: false,
                 tg_bot_ref: import.meta.env.VITE_TG_BOT_REF,
+                vk_bot_ref: import.meta.env.VITE_VK_BOT_REF,
 
                 visible_user_profile_dialog: false,
                 profile_edit_data:{
@@ -234,8 +260,14 @@
         },
         methods: {
             open_tg_bot(){
-                console.log(this.tg_bot_ref);
                 const newTab = window.open(this.tg_bot_ref, '_blank'); 
+                if (newTab) {
+                newTab.opener = null;
+                }
+            },
+
+            open_vk_bot(){
+                const newTab = window.open(this.vk_bot_ref, '_blank'); 
                 if (newTab) {
                 newTab.opener = null;
                 }
