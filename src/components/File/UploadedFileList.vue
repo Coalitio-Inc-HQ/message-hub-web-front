@@ -24,7 +24,7 @@
                 <i class="pi pi-file" style="font-size: 1.5rem"/>
                 <div class="miniature-file-text">{{ file.value.name }}</div>
 
-                <i class="pi pi-download miniature-acthion-button"/>
+                <i class="pi pi-download miniature-acthion-button invisible "/>
                 <i class="pi pi-times miniature-delete-button" style="font-size: 0.75rem" @click="(e)=>{openMiniature(null); file.value.delete_call(); e.preventDefault();}"/>
             </template>
             <ProgressBar v-if="!file.value.uploaded || 'miniature' in file.value && !file.value.miniature.uploaded" :value="file.value.progress*100" class="miniature-acthion-progressbar" style="height: 6px; position: absolute;">{{ "" }}</ProgressBar>

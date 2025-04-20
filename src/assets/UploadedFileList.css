@@ -42,11 +42,11 @@
     left: 50%;
     transform: translate(-50%, -50%);
 
-    display: none;
+    visibility: hidden;
 }
 
 .miniature-button:hover .miniature-acthion-button{
-    display: block;
+    visibility: visible;
 }
 
 .miniature-button:hover .pi-file{
