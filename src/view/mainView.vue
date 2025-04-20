@@ -14,7 +14,7 @@
                         </Avatar>
                         <Avatar v-else :label="this.AuthServiceStore.userInfo.name[0]"/>
                         <template v-if="this.open_left_menue">
-                            <p class="text-base">{{ this.AuthServiceStore.userInfo.name }}</p>
+                            <p class="text-base text-nowrap">{{ this.AuthServiceStore.userInfo.name }}</p>
                             <div class="grow"/>
                         </template>
                     </template>
@@ -37,7 +37,7 @@
                     <i class="pi pi-comments"/>
                     <template v-if="this.open_left_menue">
                         <div class="grow"/>
-                        <p class="text-left text-color text-base">Диалоги</p>
+                        <p class="text-left text-color text-base text-nowrap">Диалоги</p>
                     </template>
                 </Button>
 
@@ -50,7 +50,7 @@
                     <i class="pi pi-address-book"/>
                     <template v-if="this.open_left_menue">
                         <div class="grow"/>
-                        <p class="text-left text-color text-base">Контроль доступа</p>
+                        <p class="text-left text-color text-base text-nowrap">Контроль доступа</p>
                     </template>
                 </Button>
 
@@ -60,7 +60,7 @@
                     <i class="pi pi-telegram"/>
                     <template v-if="this.open_left_menue">
                         <div class="grow"/>
-                        <p class="text-left text-color text-base">Telegram бот</p>
+                        <p class="text-left text-color text-base text-nowrap">Telegram бот</p>
                     </template>
                 </Button>
 
@@ -85,7 +85,7 @@
                     
                     <template v-if="this.open_left_menue">
                         <div class="grow"/>
-                        <p class="text-left text-color text-base">Сообество ВКонтакте</p>
+                        <p class="text-left text-color text-base text-nowrap">Сообество ВКонтакте</p>
                     </template>
                 </Button>
 
@@ -96,7 +96,7 @@
                     <i class="pi pi-sign-out"/>
                     <template v-if="this.open_left_menue">
                         <div class="grow"/>
-                        <p class="text-left text-color text-base">Выйти</p>
+                        <p class="text-left text-color text-base text-nowrap">Выйти</p>
                     </template>
                 </Button>
                 <Button v-if="!this.SizeServiceStore.minWindow" variant="text" size="small" @click="this.open_left_menue=!this.open_left_menue"
@@ -106,7 +106,7 @@
                     <i v-else class="pi pi-arrow-right"/>
                     <template v-if="this.open_left_menue">
                         <div class="grow"/>
-                        <p class="text-left text-color text-base">Свернуть</p>
+                        <p class="text-left text-color text-base text-nowrap">Свернуть</p>
                     </template>
                 </Button>
 
