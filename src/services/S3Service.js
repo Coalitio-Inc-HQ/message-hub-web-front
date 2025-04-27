@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {ref} from 'vue';
+import {ref, reactive} from 'vue';
 import { uuidv4 } from '@/utilities/uuid';
 import {generateVideoPreview} from "@/utilities/VideoMiniature";
 import { useAuthService } from './authService';
@@ -18,7 +18,7 @@ export function upload_file(file, token) {
   if (file.type.startsWith('image/')) type = 'image';
   if (file.type.startsWith('video/')) type = 'video';
 
-  let res = ref({
+  let res = reactive({
     id: uuidv4(),
     name: file.name,
     type: type,
@@ -43,37 +43,37 @@ export function upload_file(file, token) {
     miniature_err_download_call_back: null,
   })
 
-  res.value.on_upload_progress = (progressEvent) => {
-    res.value.progress = progressEvent.progress;
+  res.on_upload_progress = (progressEvent) => {
+    res.progress = progressEvent.progress;
     if (loging) console.log("new_upload_file on_upload_progress", progressEvent);
   }
 
-  res.value.download_call_back = (response)=>{
-    res.value.uploaded = true;
-    res.value.progress = 1;
-    res.value.uploaded_url = response.data.url;
+  res.download_call_back = (response)=>{
+    res.uploaded = true;
+    res.progress = 1;
+    res.uploaded_url = response.data.url;
     if (loging) console.log("new_upload_file download_call_back", response);
   }
 
-  res.value.err_download_call_back = (error)=>{
+  res.err_download_call_back = (error)=>{
     if (loging) console.log("new_upload_file download_call_back", error);
   }
 
-  res.value.miniature_download_call_back = (response) =>{
-    res.value.miniature.uploaded = true;
-    res.value.miniature.uploaded_url = response.data.url;
+  res.miniature_download_call_back = (response) =>{
+    res.miniature.uploaded = true;
+    res.miniature.uploaded_url = response.data.url;
 
     if (loging) console.log("new_upload_file miniature_download_call_back", response);
   }
 
-  res.value.miniature_err_download_call_back = (error) =>{
+  res.miniature_err_download_call_back = (error) =>{
 
     if (loging) console.log("new_upload_file miniature_err_download_call_back", error);
   }
 
-  res.value.miniature_call_back = (m_url)=>{
-    res.value.miniature.loading = false;
-    res.value.miniature.url = m_url;
+  res.miniature_call_back = (m_url)=>{
+    res.miniature.loading = false;
+    res.miniature.url = m_url;
 
     let file_neme = uuidv4()+".png";
     let m_file = dataURLToFile(m_url, file_neme);
@@ -84,14 +84,14 @@ export function upload_file(file, token) {
     m_formData.append('file', m_file);
 
     axios.post(FILE_UPLOAD_URL, m_formData,)
-    .then((e)=>{if (res.value.miniature_download_call_back) res.value.miniature_download_call_back(e);})
-    .catch((e)=>{if (res.value.miniature_err_download_call_back) res.value.miniature_err_download_call_back(e);})
+    .then((e)=>{if (res.miniature_download_call_back) res.miniature_download_call_back(e);})
+    .catch((e)=>{if (res.miniature_err_download_call_back) res.miniature_err_download_call_back(e);})
 
     if (loging) console.log("new_upload_file miniature_call_back", m_url);
   }
 
   if (file.type.startsWith('video/')){
-    generateVideoPreview(res.value.url).then((e)=>{if (res.value.miniature_call_back) res.value.miniature_call_back(e);});
+    generateVideoPreview(res.url).then((e)=>{if (res.miniature_call_back) res.miniature_call_back(e);});
   }
 
   const authService = useAuthService();
@@ -101,10 +101,10 @@ export function upload_file(file, token) {
   
   axios.post(FILE_UPLOAD_URL, formData, 
   {
-    onUploadProgress: (e)=> {if (res.value.on_upload_progress) res.value.on_upload_progress(e);},
+    onUploadProgress: (e)=> {if (res.on_upload_progress) res.on_upload_progress(e);},
   })
-  .then((e)=>{if (res.value.download_call_back) res.value.download_call_back(e);})
-  .catch((e)=>{if (res.value.err_download_call_back) res.value.err_download_call_back(e);})
+  .then((e)=>{if (res.download_call_back) res.download_call_back(e);})
+  .catch((e)=>{if (res.err_download_call_back) res.err_download_call_back(e);})
   
   return res;
 }

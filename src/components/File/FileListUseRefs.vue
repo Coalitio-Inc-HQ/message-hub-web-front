@@ -2,14 +2,14 @@
     <div class="flex-list file-list">
         <Button 
         v-for="file in attachments.files"
-        :key="file.value.id"
+        :key="file.id"
         class="downlad-file-button" 
-        @click="(e)=>{this.download(file.value.url, file.value.name); console.log('123',e);}">
+        @click="(e)=>{this.download(file.url, file.name); console.log('123',e);}">
             <i class="pi pi-file file-icon" style="font-size: 1.5rem">
-                <ProgressBar v-if="!file.value.uploaded" :value="file.value.progress*100" class="downlad-file-button-progressbar" style="height: 6px; position: absolute;">{{ "" }}</ProgressBar>
+                <ProgressBar v-if="'uploaded' in file &&!file.uploaded" :value="file.progress*100" class="downlad-file-button-progressbar" style="height: 6px; position: absolute;">{{ "" }}</ProgressBar>
             </i>
-            <p class="file-name flex-scale">{{file.value.name }}</p>
-            <i v-if="!file.value.uploaded" class="pi pi-times" style="font-size: 1.5rem" @click.stop="(e)=>{ file.value.delete_call(); e.preventDefault(); this.$forceUpdate();}"/>
+            <p class="file-name flex-scale">{{file.name }}</p>
+            <i v-if="'progress' in file && !file.uploaded" class="pi pi-times" style="font-size: 1.5rem" @click.stop="(e)=>{ file.delete_call(); e.preventDefault(); this.$forceUpdate();}"/>
         </Button>
     </div>
 </template>

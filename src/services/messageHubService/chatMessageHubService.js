@@ -277,25 +277,25 @@ export function create_message(msg){
 
   msg.attachments.images.forEach(element => {
     attachments.images.push({
-      url: element.value.uploaded_url,
-      name: element.value.name,
+      url: element.uploaded_url,
+      name: element.name,
     });
   });
 
   msg.attachments.videos.forEach(element => {
     attachments.videos.push({
-      url: element.value.uploaded_url,
-      name: element.value.name,
+      url: element.uploaded_url,
+      name: element.name,
       miniature:{
-        url: element.value.miniature.uploaded_url
+        url: element.miniature.uploaded_url
       }
     });
   });
 
   msg.attachments.files.forEach(element => {
     attachments.files.push({
-      url: element.value.uploaded_url,
-      name: element.value.name,
+      url: element.uploaded_url,
+      name: element.name,
     });
   });
 

@@ -29,7 +29,7 @@
                 <div class="flex-list-w drawer-heder-container">
                     <p class="drawer-heder-text line-clamp-1">{{(this.openType=="images"? this.$props.attachments.images: this.$props.attachments.videos)[this.openIndex].name}}</p>
                     <div class="flex-scale"></div>
-                    <!-- <Button v-if="is_temp_messge" icon="pi pi-trash" variant="outlined" class="drawer-delete-button p-button-rounded p-button-text p-button-secondary" @click="this.miniatures[this.openIndex].delete"/> -->
+                    <Button v-if="is_temp_messge" icon="pi pi-trash" variant="outlined" class="drawer-delete-button p-button-rounded p-button-text p-button-secondary" @click="this.miniatures[this.openIndex].delete"/>
                 </div>
             </template>
             <div class="full-container icon-slide-container" @mousemove="showSlideButtons">

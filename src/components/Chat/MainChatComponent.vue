@@ -424,12 +424,12 @@
           let send_msg = ()=>{
             let chekUpload = true;
             let f = (item)=>{
-              if (!item.value.uploaded) chekUpload = false;
+              if (!item.uploaded) chekUpload = false;
             }
 
             let f_v = (item)=>{
-              if (!item.value.uploaded) chekUpload = false;
-              if (!item.value.miniature.uploaded) chekUpload = false;
+              if (!item.uploaded) chekUpload = false;
+              if (!item.miniature.uploaded) chekUpload = false;
             }
 
             msg.attachments.images.forEach(f);
@@ -464,7 +464,7 @@
           }
 
           files.forEach(element => {
-            element.value.delete_call = ()=>{
+            element.delete_call = ()=>{
               if (!msg.sended){
                 let file_index = msg.attachments.images.findIndex((item)=> item == element);
                 if (file_index!=-1){
@@ -484,30 +484,30 @@
               }
             };
 
-            element.value.err_download_call_back = (e)=>{
-              alert( `Произошла ошибка загрузки файла ${element.value.name}, он будет удалён.`);
+            element.err_download_call_back = (e)=>{
+              alert( `Произошла ошибка загрузки файла ${element.name}, он будет удалён.`);
               console.log("Произошла ошибка загрузки файла.",e);
-              element.value.delete_call();
+              element.delete_call();
             };
 
-            if (element.value.type == "video"){
-                element.value.miniature_err_download_call_back = (e)=>{
-                alert( `Произошла ошибка загрузки файла ${element.value.name}, он будет удалён.`);
+            if (element.type == "video"){
+                element.miniature_err_download_call_back = (e)=>{
+                alert( `Произошла ошибка загрузки файла ${element.name}, он будет удалён.`);
                 console.log("Произошла ошибка загрузки файла.",e);
-                element.value.delete_call();
+                element.delete_call();
               };
             }
 
-            let last_download_call_back =  element.value.download_call_back;
+            let last_download_call_back =  element.download_call_back;
 
-            element.value.download_call_back = (response)=>{
+            element.download_call_back = (response)=>{
               last_download_call_back(response);
               send_msg();
             };
 
-            let last_miniature_download_call_back =  element.value.miniature_download_call_back;
+            let last_miniature_download_call_back =  element.miniature_download_call_back;
 
-            element.value.miniature_download_call_back = (response)=>{
+            element.miniature_download_call_back = (response)=>{
               last_miniature_download_call_back(response);
               send_msg();
             };
@@ -549,9 +549,9 @@
         }
 
         files.forEach(element => {
-          if (element.value.type.startsWith("image")){
+          if (element.type.startsWith("image")){
             attachments.images.push(element);
-          } else if (element.value.type.startsWith("video")){
+          } else if (element.type.startsWith("video")){
             attachments.videos.push(element);
           } else {
             attachments.files.push(element);

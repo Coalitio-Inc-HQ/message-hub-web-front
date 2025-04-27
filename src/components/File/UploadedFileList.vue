@@ -3,48 +3,48 @@
         <Button 
             v-for="file in files"
             class="miniature-button flex-list"
-            :key="file.value.id"
-            @click="openMiniature(file.value.id)"
+            :key="file.id"
+            @click="openMiniature(file.id)"
         >
-            <template v-if="file.value.type==='image'">
-                <ImageComponent class="miniature-image" use_background_image="True" :src="file.value.url"/>
+            <template v-if="file.type==='image'">
+                <ImageComponent class="miniature-image" use_background_image="True" :src="file.url"/>
 
                 <i class="pi pi-eye miniature-acthion-button"/>
-                <i class="pi pi-times miniature-delete-button" style="font-size: 0.75rem" @click="(e)=>{openMiniature(null); file.value.delete_call(); e.preventDefault();}"/>
+                <i class="pi pi-times miniature-delete-button" style="font-size: 0.75rem" @click="(e)=>{openMiniature(null); file.delete_call(); e.preventDefault();}"/>
             </template>
-            <template v-else-if="file.value.type==='video'" >
-                <i v-if="file.value.miniature.loging" class="pi pi-spin pi-spinner"/>
-                <ImageComponent v-else class="miniature-image" use_background_image="True" :src="file.value.miniature.url"/>
+            <template v-else-if="file.type==='video'" >
+                <i v-if="file.miniature.loging" class="pi pi-spin pi-spinner"/>
+                <ImageComponent v-else class="miniature-image" use_background_image="True" :src="file.miniature.url"/>
 
                 <i class="pi pi-caret-right miniature-acthion-button"/>
-                <i class="pi pi-times miniature-delete-button" style="font-size: 0.75rem" @click="(e)=>{openMiniature(null); file.value.delete_call(); e.preventDefault();}"/>
+                <i class="pi pi-times miniature-delete-button" style="font-size: 0.75rem" @click="(e)=>{openMiniature(null); file.delete_call(); e.preventDefault();}"/>
             </template>
 
-            <template v-else-if="file.value.type==='file'">
+            <template v-else-if="file.type==='file'">
                 <i class="pi pi-file" style="font-size: 1.5rem"/>
-                <div class="miniature-file-text">{{ file.value.name }}</div>
+                <div class="miniature-file-text">{{ file.name }}</div>
 
                 <i class="pi pi-download miniature-acthion-button invisible "/>
-                <i class="pi pi-times miniature-delete-button" style="font-size: 0.75rem" @click="(e)=>{openMiniature(null); file.value.delete_call(); e.preventDefault();}"/>
+                <i class="pi pi-times miniature-delete-button" style="font-size: 0.75rem" @click="(e)=>{openMiniature(null); file.delete_call(); e.preventDefault();}"/>
             </template>
-            <ProgressBar v-if="!file.value.uploaded || 'miniature' in file.value && !file.value.miniature.uploaded" :value="file.value.progress*100" class="miniature-acthion-progressbar" style="height: 6px; position: absolute;">{{ "" }}</ProgressBar>
+            <ProgressBar v-if="!file.uploaded || 'miniature' in file && !file.miniature.uploaded" :value="file.progress*100" class="miniature-acthion-progressbar" style="height: 6px; position: absolute;">{{ "" }}</ProgressBar>
         </Button>
 
         <Drawer v-if="this.openIndex!=null" v-model:visible="drawer_visible"  position="full">
             <template #header>
                 <div class="flex-list-w drawer-heder-container items-center">
-                    <p class="drawer-heder-container-text">{{this.files[this.openIndex].value.name}}</p>
+                    <p class="drawer-heder-container-text">{{this.files[this.openIndex].name}}</p>
                     <div class="flex-scale"></div>
-                    <Button icon="pi pi-trash" variant="outlined" class="p-button-rounded p-button-text p-button-secondary" @click="(e)=>{this.files[this.openIndex].value.delete_call(); openMiniature(null); e.preventDefault();}"/>
+                    <Button icon="pi pi-trash" variant="outlined" class="p-button-rounded p-button-text p-button-secondary" @click="(e)=>{this.files[this.openIndex].delete_call(); openMiniature(null); e.preventDefault();}"/>
                 </div>
             </template>
             <div class="drawer-content-container" @mousemove="showSlideButtons">
-                <ImageComponent v-if="this.files[this.openIndex].value.type==='image'" class="drawer-content-container-image" container_class="drawer-content-container-image-comp" :src="this.files[this.openIndex].value.url" alt=" "/>
-                <video v-else-if="this.files[this.openIndex].value.type==='video'" class="drawer-content-container-video" :src="this.files[this.openIndex].value.url" controls/>
-                <template v-else-if="this.files[this.openIndex].value.type==='file'">
-                    <Button class="drawer-content-container-file-container flex-list" @click="this.downloadFile(this.files[this.openIndex].value.url,this.files[this.openIndex].value.name)">
+                <ImageComponent v-if="this.files[this.openIndex].type==='image'" class="drawer-content-container-image" container_class="drawer-content-container-image-comp" :src="this.files[this.openIndex].url" alt=" "/>
+                <video v-else-if="this.files[this.openIndex].type==='video'" class="drawer-content-container-video" :src="this.files[this.openIndex].url" controls/>
+                <template v-else-if="this.files[this.openIndex].type==='file'">
+                    <Button class="drawer-content-container-file-container flex-list" @click="this.downloadFile(this.files[this.openIndex].url,this.files[this.openIndex].name)">
                         <i class="pi pi-file drawer-content-container-file-container-icon" style="font-size: 1.5rem"/>
-                        <div class="drawer-content-container-file-text">{{ this.files[this.openIndex].value.name }}</div>
+                        <div class="drawer-content-container-file-text">{{ this.files[this.openIndex].name }}</div>
                     </Button>
                 </template>
                 
@@ -74,7 +74,7 @@
         methods:{
             openMiniature(id){
                 if (id){
-                    this.openIndex = this.files.findIndex(item => item.value.id === id);
+                    this.openIndex = this.files.findIndex(item => item.id === id);
                     if (this.openIndex!=-1){
                         this.drawer_visible=true;
                     } else{

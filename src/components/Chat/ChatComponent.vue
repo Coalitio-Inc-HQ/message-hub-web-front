@@ -32,22 +32,14 @@
     >
       <template #message="{ message }">
             <div class="message-sender-name">{{ get_user_name(message.sender_id) }}</div>
-            <template v-if="'use_ref' in message.attachments && message.attachments.use_ref">
-              <ImageVideoGalleriaUseRefs v-if="message.attachments && (message.attachments.images && message.attachments.images.length>0 || message.attachments.videos && message.attachments.videos.length>0)" 
-              :attachments="message.attachments"
-              />
-              <FileListUseRefs v-if="message.attachments && message.attachments.files && message.attachments.files.length>0"
-              :attachments="message.attachments"  
-              />
-            </template>
-            <template v-else>
-              <ImageVideoGalleria v-if="message.attachments && (message.attachments.images && message.attachments.images.length>0 || message.attachments.videos && message.attachments.videos.length>0)" 
-              :attachments="message.attachments"
-              />
-              <FileList v-if="message.attachments && message.attachments.files && message.attachments.files.length>0"
-              :attachments="message.attachments"  
-              />
-            </template>
+
+            <ImageVideoGalleriaUseRefs v-if="message.attachments && (message.attachments.images && message.attachments.images.length>0 || message.attachments.videos && message.attachments.videos.length>0)" 
+            :attachments="message.attachments"
+            />
+            <FileListUseRefs v-if="message.attachments && message.attachments.files && message.attachments.files.length>0"
+            :attachments="message.attachments"  
+            />
+
             <div class="message-text">{{ message.text }}</div>
             <div class="message-timestamp">
               <template v-if="message.id>=0">
@@ -303,13 +295,13 @@
             for (let i = 0; i < input.files.length; i++){
               try{
                 let u_file = upload_file(input.files[i], token)
-                u_file.value.delete_call = ()=>{
+                u_file.delete_call = ()=>{
                   let index = this.selected_files.indexOf(u_file);
                   if (index>-1) this.selected_files.splice(index,1);
                 };
-                u_file.value.err_download_call_back = ()=>{
-                  alert(`Ошибка загрузки файла ${u_file.value.name}. Он будет удалён.`);
-                  u_file.value.delete_call();
+                u_file.err_download_call_back = ()=>{
+                  alert(`Ошибка загрузки файла ${u_file.name}. Он будет удалён.`);
+                  u_file.delete_call();
                 };
                 this.selected_files.push(u_file);
               }catch (e){
