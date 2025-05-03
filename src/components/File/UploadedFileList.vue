@@ -2,19 +2,19 @@
     <div class="flex-list-w overflow-x-auto w-scrollbar">
         <Button 
             v-for="file in files"
-            class="miniature-button flex-list"
+            class="miniature-button flex-list !p-0"
             :key="file.id"
             @click="openMiniature(file.id)"
         >
             <template v-if="file.type==='image'">
-                <ImageComponent class="miniature-image" use_background_image="True" :src="file.url"/>
+                <ImageComponent class="miniature-image-file" container_class="miniature-image-container-file" use_background_image="false" :src="file.url"/>
 
                 <i class="pi pi-eye miniature-acthion-button"/>
                 <i class="pi pi-times miniature-delete-button" style="font-size: 0.75rem" @click="(e)=>{openMiniature(null); file.delete_call(); e.preventDefault();}"/>
             </template>
             <template v-else-if="file.type==='video'" >
                 <i v-if="file.miniature.loging" class="pi pi-spin pi-spinner"/>
-                <ImageComponent v-else class="miniature-image" use_background_image="True" :src="file.miniature.url"/>
+                <ImageComponent v-else class="miniature-image-file" container_class="miniature-image-container-file"  use_background_image="false" :src="file.miniature.url"/>
 
                 <i class="pi pi-caret-right miniature-acthion-button"/>
                 <i class="pi pi-times miniature-delete-button" style="font-size: 0.75rem" @click="(e)=>{openMiniature(null); file.delete_call(); e.preventDefault();}"/>
@@ -33,13 +33,17 @@
         <Drawer v-if="this.openIndex!=null" v-model:visible="drawer_visible"  position="full">
             <template #header>
                 <div class="flex-list-w drawer-heder-container items-center">
-                    <p class="drawer-heder-container-text">{{this.files[this.openIndex].name}}</p>
+                    <p class="text-2xl drawer-heder-text line-clamp-1 break-all">{{this.files[this.openIndex].name}}</p>
                     <div class="flex-scale"></div>
-                    <Button icon="pi pi-trash" variant="outlined" class="p-button-rounded p-button-text p-button-secondary" @click="(e)=>{this.files[this.openIndex].delete_call(); openMiniature(null); e.preventDefault();}"/>
+                    <Button v-if="this.files[this.openIndex].type==='image'" icon="pi pi-search-plus" variant="outlined" class="min-w-[2.5rem] p-button p-component p-button-icon-only p-button-secondary p-button-rounded p-button-text p-drawer-close-button" @click="this.image_scale*=2"/>
+                    <Button v-if="this.files[this.openIndex].type==='image'" icon="pi pi-search-minus" variant="outlined" class="min-w-[2.5rem] p-button p-component p-button-icon-only p-button-secondary p-button-rounded p-button-text p-drawer-close-button" @click="this.image_scale/=2"/>
+                    <Button icon="pi pi-trash" variant="outlined" class="min-w-[2.5rem] p-button p-component p-button-icon-only p-button-secondary p-button-rounded p-button-text p-drawer-close-button" @click="(e)=>{this.files[this.openIndex].delete_call(); openMiniature(null); e.preventDefault();}"/>
                 </div>
             </template>
             <div class="drawer-content-container" @mousemove="showSlideButtons">
-                <ImageComponent v-if="this.files[this.openIndex].type==='image'" class="drawer-content-container-image" container_class="drawer-content-container-image-comp" :src="this.files[this.openIndex].url" alt=" "/>
+                <!-- <ImageComponent v-if="this.files[this.openIndex].type==='image'" class="drawer-content-container-image" container_class="drawer-content-container-image-comp" :src="this.files[this.openIndex].url" alt=" "/> -->
+                <ZoomImageComponent v-if="this.files[this.openIndex].type==='image'" :image_scale="this.image_scale" class="full-image" container_class="full-image-container" :src="this.files[this.openIndex].url"/>
+
                 <video v-else-if="this.files[this.openIndex].type==='video'" class="drawer-content-container-video" :src="this.files[this.openIndex].url" controls/>
                 <template v-else-if="this.files[this.openIndex].type==='file'">
                     <Button class="drawer-content-container-file-container flex-list" @click="this.downloadFile(this.files[this.openIndex].url,this.files[this.openIndex].name)">
@@ -60,6 +64,7 @@
     import Drawer from 'primevue/drawer';
     import Button from 'primevue/button';
     import ProgressBar from 'primevue/progressbar';
+    import ZoomImageComponent from '../ZoomImageComponent.vue';
 
     export default {
         props: ["files"],
@@ -69,6 +74,7 @@
             Drawer,
             Button,
             ProgressBar,
+            ZoomImageComponent,
         },
 
         methods:{
@@ -113,6 +119,7 @@
                 drawer_visible: false,
                 visible_slide_buttons: false,
                 hideTimeout: null,
+                image_scale: 1,
             }
         },           
     }

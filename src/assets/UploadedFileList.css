@@ -20,13 +20,16 @@
     filter: brightness(50%);
 }
 
-.miniature-image-container{
+.miniature-image-container-file{
     width: 100%;
     height: 100%;
 }
 
-.miniature-image{
-    object-fit: contain;
+.miniature-image-file{
+    /* object-fit: contain; */
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
 }
 
 .miniature-file-text{
