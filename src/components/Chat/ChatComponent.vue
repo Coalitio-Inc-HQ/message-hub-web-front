@@ -28,10 +28,16 @@
       @scrollde-to-top="(chat)=>{this.$emit('scrolled-top', chat);}"
       @scrollde-to-down="(chat)=>{this.$emit('scrolled-down', chat);}"
       @set-last-viseble-message="(chat, message_index)=>{this.$emit('set-last-viseble-message', chat, message_index);}" 
-      @contextmenu-on-message="onMessageContextmenu"
     >
+    <!-- ^^^ @contextmenu-on-message="onMessageContextmenu" -->
+
+
       <template #message="{ message }">
-            <div class="message-sender-name">{{ get_user_name(message.sender_id) }}</div>
+            <div class="flex">
+              <div class="message-sender-name">{{ get_user_name(message.sender_id) }}</div>
+              <div class="grow"/>
+              <Button v-if="message.sender_id == this.$props.user.id" @click="(e)=>{onMessageContextmenu(e,message)}" icon="pi pi-ellipsis-v" class="!w-auto h-0.75"/>
+            </div>
 
             <ImageVideoGalleriaUseRefs v-if="message.attachments && (message.attachments.images && message.attachments.images.length>0 || message.attachments.videos && message.attachments.videos.length>0)" 
             :attachments="message.attachments"

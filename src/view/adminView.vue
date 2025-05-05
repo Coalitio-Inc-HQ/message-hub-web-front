@@ -65,7 +65,16 @@
                                     <Password inputClass="input-field" class="input-field" v-model="data[field]" :feedback="false" toggleMask />
                                     <label for="password">Пароль</label>
                                 </FloatLabel> -->
-                                <Button class="text-nowrap" label="Создать ссылку востановления пароля" />
+                                <template v-if="data.request_password_await">
+                                    <Button class="text-nowrap" label="Ссылка создаётся ..." disabled />
+                                </template>
+                                <template v-else>
+                                    <template v-if="data.ref_token">
+                                        <Button v-if="data.copped_link" class="text-nowrap" label="Ссылка скопирована" disabled />
+                                        <Button v-else class="text-nowrap" label="Скопировать ссылку" @click="coppyChengePasswordLink(data)"/>
+                                    </template>
+                                    <Button v-else class="text-nowrap" label="Создать ссылку востановления пароля" @click="init_chnge_password(data)" />
+                                </template>
                             </template>
                             <template #body="slotProps">
                                 <template v-if="slotProps.data.request_password_await">

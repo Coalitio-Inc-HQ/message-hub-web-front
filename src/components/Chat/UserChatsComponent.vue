@@ -21,7 +21,7 @@
           </template>
           <template v-else>
             <il class="chat-item flex-list-w align-items-center">
-              <p class="chat-list-empty-text" >Входящие чаты отсутствуют</p>
+              <p class="chat-list-empty-text" >Входящие чаты отсутствуют. Когда клиенты напишут вам, их чаты поподут во вкладку входящие.</p>
             </il>
           </template>
         </template>
@@ -54,7 +54,7 @@
           </template>
           <template v-else>
             <il class="chat-item flex-list-w align-items-center">
-              <p class="chat-list-empty-text" >Ваши чаты отсутствуют</p>
+              <p class="chat-list-empty-text" >Ваши чаты отсутствуют. Здесь будут отображены все чаты в которых вы учавствуете.</p>
             </il>
           </template>
         </template>
@@ -86,7 +86,7 @@
           </template>
           <template v-else>
             <il class="chat-item flex-list-w align-items-center w-full">
-              <p class="chat-list-empty-text" >Остальные чаты отсутствуют</p>
+              <p class="chat-list-empty-text" >Остальные чаты отсутствуют. Здесь будут отображены все чаты в которых активно ведутся диалоги, корме тех в ктоырх вы учавствуете.</p>
             </il>
           </template>
         </template>
@@ -119,7 +119,7 @@
           </template>
           <template v-else>
             <il class="chat-item flex-list-w align-items-center">
-              <p class="chat-list-empty-text" >Архивные чаты отсутствуют</p>
+              <p class="chat-list-empty-text" >Архивные чаты отсутствуют.</p>
             </il>
           </template>
         </template>
