@@ -180,6 +180,7 @@
     import Button from 'primevue/button';
     import Avatar from 'primevue/avatar';
     import Dialog from 'primevue/dialog';
+    import Skeleton from 'primevue/skeleton';
 
     import { mapStores } from 'pinia'
     import { useAuthService } from '@/services/authService';
@@ -205,6 +206,7 @@
             Dialog,
             ProgressBar,
             Message,
+            Skeleton,
         },
 
         watch:{
