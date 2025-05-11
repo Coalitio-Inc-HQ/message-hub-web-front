@@ -28,6 +28,24 @@
           </mask>
           <rect x="0" y="0" width="200" height="200" rx="30" style="fill: var(--p-splitter-color);" mask="url(#text-mask)"/>
         </svg>
+
+        <svg
+        v-else-if="platforms.platforms[chat.platform_id].platform_name==='test'"
+        xmlns="http://www.w3.org/2000/svg"
+        width="0.75rem"
+        height="0.75rem"
+        viewBox="0 0 200 200"
+        class="avatar-platform-icon"
+        >
+          <mask id="text-mask">
+              <rect x="0" y="0" width="200" height="200" fill="white"/>
+              <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Arial, sans-serif" font-size="80" font-weight="bold">
+              TEST
+              </text>
+          </mask>
+          <rect x="0" y="0" width="200" height="200" rx="30" style="fill: var(--p-splitter-color);" mask="url(#text-mask)"/>
+        </svg>
+
       </template>
     </div>
     <p class="chat-item-text">{{ chat.name }}</p>
