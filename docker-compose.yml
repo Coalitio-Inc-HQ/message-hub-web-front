@@ -2,7 +2,6 @@ services:
   vue-app:
     build: .
     container_name: vue_app
-    restart: always
     env_file:
       - .env
     ports:
