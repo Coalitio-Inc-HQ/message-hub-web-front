@@ -245,7 +245,7 @@
     data(){
       return{
         observer: null,
-        max_mode: false,
+        max_mode: true,
         selected_files: [],
         context_menu_items:[
           { label: 'Удалить', icon: 'pi pi-trash' },
