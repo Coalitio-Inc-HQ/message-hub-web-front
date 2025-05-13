@@ -216,7 +216,7 @@
         router.push('/login');
       });
       MHS.failSincEventHandlers.push(()=>{
-        router.push('/chat');
+        router.push('/ui/chat');
         // В посделствии сброс стореджа
       });
     },
