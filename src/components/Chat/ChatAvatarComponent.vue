@@ -1,5 +1,5 @@
 <template>
-  <il 
+  <li
   :class="{ 'chat-item': true, 'flex-list-w': true, 'align-items-center':true, 'active': is_iselected}" 
   @click="$emit('select-chat', chat)"
   >
@@ -49,7 +49,7 @@
       </template>
     </div>
     <p class="chat-item-text">{{ chat.name }}</p>
-  </il>
+  </li>
 </template>
   
 <script>
