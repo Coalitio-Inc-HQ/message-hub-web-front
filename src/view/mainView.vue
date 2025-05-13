@@ -288,27 +288,27 @@
                         let token = this.AuthServiceStore.token;
 
                         let u_file = upload_file(faile, token);
-                        u_file.value.delete_call = ()=>{
+                        u_file.delete_call = ()=>{
                             
                         };
 
-                        u_file.value.err_download_call_back = ()=>{
+                        u_file.err_download_call_back = ()=>{
                             
-                            u_file.value.delete_call();
+                            u_file.delete_call();
                         };
                         
                         if (this.upload_file_info) this.upload_file_info.download_call_back = ()=>{};
                 
-                        u_file.value.download_call_back = (response)=>{
-                            u_file.value.uploaded = true;
-                            u_file.value.progress = 1;
-                            u_file.value.uploaded_url = response.data.url;
+                        u_file.download_call_back = (response)=>{
+                            u_file.uploaded = true;
+                            u_file.progress = 1;
+                            u_file.uploaded_url = response.data.url;
 
-                            this.profile_edit_data.icon_url = u_file.value.uploaded_url;
+                            this.profile_edit_data.icon_url = u_file.uploaded_url;
                             this.upload_file_info = null;
                         }
                         
-                        this.profile_edit_data.icon_url = u_file.value.url;
+                        this.profile_edit_data.icon_url = u_file.url;
                         this.upload_file_info = u_file;
                     }
                 });
