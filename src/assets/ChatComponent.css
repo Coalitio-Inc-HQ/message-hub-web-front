@@ -87,6 +87,10 @@ body{
   background-color: var(--p-button-secondary-active-color); 
 }
 
+.chat-item.active .achat-item-text{
+  color: var(--p-primary-400);
+}
+
 .chat-item:hover {
   background-color: var(--p-button-secondary-hover-color); 
 }
